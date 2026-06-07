@@ -1,4 +1,25 @@
 {
   "name": "minejs",
-  "packageManager": "yarn@4.12.0"
+  "version": "0.1.0",
+  "description": "A Minecraft package",
+  "license": "MIT",
+  "packageManager": "yarn@4.12.0",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@types/node": "^25.9.1",
+    "eslint": "^10.4.1",
+    "globals": "^17.6.0",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.60.1"
+  },
+  "keywords": [
+    "minecraft",
+    "node"
+  ],
+  "author": {
+    "name": "Vaito",
+    "email": "duyduy15456@gmail.com"
+  }
 }
