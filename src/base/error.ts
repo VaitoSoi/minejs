@@ -17,8 +17,20 @@ export class NumberTooBig extends Error {
     }
 }
 
+export class StringSizeExceedLimit extends Error {
+    constructor() {
+        super("read string size is exceed buffer limit");
+    }
+}
+
 export class InvalidValue extends Error {
     constructor (public type: string, public got: string) {
         super(`got invalid value for ${type}: ${got}`);
+    }
+}
+
+export class SockerIsNotWritable extends Error {
+    constructor() {
+        super("socket is not writable, do you connect it before?");
     }
 }
