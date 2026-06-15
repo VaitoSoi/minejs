@@ -1,9 +1,7 @@
 import { readFileSync } from "node:fs";
-import { gunzipSync } from "node:zlib";
 
-import { Decoder } from "../../src/nbt/decoder";
+import { NBTDecoder } from "../../src/translator/decoder";
 
 const zippedBuffer = readFileSync("./test/decoder/level.dat");
-const buffer = gunzipSync(zippedBuffer);
-const decoder = new Decoder(buffer, true);
+const decoder = new NBTDecoder(zippedBuffer, true);
 console.log(decoder.decode());

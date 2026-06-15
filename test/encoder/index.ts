@@ -1,5 +1,5 @@
-import { Encoder } from "../../src/nbt/encoder";
-import { Decoder } from "../../src/nbt/decoder";
+import { NBTEncoder } from "../../src/nbt/encoder";
+import { NBTDecoder } from "../../src/nbt/decoder";
 
 const obj = {
     "hello": "world",
@@ -17,8 +17,8 @@ const obj = {
     "empty_coupound": {},
     "empty_array": []
 };
-const encoder = new Encoder(obj);
+const encoder = new NBTEncoder(obj);
 const buffer = encoder.encode();
 
-const decoder = new Decoder(buffer);
+const decoder = new NBTDecoder(buffer);
 console.log(decoder.decode());
