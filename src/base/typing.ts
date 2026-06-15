@@ -1,0 +1,1 @@
+export type If<Condition extends boolean, True, False = null> = Condition extends true ? True : False;
