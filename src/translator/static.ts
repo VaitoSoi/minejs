@@ -1,5 +1,8 @@
 export const SEGMENT_BITS = 0x7F;
 export const CONTINUE_BIT = 0x80;
+export const MAX_QUANTIZED_VALUE = 32766;
+export const CONTINUATION_FLAG = BigInt(0x04);
+export const SCALE_BITS = BigInt(0x03);
 
 export enum Tag {
     End = 0x00,
