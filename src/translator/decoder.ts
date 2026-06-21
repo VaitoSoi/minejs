@@ -326,7 +326,7 @@ export class BinaryDecoder {
         }
 
         const byte2 = this.readUByte();
-        const bytes3To6 = readUInt();
+        const bytes3To6 = this.readInt(); // Should be UInt
         const packed = BigInt(bytes3To6 << 16) | BigInt(byte2 << 8) | BigInt(byte1);
         let scaleFactor = BigInt(byte1) & SCALE_BITS;
         if ((BigInt(byte1) & CONTINUATION_FLAG) != 0n)
