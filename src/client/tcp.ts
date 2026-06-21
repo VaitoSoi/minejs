@@ -17,7 +17,7 @@ import { BinaryEncoder } from "../translator/encoder";
 import { SockerIsNotWritable } from "../base/error";
 import { computeUUID } from "../base/player";
 import { If } from "../base/typing";
-import { Angle, Vector } from "../base/vector";
+import { Angle, Vec3 } from "../base/vector";
 import { deflateSync, inflateSync } from "node:zlib";
 import { SectionsPerChunk } from "./static";
 
@@ -97,7 +97,7 @@ export interface PaletteContainer {
 }
 
 export interface BlockEntity {
-    position: Vector,
+    position: Vec3,
     type: number,
     data: Record<string, any>
 }
@@ -119,8 +119,8 @@ export interface ClientPlayer {
     uuid: string,
     username: string,
 
-    position: Vector,
-    velocity: Vector,
+    position: Vec3,
+    velocity: Vec3,
     angle: Angle
 }
 
