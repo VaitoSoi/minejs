@@ -1,8 +1,9 @@
-import { Vector } from "../base/vector";
-import { CONTINUE_BIT, SEGMENT_BITS } from "./static";
+import { Vec3 } from "../base/vector";
+import { CONTINUATION_FLAG, CONTINUE_BIT, MAX_QUANTIZED_VALUE, SCALE_BITS, SEGMENT_BITS } from "./static";
 import { StringSizeExceedLimit, UnexpectedValue } from "../base/error";
 import { Tag } from "./static";
 import { unzipSync } from "zlib";
+import { minBigInt } from "../base/math";
 
 export class BinaryDecoder {
     public buffer: Buffer = Buffer.alloc(0);
@@ -180,16 +181,16 @@ export class BinaryDecoder {
      * 
      * @returns a Position
      */
-    public readPosition(): Vector {
+    public readPosition(): Vec3 {
         const val = this.readLong(),
             x = val >> BigInt(38),
             y = val << BigInt(52) >> BigInt(52),
             z = val << BigInt(26) >> BigInt(38);
-        return {
-            x: Number(x),
-            y: Number(y),
-            z: Number(z),
-        };
+        return new Vec3(
+            Number(x),
+            Number(y),
+            Number(z),
+        );
     }
 
     /**
