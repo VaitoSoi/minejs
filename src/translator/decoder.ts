@@ -305,6 +305,62 @@ export class BinaryDecoder {
         this.offset += nbtDecoder.offset;
         return val;
     }
+
+    // For reading LpVec3
+    private unpack(value: number | bigint) {
+        return minBigInt(
+            BigInt(BigInt(value) & 32767n),
+            BigInt(MAX_QUANTIZED_VALUE)
+        ) * BigInt(2.0) / BigInt(MAX_QUANTIZED_VALUE) - 1n;
+    }
+
+    /**
+     * Read LpVec3
+     * 
+     * Read this article for more information: https://minecraft.wiki/w/Java_Edition_protocol/Data_types#LpVec3
+     */
+    public readLpVec3(): Vec3 {
+        const byte1 = this.readUByte();
+        if (byte1 === 0) {
+            return Vec3.Zero;
+        }
+
+        const byte2 = this.readUByte();
+        const bytes3To6 = readUInt();
+        const packed = BigInt(bytes3To6 << 16) | BigInt(byte2 << 8) | BigInt(byte1);
+        let scaleFactor = BigInt(byte1) & SCALE_BITS;
+        if ((BigInt(byte1) & CONTINUATION_FLAG) != 0n)
+            scaleFactor |= BigInt(this.readVarInt()) << 2n;
+
+        const scaleFactorD = BigInt(scaleFactor);
+        return new Vec3(
+            Number(this.unpack(packed >> 3n) * scaleFactorD),
+            Number(this.unpack(packed >> 18n) * scaleFactorD),
+            Number(this.unpack(packed >> 33n) * scaleFactorD)
+        );
+    }
+
+    /**
+     * Resolve a fixed point to a double
+     * 
+     * A fixed point is a certain number of bits represent the signed integer part (number to the left of the decimal point) 
+     * and the rest represent the fractional part (to the right).
+     * 
+     * @param x number to resole
+     * @param n n fraction bits
+     */
+    public readFixedPoint(x: number, n: number) {
+        return x / (1 << n);
+    }
+
+    /**
+     * Read an angle.
+     * 
+     * An angle is a rotation angle in steps of 1/256 of a full turn
+     */
+    public readAngle() {
+        return this.readByte();
+    }
 }
 
 export class NBTDecoder extends BinaryDecoder {
