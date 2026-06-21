@@ -192,6 +192,42 @@ export class BinaryEncoder {
         this.concat(data);
         return this;
     }
+
+    // For writing LpVec3
+    private pack(value: number): number {
+        return Math.round((value * 0.5 + 0.5) * MAX_QUANTIZED_VALUE);
+    }
+
+    /**
+     * Write LpVec3
+     * 
+     * Read this article for more information: https://minecraft.wiki/w/Java_Edition_protocol/Data_types#LpVec3
+     */
+    public writeLpVec3(vec3: Vec3) {
+        const maxCoordinate = Math.max(Math.abs(vec3.x), Math.max(Math.abs(vec3.y), Math.abs(vec3.z)));
+
+        // Checking for NaN values in our maxCoordinate
+        if (isNaN(maxCoordinate) || maxCoordinate < 1 / MAX_QUANTIZED_VALUE) {
+            this.writeByte(0);
+        } else {
+            const scaleFactor = BigInt(Math.ceil(maxCoordinate));
+            const needContinuation = (scaleFactor & SCALE_BITS) != scaleFactor;
+
+            const packedScale = needContinuation ? scaleFactor & SCALE_BITS | CONTINUATION_FLAG : scaleFactor;
+            const packedX = BigInt(this.pack(vec3.x)) / scaleFactor << 3n;
+            const packedY = BigInt(this.pack(vec3.y)) / scaleFactor << 18n;
+            const packedZ = BigInt(this.pack(vec3.z)) / scaleFactor << 33n;
+            const packed = packedZ | packedY | packedX | packedScale;
+
+            this.writeByte(Number(packed));
+            this.writeByte(Number(packed >> 8n));
+            this.writeInt(Number(packed >> 16n));
+            if (needContinuation) {
+                this.writeVarInt(Number(scaleFactor >> 2n));
+            }
+        }
+    }
+
 }
 
 export type CompoundField = any | {
