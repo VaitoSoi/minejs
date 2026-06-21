@@ -1,9 +1,7 @@
-import { Vector } from "../base/vector";
-import { CONTINUE_BIT, isFixedSizeTag, isTag, SEGMENT_BITS } from "../translator/static";
+import { Vec3 } from "../base/vector";
+import { CONTINUATION_FLAG, CONTINUE_BIT, isFixedSizeTag, isTag, MAX_QUANTIZED_VALUE, SCALE_BITS, SEGMENT_BITS } from "./static";
 import { InvalidValue, NumberTooBig, UnexpectedValue } from "../base/error";
 import { FixedSizeTag, Tag } from "./static";
-import { deflate } from "zlib";
-import { promisify } from "util";
 
 export class BinaryEncoder {
     private buffer = Buffer.alloc(0);
@@ -147,7 +145,7 @@ export class BinaryEncoder {
      * 
      * @returns a Position
      */
-    public writePosition(position: Vector) {
+    public writePosition(position: Vec3) {
         const val = BigInt(
             ((position.x & 0x3FFFFFF) << 38) |
             ((position.z & 0x3FFFFFF) << 12) |
