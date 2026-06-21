@@ -81,25 +81,37 @@ export interface ServerWorld {
      * 
      * For `Section Y`, a chunk is splitted into several cubic 16x16x16 sections, or in other word, a chunk is a bund of 16x16x16 sections stacked on each other.
      */
-    chunks: Record<`${number};${number}:${number}`, ChunkSection>
+    chunks: Record<`${number}:${number}:${number}`, ChunkSection>,
+    /**
+     * The record key is entity ID
+     */
+    entities: Record<number, Entity>,
 }
 
 export interface ChunkSection {
     block: PaletteContainer,
-    blockEntities: any[],
+    // blockEntities: any[], // TODO: Implement later
     biome: PaletteContainer,
 }
 
 export interface PaletteContainer {
     bpe: number, // Bit per entry
     palette: number[],
-    data: BigInt64Array,
+    data: BigInt64Array | null, // null if the whole section contains one 1 type of block
 }
 
 export interface BlockEntity {
     position: Vec3,
     type: number,
     data: Record<string, any>
+}
+
+export interface Entity {
+    type: number,
+    position: Vec3,
+    velocity: Vec3,
+    angle: Angle,
+    data: number
 }
 
 export enum GameMode {
@@ -255,6 +267,7 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
                     break;
                 case 0x01:
                     if (this.state === ClientState.Login) this.handleEncryption(decoder);
+                    if (this.state === ClientState.Play) this.handleSpawnEntity(decoder);
                     break;
                 case 0x02:
                     if (this.state === ClientState.Login) this.handleLoginSucess(decoder);
@@ -268,6 +281,9 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
                     break;
                 case 0x0A:
                     if (this.state === ClientState.Play) this.handleChangeGameMode(decoder);
+                    break;
+                case 0x23:
+                    if (this.state === ClientState.Play) this.handleTeleportEntity(decoder);
                     break;
                 case 0x2C:
                     if (this.state === ClientState.Play) this.handleChunkData(decoder);
@@ -473,78 +489,125 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
                 return { x, y, z, type, nbt };
             });
 
-        // TODO: Optimize reading with Promise
-        const sections: any = [];
+
         const chunkDataDecoder = new BinaryDecoder(Buffer.from(chunkData));
-        for (let i = 0; i < (SectionsPerChunk[this.world!.dimensionName] || 0); i++) {
+        for (let height = 0; height < (SectionsPerChunk[this.world!.dimensionName] || 0); height++) {
             const blockCount = chunkDataDecoder.readShort();
             // const fluidCount = chunkDataDecoder.readShort(); // Since 21.1
 
-            // Block pallete
-            {
-                const blockStateBPE = chunkDataDecoder.readUByte();
-                let actualBPE = blockStateBPE;
-                let blockStatePalletes: number[];
+            // Blocks
+            let blockStateBPE = chunkDataDecoder.readUByte();
+            let blockStatePalettes: number[] = [];
 
-                if (blockStateBPE === 0) {
-                    blockStatePalletes = [chunkDataDecoder.readVarInt()];
-                } else if (blockStateBPE <= 8) {
-                    // Indirect palette
-                    // if (blockStateBPE < 4) actualBPE = 4;
-                    blockStatePalletes = chunkDataDecoder.readPrefixedArray(decoder => decoder.readVarInt());
-                } else {
-                    // Direct palette (no palette array)
-                    // actualBPE = 15;
-                    blockStatePalletes = [];
-                }
-
-                const entriesPerSection = 4096;
-                const entriesPerLong = Math.floor(64 / actualBPE);
-                const dataArrayLength = blockStateBPE === 0 ? 0 : Math.floor((entriesPerSection + entriesPerLong - 1) / entriesPerLong);
-                const dataArray = chunkDataDecoder.readArray(dataArrayLength, (decoder) => decoder.readLong());
-
-                const blockIdAtPos: Record<`${number}:${number}:${number}`, number> = {};
-                let x = 0, y = 0, z = 0;
-                for (const long of dataArray) {
-                    for (let j = 0; j < entriesPerLong; j++) {
-                        if (Object.keys(blockIdAtPos).length >= entriesPerSection) break;
-
-                        const mask = (BigInt(1) << BigInt(actualBPE)) - BigInt(1);
-                        const bitIndex = BigInt(j * actualBPE);
-                        const blockId = Number((long >> bitIndex) & mask);
-                        blockIdAtPos[`${x}:${y}:${z}`] = blockId;
-
-                        x++;
-                        if (x > 15) { x = 0; z++; }
-                        if (z > 15) { z = 0; y++; }
-                    }
-                }
-                console.log({
-                    // blockIdAtPos,
-                    blockStateBPE,
-                    palleteLength: blockStatePalletes.length,
-                    count: Object.keys(blockIdAtPos).length,
-                    expecting: blockCount
-                });
+            if (blockStateBPE === 0) {
+                blockStatePalettes = [chunkDataDecoder.readVarInt()];
+            } else if (blockStateBPE <= 8) {
+                // Indirect palette
+                if (blockStateBPE < 4) blockStateBPE = 4; // BPE smaller than 4 ưill be rounđe up to 4
+                blockStatePalettes = chunkDataDecoder.readPrefixedArray(decoder => decoder.readVarInt());
+            } else {
+                // Direct palette (no palette array)
             }
 
-            {// Biomes - Not used yet, but need to be read to advance decoder
-                const biomeBPE = chunkDataDecoder.readUByte();
-                if (biomeBPE === 0) {
-                    chunkDataDecoder.readVarInt(); // Palette value
-                } else if (biomeBPE <= 3) {
-                    // Indirect palette
-                    chunkDataDecoder.readPrefixedArray(decoder => decoder.readVarInt());
-                } else {
-                    // Direct palette (no palette array)
-                    // actualBiomeBPE is used as sent in the packet
-                }
-                const entriesPerSection = 64;
-                const entriesPerLong = Math.floor(64 / biomeBPE);
-                const dataArrayLength = biomeBPE === 0 ? 0 : Math.floor((entriesPerSection + entriesPerLong - 1) / entriesPerLong);
-                chunkDataDecoder.readArray(dataArrayLength, (decoder) => decoder.readLong());
+            const blockEntriesPerSection = 4096;
+            const blockEntriesPerLong = Math.floor(64 / blockStateBPE);
+            let blockDataArray: BigInt64Array | null = null;
+            if (blockStateBPE !== 0) {
+                const blockDataArrayLength = Math.floor((blockEntriesPerSection + blockEntriesPerLong - 1) / blockEntriesPerLong);
+                blockDataArray = new BigInt64Array(chunkDataDecoder.readArray(blockDataArrayLength, (decoder) => decoder.readLong()));
             }
 
+
+            // Biomes - Not used yet, but need to be read to advance decoder
+            const biomeBPE = chunkDataDecoder.readUByte();
+            let biomePalettes: number[] = [];
+            if (biomeBPE === 0) {
+                biomePalettes = [chunkDataDecoder.readVarInt()]; // Palette value
+            } else if (biomeBPE <= 3) {
+                // Indirect palette
+                biomePalettes = chunkDataDecoder.readPrefixedArray(decoder => decoder.readVarInt());
+            } else {
+                // Direct palette (no palette array)
+            }
+
+            const biomeEntriesPerSection = 64;
+            const biomeEntriesPerLong = Math.floor(64 / biomeBPE);
+            let biomeDataArray: BigInt64Array | null = null;
+            if (biomeBPE !== 0) {
+                const biomeDataArrayLength = Math.floor((biomeEntriesPerSection + biomeEntriesPerLong - 1) / biomeEntriesPerLong);
+                biomeDataArray = new BigInt64Array(chunkDataDecoder.readArray(biomeDataArrayLength, (decoder) => decoder.readLong()));
+            }
+
+            this.world!.chunks[`${chunkX}:${height}:${chunkZ}`] = {
+                block: {
+                    bpe: blockStateBPE,
+                    palette: blockStatePalettes,
+                    data: blockDataArray
+                },
+                biome: {
+                    bpe: biomeBPE,
+                    palette: biomePalettes,
+                    data: biomeDataArray
+                }
+            };
+        }
+    }
+
+    private handleSpawnEntity(decoder: BinaryDecoder) {
+        const id = decoder.readVarInt(),
+            UUID = decoder.readUUID(),
+            type = decoder.readVarInt(),
+            x = decoder.readDouble(),
+            y = decoder.readDouble(),
+            z = decoder.readDouble(),
+            velocity = decoder.readLpVec3(),
+            pitch = decoder.readAngle(),
+            yaw = decoder.readAngle(),
+            headYaw = decoder.readAngle(),
+            data = decoder.readVarInt();
+
+        this.world!.entities[id] = {
+            type,
+            position: new Vec3(x, y, z),
+            velocity,
+            angle: {
+                pitch,
+                yaw
+            },
+            data
+        };
+    }
+
+    private handleTeleportEntity(decoder: BinaryDecoder) {
+        const id = decoder.readVarInt(),
+            x = decoder.readDouble(),
+            y = decoder.readDouble(),
+            z = decoder.readDouble(),
+            velX = decoder.readDouble(),
+            velY = decoder.readDouble(),
+            velZ = decoder.readDouble(),
+            pitch = decoder.readAngle(),
+            yaw = decoder.readAngle();
+
+        if (id in this.world!.entities) {
+            this.world!.entities[id]!.position = new Vec3(x, y, z);
+            this.world!.entities[id]!.velocity = new Vec3(velX, velY, velZ);
+            this.world!.entities[id]!.angle = { pitch, yaw };
+        }
+    }
+
+    private handleUpdateEntityPosition(decoder: BinaryDecoder) {
+        const id = decoder.readVarInt(),
+            delX = decoder.readFixedPoint(decoder.readShort(), 12),
+            delY = decoder.readFixedPoint(decoder.readShort(), 12),
+            delZ = decoder.readFixedPoint(decoder.readShort(), 12);
+
+        if (id in this.world!.entities) {
+            let {x, y, z} = this.world!.entities[id]!.position;
+            x += delX;
+            y += delY;
+            z += delZ;
+            this.world!.entities[id]!.position = new Vec3(x, y, z);
         }
     }
 
