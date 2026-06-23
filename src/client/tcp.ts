@@ -528,7 +528,8 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
                     type = decoder.readVarInt(),
                     nbt = decoder.readNBT();
                 const x = packedXZ >> 4, z = packedXZ & 15;
-                return { x, y, z, type, nbt };
+                const packedPosition = packBlockPos(x, y, z);
+                return { packedPosition, type, nbt };
             });
 
         // this.world!.chunks[`${this.player!.dimension}:${chunkX}:${chunkZ}`] = [];
