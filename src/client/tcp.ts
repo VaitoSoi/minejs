@@ -42,7 +42,7 @@ export interface TCPClientEvents {
     connect: [],
     disconnect: [reason: string],
     raw: [buf: Buffer],
-    ready: []
+    ready: [readyClient: TCPClient<true>],
 }
 
 export enum TCPClientStatus {
