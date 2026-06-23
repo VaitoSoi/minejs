@@ -4,6 +4,9 @@ const client = new TCPClient({
     playerName: "bot",
     host: "localhost",
     port: 25565,
-    protocolVersion: 773
+    protocolVersion: 773,
+    debug: {
+        packetLogger: true
+    }
 });
 client.connect();
