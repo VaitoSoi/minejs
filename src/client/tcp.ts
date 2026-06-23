@@ -42,6 +42,7 @@ export interface TCPClientEvents {
     connect: [],
     disconnect: [reason: string],
     raw: [buf: Buffer],
+
     ready: [readyClient: TCPClient<true>],
 
     playerPosition: [],
@@ -427,12 +428,12 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
     // Play
 
     private handlePlayLogin(decoder: BinaryDecoder) {
-        const entityId = decoder.readInt();
-        const isHardcore = decoder.readBoolean();
-        const dimensions = decoder.readPrefixedArray((decoder) => decoder.readString());
-        const maxPlayers = decoder.readVarInt();
-        const viewDistance = decoder.readVarInt();
-        const simulationDistance = decoder.readVarInt();
+        const entityId = decoder.readInt(),
+            isHardcore = decoder.readBoolean(),
+            dimensions = decoder.readPrefixedArray((decoder) => decoder.readString()),
+            maxPlayers = decoder.readVarInt(),
+            viewDistance = decoder.readVarInt(),
+            simulationDistance = decoder.readVarInt();
         decoder.readBoolean(); // Reduced Debug Info
         decoder.readBoolean(); // Enable respawn screen 
         decoder.readBoolean(); // Do limited crafting
@@ -559,7 +560,6 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
                 blockDataArray = new BigInt64Array(chunkDataDecoder.readArray(blockDataArrayLength, (decoder) => decoder.readLong()));
             }
 
-
             // Biomes - Not used yet, but need to be read to advance decoder
             const biomeBPE = chunkDataDecoder.readUByte();
             let biomePalettes: number[] = [];
@@ -598,6 +598,7 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
         const blockEntitiesObj: Record<number, BlockEntity> = Object.fromEntries(
             blockEntities.map(val => [val.packedPosition, { type: val.type, data: val.nbt }])
         );
+
         this.world!.chunks[`${this.player!.dimension}:${chunkX}:${chunkZ}`] = {
             sections: chunkSections,
             blockEntities: blockEntitiesObj
