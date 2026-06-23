@@ -19,7 +19,7 @@ import { computeUUID } from "../base/player";
 import { If } from "../base/typing";
 import { Angle, Vec3 } from "../base/vector";
 import { deflateSync, inflateSync } from "node:zlib";
-import { SectionsPerChunk } from "./static";
+import { packBlockPos, SectionsPerChunk } from "./static";
 
 export interface TCPClientOption {
     host: string,
@@ -106,7 +106,6 @@ export interface PaletteContainer {
 }
 
 export interface BlockEntity {
-    position: Vec3,
     type: number,
     data: Record<string, any>
 }
@@ -556,9 +555,25 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
                     data: biomeDataArray
                 }
             };
-        }
-    }
+        const blockEntitiesObj: Record<number, BlockEntity> = Object.fromEntries(
+            blockEntities.map(val => [val.packedPosition, { type: val.type, data: val.nbt }])
+        );
+    private handleBlockEntityData(decoder: BinaryDecoder) {
+        const location = decoder.readPosition(),
+            type = decoder.readVarInt(),
+            data = decoder.readNBT();
 
+        const chunkX = Math.floor(location.x / 16),
+            chunkZ = Math.floor(location.z / 16);
+        const xWitinChunk = location.x % 16,
+            zWitinChunk = location.z % 16;
+        const packedPosition = packBlockPos(xWitinChunk, location.y, zWitinChunk);
+        if (`${this.player!.dimension}:${chunkX}:${chunkZ}` in this.world!.chunks)
+            this.world!.chunks[`${this.player!.dimension}:${chunkX}:${chunkZ}`]!.blockEntities[packedPosition] = {
+                type,
+                data
+            };
+    }
     private handleSpawnEntity(decoder: BinaryDecoder) {
         const id = decoder.readVarInt(),
             UUID = decoder.readUUID(),
