@@ -477,6 +477,7 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
         this.world!.gameMode = gameMode;
     }
 
+    // Chunk
     private handleChunkData(decoder: BinaryDecoder) {
         const chunkX = decoder.readInt(),
             chunkZ = decoder.readInt(),
@@ -574,6 +575,8 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
                 data
             };
     }
+
+    // Entity
     private handleSpawnEntity(decoder: BinaryDecoder) {
         const id = decoder.readVarInt(),
             UUID = decoder.readUUID(),
