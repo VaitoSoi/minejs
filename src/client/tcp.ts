@@ -78,7 +78,6 @@ export interface ServerWorld {
     maxPlayers: number,
     viewDistance: number,
     simulationDistance: number,
-    dimensionName: string,
     gameMode: GameMode,
 
     /**
@@ -137,7 +136,9 @@ export interface ClientPlayer {
 
     position: Vec3,
     velocity: Vec3,
-    angle: Angle
+    angle: Angle,
+
+    dimension: string
 }
 
 export interface ServerRegistryEntry {
@@ -417,10 +418,11 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
             maxPlayers,
             viewDistance,
             simulationDistance,
-            dimensionName,
             gameMode,
             chunks: {}
         } as ServerWorld as any; // To avoid type conflict
+        this.player!.dimension = dimensionName;
+
         this.emit("ready", this as TCPClient<true>);
     }
 
