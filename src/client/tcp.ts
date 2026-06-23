@@ -160,7 +160,7 @@ export interface ServerRegistryEntry {
     data: object
 }
 
-export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () => TypedEmmiter<TCPClientEvents>) {
+export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as new () => TypedEmmiter<TCPClientEvents>) {
     public readonly socket: Socket;
 
     public server: Server | undefined = undefined;
