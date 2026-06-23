@@ -286,6 +286,9 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
                     if (this.state === ClientState.Login) this.handleSetCompression(decoder);
                     if (this.state === ClientState.Configure) this.sendConfigureAck();
                     break;
+                case 0x06:
+                    if (this.state === ClientState.Play) this.handleBlockEntityData(decoder);
+                    break;
                 case 0x07:
                     if (this.state === ClientState.Configure) this.handleRegistryData(decoder);
                     break;
@@ -301,15 +304,29 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
                 case 0x0E:
                     if (this.state === ClientState.Configure) this.handleKnownPack(decoder);
                     break;
+                case 0x25:
+                    if (this.state === ClientState.Play) this.handleUnloadChunk(decoder);
+                    break;
                 case 0x2B:
                     if (this.state === ClientState.Play) this.handleKeepAlive(decoder);
                     break;
                 case 0x30:
                     if (this.state === ClientState.Play) this.handlePlayLogin(decoder);
                     break;
+                case 0x33:
+                    if (this.state === ClientState.Play) this.handleUpdateEntityPosition(decoder);
+                    break;
+                case 0x34:
+                    if (this.state === ClientState.Play) this.handleUpdateEntityPositionRotation(decoder);
+                    break;
                 case 0x46:
                     if (this.state === ClientState.Play) this.handleSynchronizePlayerPosition(decoder);
                     break;
+                case 0x4B:
+                    if (this.state === ClientState.Play) this.handleRemoveEntity(decoder);
+                    break;
+                case 0x63:
+                    if (this.state === ClientState.Play) this.handleSetEntityVelocity(decoder);
             }
 
             this.bufferPool = this.bufferPool.subarray(expectedPacketEnd);
@@ -572,6 +589,15 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
             sections: chunkSections,
             blockEntities: blockEntitiesObj
         };
+    }
+
+    private handleUnloadChunk(decoder: BinaryDecoder) {
+        const chunkZ = decoder.readInt(),
+            chunkX = decoder.readInt();
+        delete this.world!.chunks[`${this.player!.dimension}:${chunkX}:${chunkZ}`];
+        this.emit("unloadChunk", chunkX, chunkZ);
+    }
+
     private handleBlockEntityData(decoder: BinaryDecoder) {
         const location = decoder.readPosition(),
             type = decoder.readVarInt(),
@@ -640,11 +666,48 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
             delZ = decoder.readFixedPoint(decoder.readShort(), 12);
 
         if (id in this.world!.entities) {
-            let {x, y, z} = this.world!.entities[id]!.position;
+            let { x, y, z } = this.world!.entities[id]!.position;
             x += delX;
             y += delY;
             z += delZ;
             this.world!.entities[id]!.position = new Vec3(x, y, z);
+            this.emit("updateEntity", this.world!.entities[id]!);
+        }
+    }
+
+    private handleUpdateEntityPositionRotation(decoder: BinaryDecoder) {
+        const id = decoder.readVarInt(),
+            delX = decoder.readFixedPoint(decoder.readShort(), 12),
+            delY = decoder.readFixedPoint(decoder.readShort(), 12),
+            delZ = decoder.readFixedPoint(decoder.readShort(), 12),
+            pitch = decoder.readAngle(),
+            yaw = decoder.readAngle();
+
+        if (id in this.world!.entities) {
+            let { x, y, z } = this.world!.entities[id]!.position;
+            x += delX;
+            y += delY;
+            z += delZ;
+            this.world!.entities[id]!.position = new Vec3(x, y, z);
+            this.world!.entities[id]!.angle = { yaw, pitch };
+            this.emit("updateEntity", this.world!.entities[id]!);
+        }
+    }
+
+    private handleSetEntityVelocity(decoder: BinaryDecoder) {
+        const entityId = decoder.readVarInt(),
+            velocity = decoder.readLpVec3();
+
+        if (entityId in this.world!.entities)
+            this.world!.entities[entityId]!.velocity = velocity;
+    }
+
+    private handleRemoveEntity(decoder: BinaryDecoder) {
+        const entities = decoder.readPrefixedArray((decoder) => decoder.readVarInt());
+
+        for (const entityId of entities) {
+            delete this.world!.entities[entityId];
+            this.emit("removeEntity", entityId);
         }
     }
 
