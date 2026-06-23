@@ -536,7 +536,7 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
         const chunkSections: Record<number, ChunkSection> = {};
 
         const chunkDataDecoder = new BinaryDecoder(Buffer.from(chunkData));
-        for (let height = 0; height < (SectionsPerChunk[this.world!.dimensionName] || 0); height++) {
+        for (let height = 0; height < (SectionsPerChunk[this.player!.dimension] || 0); height++) {
             const blockCount = chunkDataDecoder.readShort();
             // const fluidCount = chunkDataDecoder.readShort(); // Since 21.1
 
