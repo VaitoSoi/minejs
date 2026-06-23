@@ -450,7 +450,8 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
             viewDistance,
             simulationDistance,
             gameMode,
-            chunks: {}
+            chunks: {},
+            entities: {}
         } as ServerWorld as any; // To avoid type conflict
         this.player!.dimension = dimensionName;
 
