@@ -31,6 +31,11 @@ export interface TCPClientOption {
      * Send empty `Known Packet` to let server send all Registry data, which may consume a lot of bandwith
      */
     loadRegistry?: boolean,
+
+    debug?: {
+        // Log packet
+        packetLogger: boolean
+    }
 }
 
 export interface TCPClientEvents {
@@ -255,11 +260,12 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
             }
 
             // Debug
-            console.dir({
-                state: ClientState[this.state],
-                packetID: "0x" + packetID.toString(16),
-                length: decoder.buffer.length
-            });
+            if (this.option.debug?.packetLogger)
+                console.dir({
+                    state: ClientState[this.state],
+                    packetID: "0x" + packetID.toString(16),
+                    length: decoder.buffer.length
+                });
 
             switch (packetID) {
                 case 0x00:
