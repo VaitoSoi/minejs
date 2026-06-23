@@ -43,6 +43,15 @@ export interface TCPClientEvents {
     disconnect: [reason: string],
     raw: [buf: Buffer],
     ready: [readyClient: TCPClient<true>],
+
+    playerPosition: [],
+
+    loadChunk: [chunkX: number, sectionY: number, chunkZ: number],
+    unloadChunk: [chunkX: number, chunkZ: number],
+
+    spawnEntity: [entity: Entity],
+    updateEntity: [entity: Entity],
+    removeEntity: [entityId: number],
 }
 
 export enum TCPClientStatus {
@@ -488,6 +497,7 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
                 pitch: newPitch
             }
         } as any;
+        this.emit("playerPosition");
         this.sendConfirmTeleportation(teleportId);
     }
 
@@ -582,6 +592,9 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
                     data: biomeDataArray
                 }
             };
+            this.emit("loadChunk", chunkX, height, chunkZ);
+        }
+
         const blockEntitiesObj: Record<number, BlockEntity> = Object.fromEntries(
             blockEntities.map(val => [val.packedPosition, { type: val.type, data: val.nbt }])
         );
@@ -639,6 +652,7 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
             },
             data
         };
+        this.emit("spawnEntity", this.world!.entities[id]!);
     }
 
     private handleTeleportEntity(decoder: BinaryDecoder) {
@@ -656,6 +670,7 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
             this.world!.entities[id]!.position = new Vec3(x, y, z);
             this.world!.entities[id]!.velocity = new Vec3(velX, velY, velZ);
             this.world!.entities[id]!.angle = { pitch, yaw };
+            this.emit("updateEntity", this.world!.entities[id]!);
         }
     }
 
