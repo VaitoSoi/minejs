@@ -81,20 +81,24 @@ export interface ServerWorld {
     gameMode: GameMode,
 
     /**
-     * The record key is a chunk section position packed as `Chunk X:Section Y:Chunk Z`
+     * The record key is a chunk section position packed as `Player Dimension:Chunk X:Chunk Z[Section Y]`
      * 
      * For `Section Y`, a chunk is splitted into several cubic 16x16x16 sections, or in other word, a chunk is a bund of 16x16x16 sections stacked on each other.
      */
-    chunks: Record<`${number}:${number}:${number}`, ChunkSection>,
+    chunks: Record<`${string}:${number}:${number}`, ChunkColumn>,
     /**
      * The record key is entity ID
      */
     entities: Record<number, Entity>,
 }
 
+export interface ChunkColumn {
+    sections: Record<number, ChunkSection>,
+    blockEntities: Record<number, BlockEntity>
+}
+
 export interface ChunkSection {
     block: PaletteContainer,
-    // blockEntities: any[], // TODO: Implement later
     biome: PaletteContainer,
 }
 
@@ -498,6 +502,8 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
                 return { x, y, z, type, nbt };
             });
 
+        // this.world!.chunks[`${this.player!.dimension}:${chunkX}:${chunkZ}`] = [];
+        const chunkSections: Record<number, ChunkSection> = {};
 
         const chunkDataDecoder = new BinaryDecoder(Buffer.from(chunkData));
         for (let height = 0; height < (SectionsPerChunk[this.world!.dimensionName] || 0); height++) {
@@ -547,7 +553,7 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
                 biomeDataArray = new BigInt64Array(chunkDataDecoder.readArray(biomeDataArrayLength, (decoder) => decoder.readLong()));
             }
 
-            this.world!.chunks[`${chunkX}:${height}:${chunkZ}`] = {
+            chunkSections[height] = {
                 block: {
                     bpe: blockStateBPE,
                     palette: blockStatePalettes,
@@ -562,6 +568,10 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
         const blockEntitiesObj: Record<number, BlockEntity> = Object.fromEntries(
             blockEntities.map(val => [val.packedPosition, { type: val.type, data: val.nbt }])
         );
+        this.world!.chunks[`${this.player!.dimension}:${chunkX}:${chunkZ}`] = {
+            sections: chunkSections,
+            blockEntities: blockEntitiesObj
+        };
     private handleBlockEntityData(decoder: BinaryDecoder) {
         const location = decoder.readPosition(),
             type = decoder.readVarInt(),
