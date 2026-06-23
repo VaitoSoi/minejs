@@ -421,6 +421,7 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
             gameMode,
             chunks: {}
         } as ServerWorld as any; // To avoid type conflict
+        this.emit("ready", this as TCPClient<true>);
     }
 
     private handleSynchronizePlayerPosition(decoder: BinaryDecoder) {
@@ -745,7 +746,6 @@ export class TCPClient<IsReady extends boolean> extends (EventEmitter as new () 
     private sendConfigureAck() {
         this.state = ClientState.Play;
         this.status = TCPClientStatus.Ready;
-        this.emit("ready");
         this.sendPacket(0x3, Buffer.alloc(0));
     }
 
