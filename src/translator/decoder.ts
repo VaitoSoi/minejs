@@ -181,16 +181,16 @@ export class BinaryDecoder {
      * 
      * @returns a Position
      */
-    public readPosition(): Vec3 {
+    public readPosition(): { x: number, y: number, z: number } {
         const val = this.readLong(),
             x = val >> BigInt(38),
             y = val << BigInt(52) >> BigInt(52),
             z = val << BigInt(26) >> BigInt(38);
-        return new Vec3(
-            Number(x),
-            Number(y),
-            Number(z),
-        );
+        return { 
+            x: Number(x),
+            y: Number(y),
+            z: Number(z),
+        };
     }
 
     /**
