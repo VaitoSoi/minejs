@@ -10,19 +10,19 @@ export class AABB {
     public maxZ: number;
 
     constructor(
-        d: number,
-        e: number,
-        f: number,
-        g: number,
-        h: number,
-        i: number,
+        x1: number,
+        y1: number,
+        z1: number,
+        x2: number,
+        y2: number,
+        z2: number,
     ) {
-        this.minX = Math.min(d, g);
-        this.minY = Math.min(e, h);
-        this.minZ = Math.min(f, i);
-        this.maxX = Math.max(d, g);
-        this.maxY = Math.max(e, h);
-        this.maxZ = Math.max(f, i);
+        this.minX = Math.min(x1, x2);
+        this.minY = Math.min(y1, y2);
+        this.minZ = Math.min(z1, z2);
+        this.maxX = Math.max(x1, x2);
+        this.maxY = Math.max(y1, y2);
+        this.maxZ = Math.max(z1, z2);
     }
 
     public equal(aabb: AABB) {
