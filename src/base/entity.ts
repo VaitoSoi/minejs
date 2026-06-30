@@ -1,4 +1,6 @@
+import { TCPClient } from "../client/tcp";
 import { AABB } from "./aabb";
+import { ClientNotReady } from "./error";
 
 export class EntitiesManager {
     /**
@@ -12,6 +14,12 @@ export class EntitiesManager {
      */
     public entityToSection: Map<number, string> = new Map();
 
+    constructor(private client: TCPClient) { }
+
+    public wipe() {
+        this.sections = new Map();
+        this.entityToSection = new Map();
+    }
 
     public getSectionKey(x: number, y: number, z: number) {
         // Divide 2^4 = 16
@@ -42,9 +50,17 @@ export class EntitiesManager {
         }
     }
 
-    public queryAABB(aabb: AABB) {
-        const { minX, minY, minZ, maxX, maxY, maxZ } = aabb;
-        const results = [];
+    /**
+     * Query the entity in the section that intersec with BB
+     * @param queryBB The querying bounding box
+     * @returns
+     */
+    public queryAABB(queryBB: AABB) {
+        if (!this.client.isReady())
+            throw new ClientNotReady();
+
+        const { minX, minY, minZ, maxX, maxY, maxZ } = queryBB;
+        const results: AABB[] = [];
         const sx0 = minX >> 4, sx1 = maxX >> 4;
         const sy0 = minY >> 4, sy1 = maxY >> 4;
         const sz0 = minZ >> 4, sz1 = maxZ >> 4;
@@ -53,10 +69,16 @@ export class EntitiesManager {
             for (let sy = sy0; sy <= sy1; sy++) {
                 for (let sz = sz0; sz <= sz1; sz++) {
                     const bucket = this.sections.get(`${sx},${sy},${sz}`);
-                    if (bucket) for (const id of bucket) results.push(id);
+                    if (bucket) for (const id of bucket) {
+                        const entity = this.client.world!.entities[id];
+                        const entityBB = AABB.fromEntityType(entity!.type);
+                        if (queryBB.isIntersect(entityBB))
+                            results.push(entityBB);
+                    }
                 }
             }
         }
-        return results; // candidate set — still needs AABB-exact filtering below
+
+        return results;
     }
 }
