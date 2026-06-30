@@ -21,14 +21,14 @@ export class EntitiesManager {
         this.entityToSection = new Map();
     }
 
-    public getSectionKey(x: number, y: number, z: number) {
+    public static getSectionKey(x: number, y: number, z: number) {
         // Divide 2^4 = 16
         const sx = x >> 4, sy = y >> 4, sz = z >> 4;
         return `${sx}:${sy}:${sz}`;
     }
 
     public add(entityId: number, x: number, y: number, z: number) {
-        const key = this.getSectionKey(x, y, z);
+        const key = EntitiesManager.getSectionKey(x, y, z);
         if (!this.sections.has(key)) this.sections.set(key, new Set());
         this.sections.get(key)!.add(entityId);
         this.entityToSection.set(entityId, key);
@@ -43,7 +43,7 @@ export class EntitiesManager {
     }
 
     public update(entityId: number, x: number, y: number, z: number) {
-        const newKey = this.getSectionKey(x, y, z);
+        const newKey = EntitiesManager.getSectionKey(x, y, z);
         if (this.entityToSection.get(entityId) !== newKey) {
             this.remove(entityId);
             this.add(entityId, x, y, z);
