@@ -184,5 +184,4 @@ export class VoxelShape {
 
         return lowerBoundBinarySearch(0, arr.length + 1, (index) => index < val) - 1;
     }
-
 }
