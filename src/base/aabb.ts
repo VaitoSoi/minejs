@@ -1,7 +1,16 @@
 import { Vec3 } from "./vector";
 
-export class AABB {
-    private static readonly EPSILON = 1.0E-7;
+export interface BaseAABB {
+    minX: number;
+    minY: number;
+    minZ: number;
+    maxX: number;
+    maxY: number;
+    maxZ: number;
+}
+
+export class AABB implements BaseAABB {
+    public static readonly EPSILON = 1.0E-7;
     public minX: number;
     public minY: number;
     public minZ: number;
