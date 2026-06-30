@@ -5,6 +5,30 @@ import { Tag } from "./static";
 import { unzipSync } from "zlib";
 import { minBigInt } from "../base/math";
 
+export function getTextFromTextComponent(component: any): string | string[] {
+    switch (typeof component) {
+        case "string":
+            return component;
+        case "object": {
+            if (Array.isArray(component))
+                return component.map(val => getTextFromTextComponent(val)) as string[];
+            else if ("text" in component) {
+                if ("extra" in component && Array.isArray(component["extra"]))
+                    return [component["text"], ...component["extra"]];
+                else return component["text"];
+            } else if ("translate" in component) {
+                if ("fallback" in component) return component["fallback"];
+                else return component["translate"];
+            } else if ("keybind" in component)
+                return component["keybind"];
+            else
+                throw new UnexpectedValue("type of component", "string or object", typeof component);
+        }
+        default:
+            throw new UnexpectedValue("type of component", "string or object", typeof component);
+    }
+}
+
 export class BinaryDecoder {
     public buffer: Buffer = Buffer.alloc(0);
     public offset: number = 0;
