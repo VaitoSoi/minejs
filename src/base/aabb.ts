@@ -9,6 +9,28 @@ export class AABB {
     public maxY: number;
     public maxZ: number;
 
+    public static readonly EntityBoundingBoxes: Record<string, AABB> = {};
+
+    public static fromEntityType(type: string | number) {
+        if (this.EntityBoundingBoxes[type])
+            return this.EntityBoundingBoxes[type];
+        if (!(type in EntityRegistry.data) || !(type in EntityRegistry.mapTypeToData))
+            throw new RegistryItemNotFound(`entity type ${type}`);
+        const { height, width } = EntityRegistry.get(type)!;
+        return this.fromDimension(height, width);
+    }
+
+    public static fromDimension(height: number, width: number) {
+        return new AABB(
+            - width / 2,
+            0,
+            - width / 2,
+            width / 2,
+            height,
+            width / 2
+        );
+    }
+
     constructor(
         x1: number,
         y1: number,
