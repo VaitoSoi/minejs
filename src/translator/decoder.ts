@@ -385,6 +385,42 @@ export class BinaryDecoder {
     public readAngle() {
         return this.readByte();
     }
+
+    /**
+     * Represents a data record of type X, either inline, or by reference to a registry implied by context
+     */
+    public readIdOrX(readX: (decoder: BinaryDecoder) => any) {
+        const id = this.readVarInt();
+        if (id !== 0) return id;
+        return readX(this);
+    }
+
+    /**
+     * Read Chat Type Decoration
+     * 
+     * The chat type decorations look like:
+     * | Name            | Type                          | Description                      |
+     * |-----------------|-------------------------------|----------------------------------|
+     * | Translation Key | String                        |                                  |
+     * | Parameters      | Prefixed Array of VarInt Enum | 0: sender, 1: target, 2: content |
+     * | Style           | NBT                           |                                  |
+     */
+    public readChatTypeDecoration() {
+        const translationKey = this.readString(),
+            parameters = this.readPrefixedArray(decoder => decoder.readVarInt()),
+            style = this.readNBT();
+        return { translationKey, parameters, style };
+    }
+
+    /**
+     * Read Chat Type
+     */
+    public readChatType() {
+        return {
+            chat: this.readChatTypeDecoration(),
+            narration: this.readChatTypeDecoration()
+        };
+    }
 }
 
 export class NBTDecoder extends BinaryDecoder {
