@@ -1,4 +1,9 @@
-export class Vec3 {
+export enum Axis {
+    X,
+    Y,
+    Z
+}
+
     public static readonly Zero = new Vec3(0, 0, 0);
     public static readonly XAxis = new Vec3(1, 0, 0);
     public static readonly YAxis = new Vec3(0, 1, 0);
