@@ -7,6 +7,13 @@ const client = new TCPClient({
     protocolVersion: 773,
     debug: {
         packetLogger: true
-    }
+    },
+    isOffline: true,
+    loadRegistry: false,
+    // auth: {
+    //     client_id: "d86254d8-edf7-4640-90eb-643c99af188e",
+    //     method: "loopback",
+    //     openBrowser: true
+    // }
 });
 client.connect();
