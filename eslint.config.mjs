@@ -22,7 +22,9 @@ export default defineConfig([
             "@typescript-eslint/no-non-null-assertion": ["off"],
             "@typescript-eslint/no-unused-vars": ["off"],
             "no-unused-vars": ["off"],
-            "@typescript-eslint/no-dynamic-delete": ["off"]
+            "@typescript-eslint/no-dynamic-delete": ["off"],
+            "constructor-super": ["off"],
+            "@typescript-eslint/no-extraneous-class": ["off"]
         }
     },
     { ignores: ["build/", "node_modules", ".yarn", ".vscode", ".pnp.*"] },
