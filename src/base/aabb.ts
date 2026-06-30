@@ -1,4 +1,5 @@
-import { Vec3 } from "./vector";
+import { RegistryItemNotFound } from "./error";
+import { EntityRegistry } from "./registry";
 
 export interface BaseAABB {
     minX: number;
