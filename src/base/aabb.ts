@@ -1,5 +1,7 @@
+import { Axis, Position, Vec3 } from "./vector";
 import { RegistryItemNotFound } from "./error";
 import { EntityRegistry } from "./registry";
+import { lowerBoundBinarySearch, mergeUnique } from "./math";
 
 export interface BaseAABB {
     minX: number;
@@ -69,32 +71,118 @@ export class AABB implements BaseAABB {
     public expandTowards(x: number, y: number, z: number): AABB;
     public expandTowards(aabb: Vec3): AABB;
     public expandTowards(a: Vec3 | number, b?: number, c?: number): AABB {
-        const { x: d, y: e, z: f } = Vec3.loadArgs(a, b, c);
-        let g = this.minX;
-        let h = this.minY;
-        let i = this.minZ;
-        let j = this.maxX;
-        let k = this.maxY;
-        let l = this.maxZ;
-        if (d < 0.0) {
-            g += d;
-        } else if (d > 0.0) {
-            j += d;
+        const { x, y, z } = Vec3.loadArgs(a, b, c);
+        let { minX, minY, minZ, maxX, maxY, maxZ } = this;
+        if (x < 0.0) {
+            minX += x;
+        } else if (x > 0.0) {
+            maxX += x;
         }
 
-        if (e < 0.0) {
-            h += e;
-        } else if (e > 0.0) {
-            k += e;
+        if (y < 0.0) {
+            minY += y;
+        } else if (y > 0.0) {
+            maxY += y;
         }
 
-        if (f < 0.0) {
-            i += f;
-        } else if (f > 0.0) {
-            l += f;
+        if (z < 0.0) {
+            minZ += z;
+        } else if (z > 0.0) {
+            maxZ += z;
         }
 
-        return new AABB(g, h, i, j, k, l);
+        return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
+    }
+
+    public move(x: number, y: number, z: number): AABB;
+    public move(aabb: Vec3): AABB;
+    public move(a: Vec3 | number, b?: number, c?: number): AABB {
+        const { x, y, z } = Vec3.loadArgs(a, b, c);
+        const { minX, minY, minZ, maxX, maxY, maxZ } = this;
+        return new AABB(minX + x, minY + y, minZ + z, maxX + x, maxY + y, maxZ + z);
+    }
+
+    public isIntersect(other: AABB) {
+        return this.minX < other.maxX && this.maxX > other.minX &&
+            this.minY < other.maxY && this.maxY > other.minY &&
+            this.minZ < other.maxZ && this.maxZ > other.minZ;
+    }
+
+    public isFullWide(x: number, y: number, z: number): boolean;
+    public isFullWide(position: Position): boolean;
+    public isFullWide(a: Position | number, b?: number, c?: number): boolean {
+        const { x, y, z } = Vec3.loadArgs(a, b, c);
+        return this.minX < x && x < this.maxX &&
+            this.minY < y && y < this.maxY &&
+            this.minZ < z && z < this.maxZ;
+    }
+}
+
+export class VoxelShape {
+    public fromBox(bb: AABB) {
+        const xs = [bb.minX, bb.maxX],
+            ys = [bb.minY, bb.maxY],
+            zs = [bb.minZ, bb.maxZ];
+        const cells = [[[true]]];
+        return new VoxelShape(xs, ys, zs, cells);
+    }
+    public static or(a: VoxelShape, b: VoxelShape) {
+        const mergeX: number[] = mergeUnique(a.xs, b.xs),
+            mergeY: number[] = mergeUnique(a.ys, b.ys),
+            mergeZ: number[] = mergeUnique(a.zs, b.zs);
+
+        const cells: boolean[][][] =
+            Array.from({ length: mergeX.length - 1 }).map(() =>
+                Array.from({ length: mergeY.length - 1 }).map(() =>
+                    Array.from({ length: mergeZ.length - 1 }).map(() => false)
+                )
+            );
+
+        for (let ix = 0; ix < mergeX.length - 2; ix++)
+            for (let iy = 0; iy < mergeY.length - 2; iy++)
+                for (let iz = 0; iz < mergeZ.length - 2; iz++) {
+                    const x = mergeX[ix]! + AABB.EPSILON,
+                        y = mergeY[iy]! + AABB.EPSILON,
+                        z = mergeZ[iz]! + AABB.EPSILON;
+
+                    if (a.isFullWide(
+                        a.findIndex(Axis.X, x),
+                        a.findIndex(Axis.Y, y),
+                        a.findIndex(Axis.Z, z)
+                    ) || b.isFullWide(
+                        b.findIndex(Axis.X, x), 
+                        b.findIndex(Axis.Y, y), 
+                        b.findIndex(Axis.Z, z)
+                    ))
+                        cells[ix]![iy]![iz] = true;
+                }
+
+        return new VoxelShape(mergeX, mergeY, mergeZ, cells);
+    }
+
+    constructor(
+        public xs: number[],
+        public ys: number[],
+        public zs: number[],
+        public cells: boolean[][][]
+    ) { }
+
+    public isFullWide(x: number, y: number, z: number) {
+        if (x < 0 || x >= this.xs.length) return false;
+        if (y < 0 || y >= this.ys.length) return false;
+        if (z < 0 || z >= this.zs.length) return false;
+        return this.cells[x]![y]![z];
+    }
+
+    public findIndex(axis: Axis, val: number) {
+        let arr;
+        switch (axis) {
+            case Axis.X: arr = this.xs; break;
+            case Axis.Y: arr = this.ys; break;
+            case Axis.Z: arr = this.zs; break;
+        }
+
+        return lowerBoundBinarySearch(0, arr.length + 1, (index) => index < val) - 1;
     }
 
 }
