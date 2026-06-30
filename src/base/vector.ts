@@ -4,14 +4,21 @@ export enum Axis {
     Z
 }
 
+export interface Position {
+    x: number,
+    y: number,
+    z: number
+}
+
+export class Vec3 implements Position {
     public static readonly Zero = new Vec3(0, 0, 0);
     public static readonly XAxis = new Vec3(1, 0, 0);
     public static readonly YAxis = new Vec3(0, 1, 0);
     public static readonly ZAxis = new Vec3(0, 0, 1);
 
-    static loadArgs(a: Vec3 | number, b?: number, c?: number) {
+    static loadArgs(a: Position | number, b?: number, c?: number) {
         let x = 1, y = 1, z = 1;
-        if (a instanceof Vec3) {
+        if (typeof a === "object" && "x" in a) {
             x = a.x;
             y = a.y;
             z = a.z;
