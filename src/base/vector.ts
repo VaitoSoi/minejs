@@ -108,6 +108,31 @@ export class Vec3 implements Position {
             this.y === vec.y &&
             this.z === vec.z;
     }
+
+    /**
+     * Update one axis of the vector, keep the res
+     * @param axis 
+     * @param value 
+     */
+    public with(axis: Axis, value: number) {
+        const x = axis === Axis.X ? value : this.x;
+        const y = axis === Axis.Y ? value : this.y;
+        const z = axis === Axis.Z ? value : this.z;
+        return new Vec3(x, y, z);
+    }
+
+    /**
+     * Get value of an axis
+     * @param axis 
+     * @returns 
+     */
+    public get(axis: Axis) {
+        switch (axis) {
+            case Axis.X: return this.x;
+            case Axis.Y: return this.y;
+            case Axis.Z: return this.z;
+        }
+    }
 }
 
 export interface Angle {
