@@ -1,0 +1,767 @@
+{
+    "minecraft:acacia_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 0
+    },
+    "minecraft:acacia_chest_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 1
+    },
+    "minecraft:allay": {
+        "height": 0.6,
+        "width": 0.35,
+        "type": 2
+    },
+    "minecraft:area_effect_cloud": {
+        "height": 0.5,
+        "width": 6,
+        "type": 3
+    },
+    "minecraft:armadillo": {
+        "height": 0.65,
+        "width": 0.7,
+        "type": 4
+    },
+    "minecraft:armor_stand": {
+        "height": 1.975,
+        "width": 0.5,
+        "type": 5
+    },
+    "minecraft:arrow": {
+        "height": 0.5,
+        "width": 0.5,
+        "type": 6
+    },
+    "minecraft:axolotl": {
+        "height": 0.42,
+        "width": 0.75,
+        "type": 7
+    },
+    "minecraft:bamboo_chest_raft": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 8
+    },
+    "minecraft:bamboo_raft": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 9
+    },
+    "minecraft:bat": {
+        "height": 0.9,
+        "width": 0.5,
+        "type": 10
+    },
+    "minecraft:bee": {
+        "height": 0.6,
+        "width": 0.7,
+        "type": 11
+    },
+    "minecraft:birch_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 12
+    },
+    "minecraft:birch_chest_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 13
+    },
+    "minecraft:blaze": {
+        "height": 1.8,
+        "width": 0.6,
+        "type": 14
+    },
+    "minecraft:block_display": {
+        "height": 0,
+        "width": 0,
+        "type": 15
+    },
+    "minecraft:bogged": {
+        "height": 1.99,
+        "width": 0.6,
+        "type": 16
+    },
+    "minecraft:breeze": {
+        "height": 1.77,
+        "width": 0.6,
+        "type": 17
+    },
+    "minecraft:breeze_wind_charge": {
+        "height": 0.3125,
+        "width": 0.3125,
+        "type": 18
+    },
+    "minecraft:camel": {
+        "height": 2.375,
+        "width": 1.7,
+        "type": 19
+    },
+    "minecraft:cat": {
+        "height": 0.7,
+        "width": 0.6,
+        "type": 20
+    },
+    "minecraft:cave_spider": {
+        "height": 0.5,
+        "width": 0.7,
+        "type": 21
+    },
+    "minecraft:cherry_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 22
+    },
+    "minecraft:cherry_chest_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 23
+    },
+    "minecraft:chest_minecart": {
+        "height": 0.7,
+        "width": 0.98,
+        "type": 24
+    },
+    "minecraft:chicken": {
+        "height": 0.7,
+        "width": 0.4,
+        "type": 25
+    },
+    "minecraft:cod": {
+        "height": 0.3,
+        "width": 0.5,
+        "type": 26
+    },
+    "minecraft:command_block_minecart": {
+        "height": 0.7,
+        "width": 0.98,
+        "type": 28
+    },
+    "minecraft:copper_golem": {
+        "height": 0.98,
+        "width": 0.49,
+        "type": 27
+    },
+    "minecraft:cow": {
+        "height": 1.4,
+        "width": 0.9,
+        "type": 29
+    },
+    "minecraft:creaking": {
+        "height": 2.7,
+        "width": 0.9,
+        "type": 30
+    },
+    "minecraft:creeper": {
+        "height": 1.7,
+        "width": 0.6,
+        "type": 31
+    },
+    "minecraft:dark_oak_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 32
+    },
+    "minecraft:dark_oak_chest_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 33
+    },
+    "minecraft:dolphin": {
+        "height": 0.6,
+        "width": 0.9,
+        "type": 34
+    },
+    "minecraft:donkey": {
+        "height": 1.5,
+        "width": 1.3964844,
+        "type": 35
+    },
+    "minecraft:dragon_fireball": {
+        "height": 1,
+        "width": 1,
+        "type": 36
+    },
+    "minecraft:drowned": {
+        "height": 1.95,
+        "width": 0.6,
+        "type": 37
+    },
+    "minecraft:egg": {
+        "height": 0.25,
+        "width": 0.25,
+        "type": 38
+    },
+    "minecraft:elder_guardian": {
+        "height": 1.9975,
+        "width": 1.9975,
+        "type": 39
+    },
+    "minecraft:end_crystal": {
+        "height": 2,
+        "width": 2,
+        "type": 44
+    },
+    "minecraft:ender_dragon": {
+        "height": 8,
+        "width": 16,
+        "type": 42
+    },
+    "minecraft:ender_pearl": {
+        "height": 0.25,
+        "width": 0.25,
+        "type": 43
+    },
+    "minecraft:enderman": {
+        "height": 2.9,
+        "width": 0.6,
+        "type": 40
+    },
+    "minecraft:endermite": {
+        "height": 0.3,
+        "width": 0.4,
+        "type": 41
+    },
+    "minecraft:evoker": {
+        "height": 1.95,
+        "width": 0.6,
+        "type": 45
+    },
+    "minecraft:evoker_fangs": {
+        "height": 0.8,
+        "width": 0.5,
+        "type": 46
+    },
+    "minecraft:experience_bottle": {
+        "height": 0.25,
+        "width": 0.25,
+        "type": 47
+    },
+    "minecraft:experience_orb": {
+        "height": 0.5,
+        "width": 0.5,
+        "type": 48
+    },
+    "minecraft:eye_of_ender": {
+        "height": 0.25,
+        "width": 0.25,
+        "type": 49
+    },
+    "minecraft:falling_block": {
+        "height": 0.98,
+        "width": 0.98,
+        "type": 50
+    },
+    "minecraft:fireball": {
+        "height": 1,
+        "width": 1,
+        "type": 51
+    },
+    "minecraft:firework_rocket": {
+        "height": 0.25,
+        "width": 0.25,
+        "type": 52
+    },
+    "minecraft:fishing_bobber": {
+        "height": 0.25,
+        "width": 0.25,
+        "type": 152
+    },
+    "minecraft:fox": {
+        "height": 0.7,
+        "width": 0.6,
+        "type": 53
+    },
+    "minecraft:frog": {
+        "height": 0.5,
+        "width": 0.5,
+        "type": 54
+    },
+    "minecraft:furnace_minecart": {
+        "height": 0.7,
+        "width": 0.98,
+        "type": 55
+    },
+    "minecraft:ghast": {
+        "height": 4,
+        "width": 4,
+        "type": 56
+    },
+    "minecraft:giant": {
+        "height": 12,
+        "width": 3.6,
+        "type": 58
+    },
+    "minecraft:glow_item_frame": {
+        "height": 0.5,
+        "width": 0.5,
+        "type": 59
+    },
+    "minecraft:glow_squid": {
+        "height": 0.8,
+        "width": 0.8,
+        "type": 60
+    },
+    "minecraft:goat": {
+        "height": 1.3,
+        "width": 0.9,
+        "type": 61
+    },
+    "minecraft:guardian": {
+        "height": 0.85,
+        "width": 0.85,
+        "type": 62
+    },
+    "minecraft:happy_ghast": {
+        "height": 4,
+        "width": 4,
+        "type": 57
+    },
+    "minecraft:hoglin": {
+        "height": 1.4,
+        "width": 1.3964844,
+        "type": 63
+    },
+    "minecraft:hopper_minecart": {
+        "height": 0.7,
+        "width": 0.98,
+        "type": 64
+    },
+    "minecraft:horse": {
+        "height": 1.6,
+        "width": 1.3964844,
+        "type": 65
+    },
+    "minecraft:husk": {
+        "height": 1.95,
+        "width": 0.6,
+        "type": 66
+    },
+    "minecraft:illusioner": {
+        "height": 1.95,
+        "width": 0.6,
+        "type": 67
+    },
+    "minecraft:interaction": {
+        "height": 0,
+        "width": 0,
+        "type": 68
+    },
+    "minecraft:iron_golem": {
+        "height": 2.7,
+        "width": 1.4,
+        "type": 69
+    },
+    "minecraft:item": {
+        "height": 0.25,
+        "width": 0.25,
+        "type": 70
+    },
+    "minecraft:item_display": {
+        "height": 0,
+        "width": 0,
+        "type": 71
+    },
+    "minecraft:item_frame": {
+        "height": 0.5,
+        "width": 0.5,
+        "type": 72
+    },
+    "minecraft:jungle_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 73
+    },
+    "minecraft:jungle_chest_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 74
+    },
+    "minecraft:leash_knot": {
+        "height": 0.5,
+        "width": 0.375,
+        "type": 75
+    },
+    "minecraft:lightning_bolt": {
+        "height": 0,
+        "width": 0,
+        "type": 76
+    },
+    "minecraft:lingering_potion": {
+        "height": 0.25,
+        "width": 0.25,
+        "type": 103
+    },
+    "minecraft:llama": {
+        "height": 1.87,
+        "width": 0.9,
+        "type": 77
+    },
+    "minecraft:llama_spit": {
+        "height": 0.25,
+        "width": 0.25,
+        "type": 78
+    },
+    "minecraft:magma_cube": {
+        "height": 0.52,
+        "width": 0.52,
+        "type": 79
+    },
+    "minecraft:mangrove_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 80
+    },
+    "minecraft:mangrove_chest_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 81
+    },
+    "minecraft:mannequin": {
+        "height": 1.8,
+        "width": 0.6,
+        "type": 82
+    },
+    "minecraft:marker": {
+        "height": 0,
+        "width": 0,
+        "type": 83
+    },
+    "minecraft:minecart": {
+        "height": 0.7,
+        "width": 0.98,
+        "type": 84
+    },
+    "minecraft:mooshroom": {
+        "height": 1.4,
+        "width": 0.9,
+        "type": 85
+    },
+    "minecraft:mule": {
+        "height": 1.6,
+        "width": 1.3964844,
+        "type": 86
+    },
+    "minecraft:oak_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 87
+    },
+    "minecraft:oak_chest_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 88
+    },
+    "minecraft:ocelot": {
+        "height": 0.7,
+        "width": 0.6,
+        "type": 89
+    },
+    "minecraft:ominous_item_spawner": {
+        "height": 0.25,
+        "width": 0.25,
+        "type": 90
+    },
+    "minecraft:painting": {
+        "height": 0.5,
+        "width": 0.5,
+        "type": 91
+    },
+    "minecraft:pale_oak_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 92
+    },
+    "minecraft:pale_oak_chest_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 93
+    },
+    "minecraft:panda": {
+        "height": 1.25,
+        "width": 1.3,
+        "type": 94
+    },
+    "minecraft:parrot": {
+        "height": 0.9,
+        "width": 0.5,
+        "type": 95
+    },
+    "minecraft:phantom": {
+        "height": 0.5,
+        "width": 0.9,
+        "type": 96
+    },
+    "minecraft:pig": {
+        "height": 0.9,
+        "width": 0.9,
+        "type": 97
+    },
+    "minecraft:piglin": {
+        "height": 1.95,
+        "width": 0.6,
+        "type": 98
+    },
+    "minecraft:piglin_brute": {
+        "height": 1.95,
+        "width": 0.6,
+        "type": 99
+    },
+    "minecraft:pillager": {
+        "height": 1.95,
+        "width": 0.6,
+        "type": 100
+    },
+    "minecraft:player": {
+        "height": 1.8,
+        "width": 0.6,
+        "type": 151
+    },
+    "minecraft:polar_bear": {
+        "height": 1.4,
+        "width": 1.4,
+        "type": 101
+    },
+    "minecraft:pufferfish": {
+        "height": 0.7,
+        "width": 0.7,
+        "type": 104
+    },
+    "minecraft:rabbit": {
+        "height": 0.5,
+        "width": 0.4,
+        "type": 105
+    },
+    "minecraft:ravager": {
+        "height": 2.2,
+        "width": 1.95,
+        "type": 106
+    },
+    "minecraft:salmon": {
+        "height": 0.4,
+        "width": 0.7,
+        "type": 107
+    },
+    "minecraft:sheep": {
+        "height": 1.3,
+        "width": 0.9,
+        "type": 108
+    },
+    "minecraft:shulker": {
+        "height": 1,
+        "width": 1,
+        "type": 109
+    },
+    "minecraft:shulker_bullet": {
+        "height": 0.3125,
+        "width": 0.3125,
+        "type": 110
+    },
+    "minecraft:silverfish": {
+        "height": 0.3,
+        "width": 0.4,
+        "type": 111
+    },
+    "minecraft:skeleton": {
+        "height": 1.99,
+        "width": 0.6,
+        "type": 112
+    },
+    "minecraft:skeleton_horse": {
+        "height": 1.6,
+        "width": 1.3964844,
+        "type": 113
+    },
+    "minecraft:slime": {
+        "height": 0.52,
+        "width": 0.52,
+        "type": 114
+    },
+    "minecraft:small_fireball": {
+        "height": 0.3125,
+        "width": 0.3125,
+        "type": 115
+    },
+    "minecraft:sniffer": {
+        "height": 1.75,
+        "width": 1.9,
+        "type": 116
+    },
+    "minecraft:snow_golem": {
+        "height": 1.9,
+        "width": 0.7,
+        "type": 118
+    },
+    "minecraft:snowball": {
+        "height": 0.25,
+        "width": 0.25,
+        "type": 117
+    },
+    "minecraft:spawner_minecart": {
+        "height": 0.7,
+        "width": 0.98,
+        "type": 119
+    },
+    "minecraft:spectral_arrow": {
+        "height": 0.5,
+        "width": 0.5,
+        "type": 120
+    },
+    "minecraft:spider": {
+        "height": 0.9,
+        "width": 1.4,
+        "type": 121
+    },
+    "minecraft:splash_potion": {
+        "height": 0.25,
+        "width": 0.25,
+        "type": 102
+    },
+    "minecraft:spruce_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 122
+    },
+    "minecraft:spruce_chest_boat": {
+        "height": 0.5625,
+        "width": 1.375,
+        "type": 123
+    },
+    "minecraft:squid": {
+        "height": 0.8,
+        "width": 0.8,
+        "type": 124
+    },
+    "minecraft:stray": {
+        "height": 1.99,
+        "width": 0.6,
+        "type": 125
+    },
+    "minecraft:strider": {
+        "height": 1.7,
+        "width": 0.9,
+        "type": 126
+    },
+    "minecraft:tadpole": {
+        "height": 0.3,
+        "width": 0.4,
+        "type": 127
+    },
+    "minecraft:text_display": {
+        "height": 0,
+        "width": 0,
+        "type": 128
+    },
+    "minecraft:tnt": {
+        "height": 0.98,
+        "width": 0.98,
+        "type": 129
+    },
+    "minecraft:tnt_minecart": {
+        "height": 0.7,
+        "width": 0.98,
+        "type": 130
+    },
+    "minecraft:trader_llama": {
+        "height": 1.87,
+        "width": 0.9,
+        "type": 131
+    },
+    "minecraft:trident": {
+        "height": 0.5,
+        "width": 0.5,
+        "type": 132
+    },
+    "minecraft:tropical_fish": {
+        "height": 0.4,
+        "width": 0.5,
+        "type": 133
+    },
+    "minecraft:turtle": {
+        "height": 0.4,
+        "width": 1.2,
+        "type": 134
+    },
+    "minecraft:vex": {
+        "height": 0.8,
+        "width": 0.4,
+        "type": 135
+    },
+    "minecraft:villager": {
+        "height": 1.95,
+        "width": 0.6,
+        "type": 136
+    },
+    "minecraft:vindicator": {
+        "height": 1.95,
+        "width": 0.6,
+        "type": 137
+    },
+    "minecraft:wandering_trader": {
+        "height": 1.95,
+        "width": 0.6,
+        "type": 138
+    },
+    "minecraft:warden": {
+        "height": 2.9,
+        "width": 0.9,
+        "type": 139
+    },
+    "minecraft:wind_charge": {
+        "height": 0.3125,
+        "width": 0.3125,
+        "type": 140
+    },
+    "minecraft:witch": {
+        "height": 1.95,
+        "width": 0.6,
+        "type": 141
+    },
+    "minecraft:wither": {
+        "height": 3.5,
+        "width": 0.9,
+        "type": 142
+    },
+    "minecraft:wither_skeleton": {
+        "height": 2.4,
+        "width": 0.7,
+        "type": 143
+    },
+    "minecraft:wither_skull": {
+        "height": 0.3125,
+        "width": 0.3125,
+        "type": 144
+    },
+    "minecraft:wolf": {
+        "height": 0.85,
+        "width": 0.6,
+        "type": 145
+    },
+    "minecraft:zoglin": {
+        "height": 1.4,
+        "width": 1.3964844,
+        "type": 146
+    },
+    "minecraft:zombie": {
+        "height": 1.95,
+        "width": 0.6,
+        "type": 147
+    },
+    "minecraft:zombie_horse": {
+        "height": 1.6,
+        "width": 1.3964844,
+        "type": 148
+    },
+    "minecraft:zombie_villager": {
+        "height": 1.95,
+        "width": 0.6,
+        "type": 149
+    },
+    "minecraft:zombified_piglin": {
+        "height": 1.95,
+        "width": 0.6,
+        "type": 150
+    }
+}
