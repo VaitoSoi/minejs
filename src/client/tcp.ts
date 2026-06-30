@@ -10,75 +10,30 @@ import {
     Cipheriv,
     Decipheriv
 } from "node:crypto";
+import { deflateSync, inflateSync } from "node:zlib";
 
 import { TypedEmmiter } from "../base/event";
-import { BinaryDecoder } from "../translator/decoder";
+import { BinaryDecoder, getTextFromTextComponent } from "../translator/decoder";
 import { BinaryEncoder } from "../translator/encoder";
-import { SockerIsNotWritable } from "../base/error";
-import { computeUUID } from "../base/player";
+import { MissingAuthOption, SockerIsNotWritable } from "../base/error";
+import { computeUUID } from "../base/math";
 import { If } from "../base/typing";
-import { Angle, Vec3 } from "../base/vector";
-import { deflateSync, inflateSync } from "node:zlib";
+import { Angle, Position } from "../base/vector";
 import { packBlockPos, SectionsPerChunk } from "./static";
+import { AuthClient, AuthOption } from "./auth";
 
-export interface TCPClientOption {
-    host: string,
-    port: number,
-    protocolVersion: number,
-    playerName: string,
+// Minecraft related typing
+export type TextComponent = Record<string, any>;
 
-    /**
-     * Send empty `Known Packet` to let server send all Registry data, which may consume a lot of bandwith
-     */
-    loadRegistry?: boolean,
-
-    debug?: {
-        // Log packet
-        packetLogger: boolean
-    }
-}
-
-export interface TCPClientEvents {
-    connect: [],
-    disconnect: [reason: string],
-    raw: [buf: Buffer],
-
-    ready: [readyClient: TCPClient<true>],
-
-    playerPosition: [],
-
-    loadChunk: [chunkX: number, sectionY: number, chunkZ: number],
-    unloadChunk: [chunkX: number, chunkZ: number],
-
-    spawnEntity: [entity: Entity],
-    updateEntity: [entity: Entity],
-    removeEntity: [entityId: number],
-}
-
-export enum TCPClientStatus {
-    Disconnected,
-    Connecting,
-    Logining,
-    Ready,
-}
-
-export enum ClientState {
-    Disconnected,
-    Handshake,
-    Login,
-    Configure,
-    Play
-}
-
-// export enum TCPServerIntent {
-//     Status = 1,
-//     Login = 2,
-//     Transfer = 3,
-// }
 
 export interface Server {
-    knownPacks?: ServerKnownPack,
-    world?: ServerWorld
+    knownPacks?: ServerKnownPack
+}
+
+export interface ServerKnownPack {
+    namespace: string,
+    id: string,
+    version: string
 }
 
 export interface ServerWorld {
@@ -95,7 +50,7 @@ export interface ServerWorld {
      * 
      * For `Section Y`, a chunk is splitted into several cubic 16x16x16 sections, or in other word, a chunk is a bund of 16x16x16 sections stacked on each other.
      */
-    chunks: Record<`${string}:${number}:${number}`, ChunkColumn>,
+    chunks: Record<string, ChunkColumn>,
     /**
      * The record key is entity ID
      */
@@ -124,9 +79,10 @@ export interface BlockEntity {
 }
 
 export interface Entity {
+    id: number,
     type: number,
-    position: Vec3,
-    velocity: Vec3,
+    position: Position,
+    velocity: Position,
     angle: Angle,
     data: number
 }
@@ -138,18 +94,12 @@ export enum GameMode {
     Spectator = 3
 }
 
-export interface ServerKnownPack {
-    namespace: string,
-    id: string,
-    version: string
-}
-
 export interface ClientPlayer {
     uuid: string,
     username: string,
 
-    position: Vec3,
-    velocity: Vec3,
+    position: Position,
+    velocity: Position,
     angle: Angle,
 
     dimension: string
@@ -160,7 +110,89 @@ export interface ServerRegistryEntry {
     data: object
 }
 
-export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as new () => TypedEmmiter<TCPClientEvents>) {
+// TCP related typing
+export interface TCPClientOption {
+    host: string,
+    port: number,
+    protocolVersion: number,
+    playerName: string,
+    /**
+     * Set to true only if you are playing in offline server or crack server
+     */
+    isOffline?: boolean,
+
+    /**
+     * Send empty `Known Packet` to let server send all Registry data, which may consume a lot of bandwith
+     */
+    loadRegistry?: boolean,
+
+    debug?: {
+        // Log packet
+        packetLogger: boolean
+    },
+
+    // For premium account
+    auth?: AuthOption
+}
+
+export interface TCPClientEvents {
+    connect: [],
+    disconnect: [reason: string],
+    disconnectRaw: [textComponent: TextComponent],
+    raw: [buf: Buffer],
+
+    ready: [readyClient: TCPClient<true>],
+
+    playerPosition: [],
+
+    loadChunk: [chunkX: number, sectionY: number, chunkZ: number],
+    unloadChunk: [chunkX: number, chunkZ: number],
+
+    spawnEntity: [entity: Entity],
+    updateEntity: [entity: Entity],
+    removeEntity: [entityId: number],
+
+    // Chat
+    message: [message: Message],
+    systemMessage: [message: string],
+    systemMessageRaw: [textComponent: TextComponent],
+    actionBar: [message: string],
+    actionBarRaw: [textComponent: TextComponent],
+}
+
+export interface Message {
+    sender: string,
+    target?: string,
+    content: string,
+    raw: {
+        sender: TextComponent,
+        target?: TextComponent,
+        content?: TextComponent
+    }
+}
+
+export enum ClientStatus {
+    Disconnected,
+    Connecting,
+    Logining,
+    Ready,
+}
+
+export enum ClientState {
+    Disconnected,
+    Handshake,
+    Login,
+    Configure,
+    Play
+}
+
+// export enum TCPServerIntent {
+//     Status = 1,
+//     Login = 2,
+//     Transfer = 3,
+// }
+
+export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter as new () => TypedEmmiter<TCPClientEvents>) {
     public readonly socket: Socket;
 
     public server: Server | undefined = undefined;
@@ -175,7 +207,7 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
      */
     private compressionThreshold: number = 0;
     private bufferPool: Buffer = Buffer.alloc(0);
-    public status: TCPClientStatus = TCPClientStatus.Disconnected;
+    public status: ClientStatus = ClientStatus.Disconnected;
     private state: ClientState = ClientState.Disconnected;
 
     // Encryption
@@ -188,14 +220,19 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
     public player?: If<IsReady, ClientPlayer>;
     public registry?: If<IsReady, Record<string, ServerRegistryEntry[]>>;
 
+    // Initial data
+    private playerUUID?: Buffer;
+
     constructor(
         public readonly option: TCPClientOption,
         socketOption?: SocketConstructorOpts
     ) {
-        // eslint-disable-next-line constructor-super
         super();
         this.socket = new Socket(socketOption);
         this.wipePlayData();
+
+        if (!option.isOffline && !option.auth)
+            throw new MissingAuthOption();
     }
 
     private wipePlayData() {
@@ -207,8 +244,17 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
     /**
      * Connect to server
      */
-    public connect() {
-        this.status = TCPClientStatus.Connecting;
+    public async connect() {
+        if (!this.playerUUID) {
+            if (this.option.auth) {
+                const authClient = new AuthClient(this.option.auth);
+                const { uuid } = await authClient.auth();
+                this.playerUUID = Buffer.from(uuid);
+            } else
+                this.playerUUID = computeUUID(this.option.playerName);
+        }
+
+        this.status = ClientStatus.Connecting;
         const connection = this.socket.connect({
             host: this.option.host,
             port: this.option.port
@@ -230,15 +276,25 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
             this.handlePacket();
         });
         connection.once("end", () => {
-            if (this.status === TCPClientStatus.Disconnected) return;
-            this.status = TCPClientStatus.Disconnected;
+            if (this.status === ClientStatus.Disconnected) return;
+            this.status = ClientStatus.Disconnected;
+            this.state = ClientState.Disconnected;
             this.emit("disconnect", "socket close");
         });
     }
 
+    public disconnect() {
+        if (!this.socket.closed)
+            this.socket.destroy();
+    }
+
+    public isReady(): this is TCPClient<true> {
+        return this.status === ClientStatus.Ready;
+    }
+
     /*
-     * Read packet
-     */
+    * Read packet
+    */
 
     private handlePacket() {
         while (true) {
@@ -283,13 +339,14 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
 
             switch (packetID) {
                 case 0x00:
-                    if (this.state === ClientState.Login) this.handleLoginDisconnect();
+                    if (this.state === ClientState.Login) this.handleLoginDisconnect(decoder);
                     break;
                 case 0x01:
                     if (this.state === ClientState.Login) this.handleEncryption(decoder);
                     if (this.state === ClientState.Play) this.handleSpawnEntity(decoder);
                     break;
                 case 0x02:
+                    if (this.state === ClientState.Configure) this.handleConfiguarionPlayDisconnect(decoder);
                     if (this.state === ClientState.Login) this.handleLoginSucess(decoder);
                     break;
                 case 0x03:
@@ -304,6 +361,12 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
                     break;
                 case 0x0A:
                     if (this.state === ClientState.Play) this.handleChangeGameMode(decoder);
+                    break;
+                case 0x20:
+                    if (this.state === ClientState.Play) this.handleConfiguarionPlayDisconnect(decoder);
+                    break;
+                case 0x21:
+                    if (this.state === ClientState.Play) this.handleDisguisedChatMessage(decoder);
                     break;
                 case 0x23:
                     if (this.state === ClientState.Play) this.handleTeleportEntity(decoder);
@@ -329,14 +392,24 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
                 case 0x34:
                     if (this.state === ClientState.Play) this.handleUpdateEntityPositionRotation(decoder);
                     break;
+                case 0x3F:
+                    if (this.state === ClientState.Play) this.handlePlayerChat(decoder);
+                    break;
                 case 0x46:
                     if (this.state === ClientState.Play) this.handleSynchronizePlayerPosition(decoder);
                     break;
                 case 0x4B:
                     if (this.state === ClientState.Play) this.handleRemoveEntity(decoder);
                     break;
+                case 0x55:
+                    if (this.state === ClientState.Play) this.handleSetActionBar(decoder);
+                    break;
                 case 0x63:
                     if (this.state === ClientState.Play) this.handleSetEntityVelocity(decoder);
+                    break;
+                case 0x77:
+                    if (this.state === ClientState.Play) this.handleSystemMessage(decoder);
+                    break;
             }
 
             this.bufferPool = this.bufferPool.subarray(expectedPacketEnd);
@@ -345,13 +418,17 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
 
     // Login
 
-    private handleLoginDisconnect() {
-        // Need to handle JSON Text component
-        this.status = TCPClientStatus.Disconnected;
+    private handleLoginDisconnect(decoder: BinaryDecoder) {
+        const reason = JSON.parse(decoder.readString());
+        const text = getTextFromTextComponent(reason);
+
+        this.status = ClientStatus.Disconnected;
+        this.state = ClientState.Disconnected;
         this.wipePlayData();
 
-        this.emit("disconnect", "server close connection");
-        if (!this.socket.closed) this.socket.destroy();
+        this.emit("disconnect", text.toString());
+        this.emit("disconnectRaw", reason);
+        this.disconnect();
     }
 
     private handleEncryption(decoder: BinaryDecoder) {
@@ -408,7 +485,8 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
             version: decoder.readString()
         }));
         this.server!.knownPacks = packs as any;
-        this.sendKnownPack(this.option.loadRegistry ? [] : packs);
+        // this.sendKnownPack(this.option.loadRegistry === true ? [] : packs);
+        this.sendKnownPack([]);
     }
 
     private handleRegistryData(decoder: BinaryDecoder) {
@@ -423,6 +501,19 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
         if (!(id in registry)) registry[id] = [];
         registry[id]!.push(...entries);
         console.dir({ id });
+    }
+
+    private handleConfiguarionPlayDisconnect(decoder: BinaryDecoder) {
+        const reason = decoder.readNBT();
+        const text = getTextFromTextComponent(reason);
+
+        this.status = ClientStatus.Disconnected;
+        this.state = ClientState.Disconnected;
+        this.wipePlayData();
+
+        this.emit("disconnect", text.toString());
+        this.emit("disconnectRaw", reason);
+        this.disconnect();
     }
 
     // Play
@@ -456,6 +547,7 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
         this.player!.dimension = dimensionName;
 
         this.emit("ready", this as TCPClient<true>);
+        this.status = ClientStatus.Ready;
     }
 
     private handleSynchronizePlayerPosition(decoder: BinaryDecoder) {
@@ -548,7 +640,7 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
                 blockStatePalettes = [chunkDataDecoder.readVarInt()];
             } else if (blockStateBPE <= 8) {
                 // Indirect palette
-                if (blockStateBPE < 4) blockStateBPE = 4; // BPE smaller than 4 ưill be rounđe up to 4
+                if (blockStateBPE < 4) blockStateBPE = 4; // BPE smaller than 4 will be rounđe up to 4
                 blockStatePalettes = chunkDataDecoder.readPrefixedArray(decoder => decoder.readVarInt());
             } else {
                 // Direct palette (no palette array)
@@ -646,8 +738,9 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
             data = decoder.readVarInt();
 
         this.world!.entities[id] = {
+            id,
             type,
-            position: new Vec3(x, y, z),
+            position: { x, y, z },
             velocity,
             angle: {
                 pitch,
@@ -670,8 +763,8 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
             yaw = decoder.readAngle();
 
         if (id in this.world!.entities) {
-            this.world!.entities[id]!.position = new Vec3(x, y, z);
-            this.world!.entities[id]!.velocity = new Vec3(velX, velY, velZ);
+            this.world!.entities[id]!.position = { x, y, z };
+            this.world!.entities[id]!.velocity = { x: velX, y: velY, z: velZ };
             this.world!.entities[id]!.angle = { pitch, yaw };
             this.emit("updateEntity", this.world!.entities[id]!);
         }
@@ -688,7 +781,7 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
             x += delX;
             y += delY;
             z += delZ;
-            this.world!.entities[id]!.position = new Vec3(x, y, z);
+            this.world!.entities[id]!.position = { x, y, z };
             this.emit("updateEntity", this.world!.entities[id]!);
         }
     }
@@ -706,7 +799,7 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
             x += delX;
             y += delY;
             z += delZ;
-            this.world!.entities[id]!.position = new Vec3(x, y, z);
+            this.world!.entities[id]!.position = { x, y, z };
             this.world!.entities[id]!.angle = { yaw, pitch };
             this.emit("updateEntity", this.world!.entities[id]!);
         }
@@ -729,12 +822,91 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
         }
     }
 
+    // Chat
+    private handlePlayerChat(decoder: BinaryDecoder) {
+        const globalIndex = decoder.readVarInt(),
+            senderUUID = decoder.readUUID(),
+            index = decoder.readVarInt(),
+            messageSignature = decoder.readPrefixedOptional(decoder => decoder.readArray(256, decoder => decoder.readByte())),
+            message = decoder.readString(),
+            timestamp = decoder.readLong(),
+            salt = decoder.readLong(),
+            previousMessages = decoder.readPrefixedArray(decoder => {
+                const id = decoder.readVarInt();
+                let signature;
+                if (id === 0)
+                    signature = decoder.readArray(256, decoder => decoder.readByte());
+                return { id, signature };
+            }),
+            unsignedContent = decoder.readPrefixedOptional(decoder => decoder.readNBT()), // Text component
+            filterType = decoder.readVarInt(),
+            filterTypeBits = decoder.readPrefixedArray(decoder => decoder.readLong()),
+            chatType = decoder.readChatType(),
+            senderName = decoder.readNBT(),
+            targetName = decoder.readPrefixedOptional(decoder => decoder.readNBT());
+
+        const senderNameText = getTextFromTextComponent(senderName).toString(),
+            targetNameText = targetName ?? getTextFromTextComponent(targetName).toString();
+
+        this.emit("message", {
+            sender: senderNameText,
+            target: targetNameText,
+            content: message,
+            raw: {
+                sender: senderName,
+                target: targetName,
+                content: unsignedContent,
+            }
+        });
+    }
+
+    private handleSystemMessage(decoder: BinaryDecoder) {
+        const content = decoder.readNBT(),
+            isActionbar = decoder.readBoolean();
+        const text = getTextFromTextComponent(content);
+
+        if (isActionbar) {
+            this.emit("actionBar", text.toString());
+            this.emit("actionBarRaw", content);
+        } else {
+            this.emit("systemMessage", text.toString());
+            this.emit("systemMessageRaw", content);
+        }
+    }
+
+    private handleSetActionBar(decoder: BinaryDecoder) {
+        const content = decoder.readNBT();
+        const text = getTextFromTextComponent(content);
+        this.emit("actionBar", text.toString());
+        this.emit("actionBarRaw", content);
+    }
+
+    private handleDisguisedChatMessage(decoder: BinaryDecoder) {
+        const message = decoder.readNBT(),
+            chatType = decoder.readChatType(),
+            senderName = decoder.readNBT(),
+            targetName = decoder.readPrefixedOptional(decoder => decoder.readNBT());
+        const messageText = getTextFromTextComponent(message).toString(),
+            senderNameText = getTextFromTextComponent(senderName).toString(),
+            targetNameText = targetName ?? getTextFromTextComponent(targetName).toString();
+        this.emit("message", {
+            sender: senderNameText,
+            target: targetNameText,
+            content: messageText,
+            raw: {
+                sender: senderName,
+                target: targetName,
+                content: message,
+            }
+        });
+    }
+
     /*
-     * Send packet 
-     */
+    * Send packet 
+    */
 
     private write(buf: Buffer) {
-        if (this.status == TCPClientStatus.Disconnected || !this.socket.writable)
+        if (this.status == ClientStatus.Disconnected || !this.socket.writable)
             throw new SockerIsNotWritable();
 
         let sendBuffer = buf;
@@ -792,10 +964,10 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
 
     private sendLoginStart() {
         this.state = ClientState.Login;
-        this.status = TCPClientStatus.Logining;
+        this.status = ClientStatus.Logining;
         const encoder = new BinaryEncoder();
         const playerName = this.option.playerName;
-        const playerUUID = computeUUID(playerName);
+        const playerUUID = this.playerUUID!;
         encoder.writeString(playerName);
         encoder.concat(playerUUID);
         this.sendPacket(0x00, encoder.getBuffer());
@@ -838,7 +1010,6 @@ export class TCPClient<IsReady extends boolean = false> extends (EventEmitter as
 
     private sendConfigureAck() {
         this.state = ClientState.Play;
-        this.status = TCPClientStatus.Ready;
         this.sendPacket(0x3, Buffer.alloc(0));
     }
 
