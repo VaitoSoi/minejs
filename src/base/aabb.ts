@@ -548,6 +548,16 @@ export class VoxelShape {
         this.storage.clear(this.getIndex(x, y, startZ), this.getIndex(x, y, endZ));
     }
 }
+
+export class Shapes {
+    public static collide(axis: BaseAxis, moving: AABB, shapes: VoxelShape[], distance: number): number {
+        if (Math.abs(distance) < Epsilon) return 0;
+        for (const shape of shapes)
+            distance = shape.collide(axis, moving, distance);
+        return distance;
+    }
+}
+
 export type IndexMergerConsumer = (i1: number, i2: number, ir: number) => void;
 
 export abstract class IndexMerger {
