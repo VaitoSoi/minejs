@@ -302,10 +302,15 @@ export class VoxelShape {
         else return new IndirectMerger(first, second);
     }
 
+    private storage: BitSet;
+
     constructor(
         public xs: number[],
         public ys: number[],
         public zs: number[],
+    private getIndex(x: number, y: number, z: number) {
+        return ((x * (this.ys.length - 1)) + y) * (this.zs.length - 1) + z;
+    }
 export type IndexMergerConsumer = (i1: number, i2: number, ir: number) => void;
 
 export abstract class IndexMerger {
