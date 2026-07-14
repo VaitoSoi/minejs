@@ -487,7 +487,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
                 yaw: 0,
                 pitch: 0,
             }
-        } as ClientPlayer as any;
+        } satisfies ClientPlayer as any;
         this.sendLoginAck();
     }
 
@@ -499,7 +499,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
             id: decoder.readString(),
             version: decoder.readString()
         }));
-        this.server!.knownPacks = packs as any;
+        this.server!.knownPacks = packs satisfies ServerKnownPack[] as any;
         // this.sendKnownPack(this.option.loadRegistry === true ? [] : packs);
         this.sendKnownPack([]);
     }
@@ -557,7 +557,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
             gameMode,
             chunks: {},
             entities: {}
-        } as ServerWorld as any; // To avoid type conflict
+        } satisfies ServerWorld as any; // To avoid type conflict
         this.player!.dimension = dimensionName;
         this.player!.entityId = entityId;
 
