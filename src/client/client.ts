@@ -79,19 +79,14 @@ export class Client<IsTCPReady extends boolean = boolean> extends (EventEmitter 
         this.tcp.disconnect();
     }
 
-    public move(x: number, y: number, z: number) {
-
+    public held(direction: MoveDirection) {
+        this.player.input(direction);
     }
-
-    private collide(movement: Vec3) {
-        if (!this._client.isReady())
-            throw new ClientNotReady();
-        const { x: playerX, y: playerY, z: playerZ } = this._client.player!.position;
-        const playerBB =
-            AABB.fromEntityType("minecraft:player")
-                .move(playerX, playerY, playerZ);
-        const expandedBB = playerBB.expandTowards(movement);
-        
-        const entities = this.entities.queryAABB(expandedBB);
+    public release(direction: MoveDirection) {
+        this.player.releaseInput(direction);
+    }
+    public stopMoving() {
+        this.player.releaseAllInputs();
+    }
     }
 }
