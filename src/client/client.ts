@@ -22,13 +22,25 @@ export interface ClientEvents {
     actionBarRaw: [textComponent: TextComponent],
 }
 
-    constructor(option: TCPClientOption) {
-        super();
-        this._client = new TCPClient(option);
-        this.forwardEvents();
-        this.handleEvents();
+export class Client<IsTCPReady extends boolean = boolean> extends (EventEmitter as new () => TypedEmmiter<ClientEvents>) {
+    private tickLoop: TickLoop;
 
-        this.entities = new EntitiesManager(this._client);
+    private tcp: TCPClient<IsTCPReady>;
+    private blocks: BlockManager;
+    private entities: EntitiesManager;
+    private player: Player;
+
+    constructor(options: TCPClientOption) {
+        super();
+        BlockRegistry.load();
+        EntityRegistry.load();
+
+        this.tcp = new TCPClient(options);
+        this.blocks = new BlockManager(this.tcp);
+        this.entities = new EntitiesManager(this.tcp);
+        this.player = new Player(this.entities, this.blocks, this.tcp);
+        this.tickLoop = new TickLoop(() => this.player.tick());
+        this.forwardEvents();
     }
 
     private forwardEvents() {
