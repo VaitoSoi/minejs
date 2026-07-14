@@ -10,7 +10,7 @@ export class EntityRegistry {
         if (this.loaded) return;
         this.loaded = true;
 
-        const file = await readFile("assets/minecraft/entity_dimension.json", { encoding: "utf8" });
+        const file = await readFile(`${__dirname}/../../assets/minecraft/entity_dimension.json`, { encoding: "utf8" });
         const json = JSON.parse(file);
         for (const entity in json) {
             this.data[entity] = json[entity];
@@ -39,12 +39,6 @@ export class BlockStateRegistry {
         if (this.loaded) return;
         this.loaded = true;
 
-        const file = await readFile("assets/minecraft/block_dimension.json", { encoding: "utf8" });
-        const json = JSON.parse(file);
-        for (const block in json) {
-            this.data[block] = json[block];
-            for (const stateId of Object.keys(json[block]))
-                this.mapIdToState[stateId] = this.data[block]![stateId]!;
-        }
+        const file = await readFile(`${__dirname}/../../assets/minecraft/blocks.json`, { encoding: "utf8" });
     }
 };
