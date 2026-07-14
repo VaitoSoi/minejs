@@ -130,5 +130,101 @@ export class BlockManager {
         return blockShapes;
     }
 }
+
+interface Context {
+    getBlockState: (position: BaseVec3) => VoxelShape,
+    from: Vec3,
+    to: Vec3
+}
+
+export class BlockGetter {
+    public static clip(from: Vec3, to: Vec3, context: Context) {
+        return this.traverseBlocks(
+            from, to, context,
+            (context, pos) => {
+                const blockState = context.getBlockState(pos);
+                const { from, to } = context;
+                return blockState.clip(from, to, pos);
+            },
+            (context) => {
+                const { from, to } = context;
+                const delta = from.subtract(to);
+                return BlockHitResult.miss(to, Direction.getApproximateNearest(delta), to);
+            }
+        );
+    }
+
+    public static traverseBlocks<T, C = Context>(
+        from: Vec3,
+        to: Vec3,
+        context: C,
+        consumer: (context: C, position: BaseVec3) => T,
+        missFactory: (context: C) => T): T {
+        let result: T;
+
+        if (from.equal(to)) return missFactory(context);
+        const toX = lerp(-Epsilon, to.x, from.x);
+        const toY = lerp(-Epsilon, to.y, from.y);
+        const toZ = lerp(-Epsilon, to.z, from.z);
+        const fromX = lerp(-Epsilon, from.x, to.x);
+        const fromY = lerp(-Epsilon, from.y, to.y);
+        const fromZ = lerp(-Epsilon, from.z, to.z);
+        let currentBlockX = Math.floor(fromX);
+        let currentBlockY = Math.floor(fromY);
+        let currentBlockZ = Math.floor(fromZ);
+        const firstBlock = consumer(context, { x: currentBlockX, y: currentBlockY, z: currentBlockZ });
+        if (firstBlock !== null) return firstBlock;
+        const dx = toX - fromX;
+        const dy = toY - fromY;
+        const dz = toZ - fromZ;
+        const signX = getSign(dx);
+        const signY = getSign(dy);
+        const signZ = getSign(dz);
+        const tDeltaX = signX == 0 ? Infinity : signX / dx;
+        const tDeltaY = signY == 0 ? Infinity : signY / dy;
+        const tDeltaZ = signZ == 0 ? Infinity : signZ / dz;
+        let tX = tDeltaX * (signX > 0 ? 1 - getFrac(fromX) : getFrac(fromX));
+        let tY = tDeltaY * (signY > 0 ? 1 - getFrac(fromY) : getFrac(fromY));
+        let tZ = tDeltaZ * (signZ > 0 ? 1 - getFrac(fromZ) : getFrac(fromZ));
+        do {
+            if (tX <= 1.0 || tY <= 1.0 || tZ <= 1.0) {
+                if (tX < tY) {
+                    if (tX < tZ) {
+                        currentBlockX += signX;
+                        tX += tDeltaX;
+                    } else {
+                        currentBlockZ += signZ;
+                        tZ += tDeltaZ;
+                    }
+                } else if (tY < tZ) {
+                    currentBlockY += signY;
+                    tY += tDeltaY;
+                } else {
+                    currentBlockZ += signZ;
+                    tZ += tDeltaZ;
+                }
+                result = consumer(context, { x: currentBlockX, y: currentBlockY, z: currentBlockZ });
+            } else {
+                return missFactory(context);
+            }
+        } while (result == null);
+        return result;
+    }
+}
+
+export class BlockHitResult {
+    constructor(
+        public miss: boolean,
+        public location: Vec3,
+        public direction: Direction,
+        public pos: BaseVec3,
+    ) { }
+
+    public static hit(location: Vec3, direction: Direction, pos: BaseVec3) {
+        return new BlockHitResult(true, location, direction, pos);
+    }
+
+    public static miss(location: Vec3, direction: Direction, pos: BaseVec3) {
+        return new BlockHitResult(true, location, direction, pos);
     }
 }
