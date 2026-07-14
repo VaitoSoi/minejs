@@ -1033,4 +1033,59 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
         encoder.writeLong(id);
         this.sendPacket(0x1B, encoder.getBuffer());
     }
+
+    public sendPlayerPosRot(pos: BaseVec3, rot: Angle, onGround: boolean, pushingWall: boolean) {
+        let flag = 0;
+        if (onGround)
+            flag |= 1;
+        if (pushingWall)
+            flag |= 1 << 2;
+        // // console.log({ pos, rot, flag });
+        const encoder = new BinaryEncoder();
+        encoder.writeDouble(pos.x);
+        encoder.writeDouble(pos.y);
+        encoder.writeDouble(pos.z);
+        encoder.writeFloat(rot.yaw);
+        encoder.writeFloat(rot.pitch);
+        encoder.writeByte(flag);
+        this.sendPacket(0x1E, encoder.getBuffer());
+    }
+    public sendPlayerPos(pos: BaseVec3, onGround: boolean, pushingWall: boolean) {
+        let flag = 0;
+        if (onGround)
+            flag &= 1;
+        if (pushingWall)
+            flag |= 1 << 2;
+        // // console.log({ pos, flag });
+        const encoder = new BinaryEncoder();
+        encoder.writeDouble(pos.x);
+        encoder.writeDouble(pos.y);
+        encoder.writeDouble(pos.z);
+        encoder.writeByte(flag);
+        this.sendPacket(0x1D, encoder.getBuffer());
+    }
+    public sendPlayerRot(rot: Angle, onGround: boolean, pushingWall: boolean) {
+        let flag = 0;
+        if (onGround)
+            flag &= 1;
+        if (pushingWall)
+            flag |= 1 << 2;
+        // // console.log({ rot, flag });
+        const encoder = new BinaryEncoder();
+        encoder.writeFloat(rot.yaw);
+        encoder.writeFloat(rot.pitch);
+        encoder.writeByte(flag);
+        this.sendPacket(0x1F, encoder.getBuffer());
+    }
+    public sendPlayerStatus(onGround: boolean, pushingWall: boolean) {
+        let flag = 0;
+        if (onGround)
+            flag &= 1;
+        if (pushingWall)
+            flag |= 1 << 2;
+        // // console.log({ flag });
+        const encoder = new BinaryEncoder();
+        encoder.writeByte(flag);
+        this.sendPacket(0x20, encoder.getBuffer());
+    }
 }
