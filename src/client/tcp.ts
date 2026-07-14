@@ -599,6 +599,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
         } satisfies ClientPlayer as any;
         this.emit("playerPosition", { x: newPosX, y: newPosY, z: newPosZ });
         this.sendConfirmTeleportation(teleportId);
+        this.sendPlayerPosRot(newPosition, newAngle, true, false);
     }
 
     private handleKeepAlive(decoder: BinaryDecoder) {
