@@ -43,13 +43,13 @@ export class Client<IsTCPReady extends boolean = boolean> extends (EventEmitter 
         this.forwardEvents();
     }
 
+    private forwardEvent(eventName: keyof ClientEvents & keyof TCPClientEvents) {
+        this.tcp.on(eventName, (...args) => this.emit(eventName, ...args));
+    }
     private forwardEvents() {
-        this.forwardEvent("ready");
-        this.forwardEvent("connect");
-        this.forwardEvent("disconnect");
-        this.forwardEvent("disconnectRaw");
         this.forwardEvent("loadChunk");
         this.forwardEvent("unloadChunk");
+        this.forwardEvent("playerPosition");
         this.forwardEvent("spawnEntity");
         this.forwardEvent("updateEntity");
         this.forwardEvent("removeEntity");
