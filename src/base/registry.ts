@@ -40,5 +40,15 @@ export class BlockStateRegistry {
         this.loaded = true;
 
         const file = await readFile(`${__dirname}/../../assets/minecraft/blocks.json`, { encoding: "utf8" });
+
+    public static getBlock(type: string) {
+        if (!(type in this.blocks))
+            throw new RegistryItemNotFound(`block ${type}`);
+        return this.blocks[type]!;
+    }
+    public static getState(id: string) {
+        if (!(id in this.states))
+            throw new RegistryItemNotFound(`block state ${id}`);
+        return this.states[id]!;
     }
 };
