@@ -80,8 +80,8 @@ export interface BlockEntity {
 export interface Entity {
     id: number,
     type: number,
-    position: Position,
-    velocity: Position,
+    position: BaseVec3,
+    velocity: BaseVec3,
     angle: Angle,
     data: number
 }
@@ -98,8 +98,8 @@ export interface ClientPlayer {
     username: string,
     entityId: number,
 
-    position: Position,
-    velocity: Position,
+    position: BaseVec3,
+    velocity: BaseVec3,
     angle: Angle,
 
     dimension: string
