@@ -292,6 +292,12 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
         return this.status === ClientStatus.Ready;
     }
 
+    public checkReady() {
+        if (!this.isReady())
+            throw new ClientNotReady();
+        return true;
+    }
+
     /*
     * Read packet
     */
