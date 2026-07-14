@@ -114,31 +114,21 @@ export class BlockManager {
             throw new ClientNotReady();
 
         const { minX, minY, minZ, maxX, maxY, maxZ } = queryBB;
-        const sx0 = Math.floor(minX / 4), sx1 = Math.floor(maxX / 4);
-        const sy0 = Math.floor(minY / 4), sy1 = Math.floor(maxY / 4);
-        const sz0 = Math.floor(minZ / 4), sz1 = Math.floor(maxZ / 4);
+        const sx0 = Math.floor(minX), sx1 = Math.floor(maxX);
+        const sy0 = Math.floor(minY), sy1 = Math.floor(maxY);
+        const sz0 = Math.floor(minZ), sz1 = Math.floor(maxZ);
 
-        const ids: string[] = [];
-        // Interating through each chunk section
-        for (let sx = sx0; sx <= sx1; sx++)
-            for (let sy = sy0; sy <= sy1; sy++)
-                for (let sz = sz0; sz <= sz1; sz++)
-                    // Interating through each block in each
-                    for (let px = minX - sx * 16; px < Math.min(maxX - sx * 16, (sx + 1) * 16); px++)
-                        for (let py = minY - sy * 16; py < Math.min(maxY - sy * 16, (sy + 1) * 16); py++)
-                            for (let pz = minZ - sz * 16; pz < Math.min(maxZ - sz * 16, (sz + 1) * 16); pz++)
-                                ids.push(this.at(px, py, pz));
+        const blockShapes: VoxelShape[] = [];
+        for (let x = sx0; x <= sx1; x++)
+            for (let y = sy0; y <= sy1; y++)
+                for (let z = sz0; z <= sz1; z++) {
+                    const blockState = this.at(x, y, z);
+                    if (blockState)
+                        blockShapes.push(blockState.shape.move(x, y, z));
+                }
 
-        return ids.map((id) => {
-            if (!(id in BlockStateRegistry.mapIdToState))
-                throw new RegistryItemNotFound(`block state ${id}`);
-            const state = BlockStateRegistry.mapIdToState[id]!;
-
-            const bbs = state.boxes.map(val => new AABB(
-                val.minX, val.minY, val.minZ,
-                val.maxX, val.maxY, val.maxZ
-            ));
-            
-        });
+        return blockShapes;
+    }
+}
     }
 }
