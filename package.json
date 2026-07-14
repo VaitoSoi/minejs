@@ -7,7 +7,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@stylistic/eslint-plugin": "^5.10.0",
-    "@types/node": "^25.9.1",
+    "@types/node": "^26.1.1",
     "eslint": "^10.4.1",
     "globals": "^17.6.0",
     "tsx": "^4.22.4",
@@ -21,5 +21,8 @@
   "author": {
     "name": "Vaito",
     "email": "duyduy15456@gmail.com"
+  },
+  "dependencies": {
+    "bitset": "^5.2.3"
   }
 }
