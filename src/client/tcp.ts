@@ -282,6 +282,12 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
             this.state = ClientState.Disconnected;
             this.emit("disconnect", "socket close");
         });
+        connection.once("close", () => {
+            if (this.status === ClientStatus.Disconnected) return;
+            this.status = ClientStatus.Disconnected;
+            this.state = ClientState.Disconnected;
+            this.emit("disconnect", "socket close");
+        });
     }
 
     public disconnect() {
