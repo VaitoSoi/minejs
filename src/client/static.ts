@@ -5,6 +5,13 @@ export const SectionsPerChunk: Record<string, number> = {
     "minecraft:the_nether": 8,
 };
 
+export const LevelHeightLimit: Record<string, [min: number, max: number]> = {
+    "minecraft:overworld": [-64, 320],
+    "minecraft:overworld_caves": [-64, 320],
+    "minecraft:the_end": [0, 256],
+    "minecraft:the_nether": [0, 0],
+};
+
 /**
  * Packed block position within a chunk column to an integer
  * 
