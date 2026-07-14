@@ -44,6 +44,14 @@ export class BlockRegistry {
         this.loaded = true;
 
         const file = await readFile(`${__dirname}/../../assets/minecraft/blocks.json`, { encoding: "utf8" });
+        const json = JSON.parse(file) as Record<string, any>;
+        for (const [type, blockRaw] of Object.entries(json)) {
+            const block = new Block(type, blockRaw['definition'], blockRaw['properties'], blockRaw['states']);
+            this.blocks[type] = block;
+            for (const state of block.states)
+                this.states[state.id] = state;
+        }
+    }
 
     public static getBlock(type: string) {
         if (!(type in this.blocks))
