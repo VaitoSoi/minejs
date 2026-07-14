@@ -1,7 +1,9 @@
-import { Axis, Position, Vec3 } from "./vector";
+import { BitSet } from "./bitset";
+import { Axis, AxisCycle, BaseAxis, BaseVec3, Direction, Vec3 } from "./direction";
 import { RegistryItemNotFound } from "./error";
 import { EntityRegistry } from "./registry";
-import { lowerBoundBinarySearch, mergeUnique } from "./math";
+import { Epsilon, lowerBoundBinarySearch, mergeUnique } from "./math";
+import { BlockHitResult } from "./block";
 
 export interface BaseAABB {
     minX: number;
