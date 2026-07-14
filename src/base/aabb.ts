@@ -271,61 +271,161 @@ export class VoxelShape {
         return new VoxelShape(xs, ys, zs, cells);
     }
     public static or(a: VoxelShape, b: VoxelShape) {
-        const mergeX: number[] = mergeUnique(a.xs, b.xs),
-            mergeY: number[] = mergeUnique(a.ys, b.ys),
-            mergeZ: number[] = mergeUnique(a.zs, b.zs);
+        const mergeX = VoxelShape.createMerger(a.xs, b.xs),
+            mergeY = VoxelShape.createMerger(a.ys, b.ys),
+            mergeZ = VoxelShape.createMerger(a.zs, b.zs);
 
-        const cells: boolean[][][] =
-            Array.from({ length: mergeX.length - 1 }).map(() =>
-                Array.from({ length: mergeY.length - 1 }).map(() =>
-                    Array.from({ length: mergeZ.length - 1 }).map(() => false)
-                )
-            );
+        const getCoords = (x: number, y: number, z: number) =>
+            ((x * (mergeY.size - 1)) + y) * (mergeZ.size - 1) + z;
+        const storage = new BitSet();
 
-        for (let ix = 0; ix < mergeX.length - 2; ix++)
-            for (let iy = 0; iy < mergeY.length - 2; iy++)
-                for (let iz = 0; iz < mergeZ.length - 2; iz++) {
-                    const x = mergeX[ix]! + AABB.EPSILON,
-                        y = mergeY[iy]! + AABB.EPSILON,
-                        z = mergeZ[iz]! + AABB.EPSILON;
+        mergeX.forMergedIndex((x1, x2, xr) => {
+            mergeY.forMergedIndex((y1, y2, yr) => {
+                mergeZ.forMergedIndex((z1, z2, zr) => {
+                    if (a.isFullWide(x1, y1, z1) || b.isFullWide(x2, y2, z2))
+                        storage.set(getCoords(xr, yr, zr), 1);
+                });
+            });
+        });
 
-                    if (a.isFullWide(
-                        a.findIndex(Axis.X, x),
-                        a.findIndex(Axis.Y, y),
-                        a.findIndex(Axis.Z, z)
-                    ) || b.isFullWide(
-                        b.findIndex(Axis.X, x), 
-                        b.findIndex(Axis.Y, y), 
-                        b.findIndex(Axis.Z, z)
-                    ))
-                        cells[ix]![iy]![iz] = true;
-                }
-
-        return new VoxelShape(mergeX, mergeY, mergeZ, cells);
+        return new VoxelShape(mergeX.list, mergeY.list, mergeZ.list, storage);
+    }
+    public static createMerger(first: number[], second: number[]): IndexMerger {
+        if (first.at(-1)! < second.at(0)!)
+            return new NoneOverlappingMerger(first, second, false);
+        else if (first.at(0)! > second.at(-1)!)
+            return new NoneOverlappingMerger(second, first, true);
+        if (first.length === second.length && first.every((val, ind) => val === second[ind]!))
+            return new IdenticalMerger(first);
+        else return new IndirectMerger(first, second);
     }
 
     constructor(
         public xs: number[],
         public ys: number[],
         public zs: number[],
-        public cells: boolean[][][]
-    ) { }
+export type IndexMergerConsumer = (i1: number, i2: number, ir: number) => void;
 
-    public isFullWide(x: number, y: number, z: number) {
-        if (x < 0 || x >= this.xs.length) return false;
-        if (y < 0 || y >= this.ys.length) return false;
-        if (z < 0 || z >= this.zs.length) return false;
-        return this.cells[x]![y]![z];
+export abstract class IndexMerger {
+    public abstract forMergedIndex(consumer: IndexMergerConsumer): void;
+    public abstract get size(): number;
+    public abstract get list(): number[];
+}
+
+export class NoneOverlappingMerger extends IndexMerger {
+    constructor(
+        private lower: number[],
+        private upper: number[],
+        private swap: boolean,
+    ) {
+        super();
     }
 
-    public findIndex(axis: Axis, val: number) {
-        let arr;
-        switch (axis) {
-            case Axis.X: arr = this.xs; break;
-            case Axis.Y: arr = this.ys; break;
-            case Axis.Z: arr = this.zs; break;
+    public forMergedIndex(consumer: IndexMergerConsumer): void {
+        return this.swap
+            ? this.forMergedIndexNotSwapped((i1, i2, ir) => consumer(i2, i1, ir))
+            : this.forMergedIndexNotSwapped(consumer);
+    }
+
+    private forMergedIndexNotSwapped(consumer: IndexMergerConsumer) {
+        for (const i of this.lower)
+            consumer(i, -1, i);
+
+        for (const i of this.upper)
+            consumer(this.lower.length - 1, i, this.lower.length + i);
+    }
+
+    public get size() {
+        return this.lower.length + this.upper.length;
+    }
+    public get list() {
+        return [...this.lower, ...this.upper];
+    }
+}
+
+export class IdenticalMerger extends IndexMerger {
+    constructor(
+        private coords: number[],
+    ) {
+        super();
+    }
+
+    public forMergedIndex(consumer: IndexMergerConsumer): void {
+        for (const i of this.coords)
+            consumer(i, i, i);
+    }
+
+    public get size() {
+        return this.coords.length;
+    }
+
+    public get list() {
+        return this.coords;
+    }
+}
+
+export class IndirectMerger extends IndexMerger {
+    private result: number[];
+    private resultLength: number;
+    private firstIndices: number[];
+    private secondIndices: number[];
+
+    constructor(
+        first: number[],
+        second: number[],
+    ) {
+        super();
+        let firstIndex = 0,
+            secondIndex = 0,
+            resultIndex = 0,
+            lastVal = Number.NaN;
+        const capacity = first.length + second.length;
+        this.result = Array.from({ length: capacity });
+        this.firstIndices = Array.from({ length: capacity });
+        this.secondIndices = Array.from({ length: capacity });
+        this.resultLength = 0;
+
+        while (true) {
+            const ranOutOfFirst = firstIndex >= first.length;
+            const ranOutOfSecond = secondIndex >= second.length;
+            if (ranOutOfFirst && ranOutOfSecond) {
+                this.resultLength = Math.max(1, resultIndex);
+                return;
+            }
+
+            const chooseFirst = !ranOutOfFirst && (ranOutOfSecond || first[firstIndex]! < second[secondIndex]! + Epsilon);
+            if (chooseFirst)
+                firstIndex++;
+            else
+                secondIndex++;
+
+            const currentFirstIndex = firstIndex - 1,
+                currentSecondIndex = secondIndex - 1,
+                nextValue = chooseFirst ? first[currentFirstIndex]! : second[currentSecondIndex]!;
+            if (Number.isNaN(lastVal) || lastVal < nextValue - Epsilon) {
+                this.firstIndices[resultIndex] = currentFirstIndex;
+                this.secondIndices[resultIndex] = currentSecondIndex;
+                this.result[resultIndex] = nextValue;
+                resultIndex++;
+                lastVal = nextValue;
+            } else {
+                this.firstIndices[resultIndex - 1] = currentFirstIndex;
+                this.secondIndices[resultIndex - 1] = currentSecondIndex;
+            }
         }
 
-        return lowerBoundBinarySearch(0, arr.length + 1, (index) => index < val) - 1;
+    }
+
+    public forMergedIndex(consumer: IndexMergerConsumer): void {
+        for (let i = 0; i < this.resultLength - 1; i++)
+            consumer(this.firstIndices[i]!, this.secondIndices[i]!, i);
+    }
+
+    public get size() {
+        return this.resultLength;
+    }
+
+    public get list() {
+        return this.result.filter(val => val !== undefined);
     }
 }
