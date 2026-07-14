@@ -263,7 +263,9 @@ export class AABB implements BaseAABB {
 }
 
 export class VoxelShape {
-    public fromBox(bb: AABB) {
+    public static Empty = new VoxelShape([], [], [], [[[false]]]);
+
+    public static fromBox(bb: BaseAABB) {
         const xs = [bb.minX, bb.maxX],
             ys = [bb.minY, bb.maxY],
             zs = [bb.minZ, bb.maxZ];
