@@ -42,6 +42,17 @@ export class AABB implements BaseAABB {
         );
     }
 
+    public static fromAABB(aabb: BaseAABB) {
+        return new AABB(
+            aabb.minX,
+            aabb.minY,
+            aabb.minZ,
+            aabb.maxX,
+            aabb.maxY,
+            aabb.maxZ,
+        );
+    }
+
     constructor(
         x1: number,
         y1: number,
