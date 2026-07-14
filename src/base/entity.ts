@@ -14,7 +14,7 @@ export class EntitiesManager {
      */
     public entityToSection: Map<number, string> = new Map();
 
-    constructor(private client: TCPClient) { }
+    constructor(private tcp: TCPClient) { }
 
     public wipe() {
         this.sections = new Map();
@@ -70,7 +70,7 @@ export class EntitiesManager {
                 for (let sz = sz0; sz <= sz1; sz++) {
                     const bucket = this.sections.get(`${sx},${sy},${sz}`);
                     if (bucket) for (const id of bucket) {
-                        const entity = this.client.world!.entities[id];
+                        const entity = this.tcp.world!.entities[id];
                         const entityBB = AABB.fromEntityType(entity!.type);
                         if (queryBB.isIntersect(entityBB))
                             results.push(entityBB);
