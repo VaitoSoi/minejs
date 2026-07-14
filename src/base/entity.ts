@@ -56,6 +56,7 @@ export class EntitiesManager {
      * @returns
      */
     public queryAABB(queryBB: AABB, exclude: number[] = []) {
+        this.tcp.checkReady();
 
         const { minX, minY, minZ, maxX, maxY, maxZ } = queryBB;
         const results: AABB[] = [];
