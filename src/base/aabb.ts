@@ -333,6 +333,10 @@ export class VoxelShape {
             this.storage.clone()
         );
     }
+
+    /**
+     * Map an (X, Y, Z) index into storage or bitset index
+     */
     private getIndex(x: number, y: number, z: number) {
         return ((x * (this.ys.length - 1)) + y) * (this.zs.length - 1) + z;
     }
