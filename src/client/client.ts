@@ -79,6 +79,7 @@ export class Client<IsTCPReady extends boolean = boolean> extends (EventEmitter 
         this.tcp.disconnect();
     }
 
+    // Inputs
     public held(direction: MoveDirection) {
         this.player.input(direction);
     }
