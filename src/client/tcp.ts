@@ -547,8 +547,8 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
         this.player!.dimension = dimensionName;
         this.player!.entityId = entityId;
 
-        this.emit("ready", this as TCPClient<true>);
         this.status = ClientStatus.Ready;
+        this.emit("ready", this as TCPClient<true>);
     }
 
     private handleSynchronizePlayerPosition(decoder: BinaryDecoder) {
