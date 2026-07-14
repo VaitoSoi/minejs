@@ -334,6 +334,91 @@ export class VoxelShape {
     private getIndex(x: number, y: number, z: number) {
         return ((x * (this.ys.length - 1)) + y) * (this.zs.length - 1) + z;
     }
+
+    public clip(from: Vec3, to: Vec3, pos: BaseVec3) {
+        if (this.isEmpty()) return null;
+        const diff = to.subtract(from);
+        if (diff.lengthSqr() < Epsilon) return null;
+        const testPoint = from.add(diff.scale(0.001));
+        if (this.isFullWide(
+            this.findIndex(BaseAxis.X, testPoint.x - pos.x),
+            this.findIndex(BaseAxis.Y, testPoint.y - pos.y),
+            this.findIndex(BaseAxis.Z, testPoint.z - pos.z)
+        ))
+            return BlockHitResult.hit(testPoint, Direction.getApproximateNearest(diff), pos);
+        return AABB.clip(this.toAABBs(), from, to, pos);
+    }
+
+    public toAABBs() {
+        const bbs: AABB[] = [];
+        this.forAllBoxes((bb) => bbs.push(AABB.fromAABB(bb)), true);
+        return bbs;
+    }
+
+    private forAllBoxes(consumer: (bb: BaseAABB) => void, mergeNeighbor: boolean) {
+        const shape = this.copy();
+        for (let y = 0; y < shape.getSize(BaseAxis.Y); y++)
+            for (let x = 0; x < shape.getSize(BaseAxis.X); x++) {
+                let lastStartZ = -1;
+                for (let z = 0; z <= shape.getSize(BaseAxis.Z); z++) {
+                    if (shape.isFullWide(x, y, z)) {
+                        if (!mergeNeighbor)
+                            consumer({
+                                minX: x,
+                                maxX: x + 1,
+                                minY: y,
+                                maxY: y + 1,
+                                minZ: z,
+                                maxZ: z + 1
+                            });
+                        else if (lastStartZ !== -1)
+                            lastStartZ = z;
+                    } else if (lastStartZ === -1) {
+                        let endX = x,
+                            endY = y;
+                        shape.clearZStrip(lastStartZ, z, endX, endY);
+                        while (shape.isZStripFull(lastStartZ, z, endX + 1, endY)) {
+                            shape.clearZStrip(lastStartZ, z, endX + 1, endY);
+                            endX++;
+                        }
+                        while (shape.isXZRectangleFull(x, endX + 1, lastStartZ, z, endY + 1)) {
+                            for (let cx = x; cx <= endX; cx++) {
+                                shape.clearZStrip(lastStartZ, z, cx, endY + 1);
+                            }
+                            endY++;
+                        }
+                        consumer({
+                            minX: x,
+                            maxX: endX + 1,
+                            minY: y,
+                            maxY: endY + 1,
+                            minZ: lastStartZ,
+                            maxZ: z
+                        });
+                        lastStartZ = -1;
+                    }
+                }
+            }
+    }
+
+    private isZStripFull(startZ: number, endZ: number, x: number, y: number) {
+        return x < this.getSize(BaseAxis.X) &&
+            y < this.getSize(BaseAxis.Y) &&
+            this.storage.nextClearBit(this.getIndex(x, y, startZ)) >= this.getIndex(x, y, endZ);
+    }
+
+    private isXZRectangleFull(startX: number, endX: number, startZ: number, endZ: number, y: number) {
+        for (let x = startX; x < endX; x++) {
+            if (!this.isZStripFull(startZ, endZ, x, y))
+                return false;
+        }
+        return true;
+    }
+
+    private clearZStrip(startZ: number, endZ: number, x: number, y: number) {
+        this.storage.clear(this.getIndex(x, y, startZ), this.getIndex(x, y, endZ));
+    }
+}
 export type IndexMergerConsumer = (i1: number, i2: number, ir: number) => void;
 
 export abstract class IndexMerger {
