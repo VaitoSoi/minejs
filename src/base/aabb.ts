@@ -116,8 +116,8 @@ export class AABB implements BaseAABB {
     }
 
     public move(x: number, y: number, z: number): AABB;
-    public move(aabb: Vec3): AABB;
-    public move(a: Vec3 | number, b?: number, c?: number): AABB {
+    public move(aabb: BaseVec3): AABB;
+    public move(a: BaseVec3 | number, b?: number, c?: number): AABB {
         const { x, y, z } = Vec3.loadArgs(a, b, c);
         const { minX, minY, minZ, maxX, maxY, maxZ } = this;
         return new AABB(minX + x, minY + y, minZ + z, maxX + x, maxY + y, maxZ + z);
