@@ -559,8 +559,8 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
             velX = decoder.readDouble(),
             velY = decoder.readDouble(),
             velZ = decoder.readDouble(),
-            yaw = decoder.readFloat(),
-            pitch = decoder.readFloat();
+            yaw = decoder.readFloat() % 360,
+            pitch = decoder.readFloat() % 360;
         const flag = decoder.readTeleportFlag();
 
         const { position, velocity, angle } = this.player!;
