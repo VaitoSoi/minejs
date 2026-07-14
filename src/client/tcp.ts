@@ -143,7 +143,8 @@ export interface TCPClientEvents {
 
     ready: [readyClient: TCPClient<true>],
 
-    playerPosition: [],
+    // Position
+    playerPosition: [position: BaseVec3],
 
     loadChunk: [chunkX: number, sectionY: number, chunkZ: number],
     unloadChunk: [chunkX: number, chunkZ: number],
