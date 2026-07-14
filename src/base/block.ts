@@ -62,7 +62,21 @@ export class Block {
 }
 
 export class BlockManager {
-    constructor(private client: TCPClient) { }
+
+    public hasChunkAt(x: number, y: number, z: number): boolean;
+    public hasChunkAt(position: BaseVec3): boolean;
+    public hasChunkAt(a: BaseVec3 | number, b?: number, c?: number): boolean {
+        this.tcp.checkReady();
+        const { x, y, z } = Vec3.loadArgs(a, b, c);
+        const sx = Math.floor(x / 16), sy = Math.floor((y + 64) / 16), sz = Math.floor(z / 16);
+        // // console.log({
+        //     key: `${this.tcp.player!.dimension}:${sx}:${sz}`,
+        //     hasKey: `${this.tcp.player!.dimension}:${sx}:${sz}` in this.tcp.world!.chunks
+        // });
+        const section = this.tcp.world!.chunks[`${this.tcp.player!.dimension}:${sx}:${sz}`]?.sections[sy];
+        if (!section) return false;
+        return true;
+    }
 
     /**
      * Get block at position
