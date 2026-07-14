@@ -28,7 +28,7 @@ export class EntityRegistry {
     }
 };
 
-export class BlockStateRegistry {
+export class BlockRegistry {
     private static loaded: boolean = false;
     /**
      * block id to block
