@@ -62,6 +62,7 @@ export class Block {
 }
 
 export class BlockManager {
+    constructor(private tcp: TCPClient) { }
 
     public hasChunkAt(x: number, y: number, z: number): boolean;
     public hasChunkAt(position: BaseVec3): boolean;
