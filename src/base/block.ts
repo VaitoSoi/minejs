@@ -67,15 +67,9 @@ export class BlockManager {
     /**
      * Get block at position
      */
-    public at(x: number, y: number, z: number): string;
-    public at(position: Position): string;
-    public at(a: Position | number, b?: number, c?: number): string {
-        const { x, y, z } = Vec3.loadArgs(a, b, c);
-        const sx = Math.floor(x / 4), sy = Math.floor(y / 4), sz = Math.floor(z / 4);
-        const px = x % 16, py = y % 16, pz = z % 16;
-        const section = this.client.world!.chunks[`${this.client.player!.dimension}${sx}${sz}`]!.sections[sy]?.block;
-        if (!section) return "";
-        if (section.data == null) return section.palette[0]!.toString();
+    public at(x: number, y: number, z: number): BlockState | null;
+    public at(position: BaseVec3): BlockState | null;
+    public at(a: BaseVec3 | number, b?: number, c?: number): BlockState | null {
         const dataArray = section.data!;
         const bitsPerEntry = section.bpe;
         const entryIndex = px + (py * 16) + (pz * 16 * 16);
