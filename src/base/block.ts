@@ -110,8 +110,7 @@ export class BlockManager {
      * @returns 
      */
     public queryAABB(queryBB: AABB) {
-        if (!this.client.isReady())
-            throw new ClientNotReady();
+        this.tcp.checkReady();
 
         const { minX, minY, minZ, maxX, maxY, maxZ } = queryBB;
         const sx0 = Math.floor(minX), sx1 = Math.floor(maxX);
