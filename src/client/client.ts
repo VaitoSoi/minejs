@@ -88,5 +88,12 @@ export class Client<IsTCPReady extends boolean = boolean> extends (EventEmitter 
     public stopMoving() {
         this.player.releaseAllInputs();
     }
+
+    // World
+    public at(x: number, y: number, z: number): BlockState | null;
+    public at(position: BaseVec3): BlockState | null;
+    public at(a: BaseVec3 | number, b?: number, c?: number): BlockState | null {
+        const vec3 = Vec3.loadArgs(a, b, c);
+        return this.blocks.at(vec3);
     }
 }
