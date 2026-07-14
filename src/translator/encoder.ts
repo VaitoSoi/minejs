@@ -62,7 +62,7 @@ export class BinaryEncoder {
     /**
      * Write 8 bytes double
      */
-    public writeDouble(val: bigint) { return this.write(1, val, (buf) => buf.writeDoubleBE); }
+    public writeDouble(val: number) { return this.write(8, val, (buf) => buf.writeDoubleBE); }
 
     /**
      * Write boolean
