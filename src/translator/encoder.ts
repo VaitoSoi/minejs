@@ -285,7 +285,7 @@ export class NBTEncoder extends BinaryEncoder {
             case Tag.Int: this.writeInt(value); break;
             case Tag.Long: this.writeLong(BigInt(value)); break;
             case Tag.Float: this.writeFloat(value); break;
-            case Tag.Double: this.writeDouble(BigInt(value)); break;
+            case Tag.Double: this.writeDouble(value); break;
             default: throw new UnexpectedValue("fixed-size tag", (type as any).toString(16));
         }
         return this;
