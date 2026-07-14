@@ -13,7 +13,6 @@ export interface BaseAABB {
 }
 
 export class AABB implements BaseAABB {
-    public static readonly EPSILON = 1.0E-7;
     public minX: number;
     public minY: number;
     public minZ: number;
