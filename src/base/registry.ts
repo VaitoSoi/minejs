@@ -30,10 +30,14 @@ export class EntityRegistry {
 
 export class BlockStateRegistry {
     private static loaded: boolean = false;
-    public static readonly data: Record<string,
-        Record<string, { boxes: BaseAABB[], state: string }>
-    > = {};
-    public static readonly mapIdToState: Record<string, { boxes: BaseAABB[], state: string }> = {};
+    /**
+     * block id to block
+     */
+    public static readonly blocks: Record<string, Block> = {};
+    /**
+     * state id to block state
+     */
+    public static readonly states: Record<string, BlockState> = {};
 
     public static async load() {
         if (this.loaded) return;
