@@ -1,4 +1,4 @@
-import { Vec3 } from "../base/vector";
+import { Vec3 } from "../base/direction";
 import { CONTINUATION_FLAG, CONTINUE_BIT, MAX_QUANTIZED_VALUE, SCALE_BITS, SEGMENT_BITS } from "./static";
 import { StringSizeExceedLimit, UnexpectedValue } from "../base/error";
 import { Tag } from "./static";
