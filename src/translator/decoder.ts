@@ -6,6 +6,7 @@ import { unzipSync } from "zlib";
 import { minBigInt } from "../base/math";
 
 export function getTextFromTextComponent(component: any): string | string[] {
+    if (component === null || component === undefined) return "null";
     switch (typeof component) {
         case "string":
             return component;
