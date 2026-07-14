@@ -575,24 +575,16 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
         if (flag.velZ) newVelZ += velZ; else newVelZ = velZ;
         if (flag.yaw) newYaw += yaw; else newYaw = yaw;
         if (flag.pitch) newPitch += pitch; else newPitch = pitch;
-
+        const newPosition = { x: newPosX, y: newPosY, z: newPosZ },
+            newVelocity = { x: newVelX, y: newVelY, z: newVelZ },
+            newAngle = { yaw: newYaw, pitch: newPitch };
         this.player = {
-            position: {
-                x: newPosX,
-                y: newPosY,
-                z: newPosZ
-            },
-            velocity: {
-                x: newVelX,
-                y: newVelY,
-                z: newVelZ
-            },
-            angle: {
-                yaw: newYaw,
-                pitch: newPitch
-            }
-        } as any;
-        this.emit("playerPosition");
+            ...this.player!,
+            position: newPosition,
+            velocity: newVelocity,
+            angle: newAngle,
+        } satisfies ClientPlayer as any;
+        this.emit("playerPosition", { x: newPosX, y: newPosY, z: newPosZ });
         this.sendConfirmTeleportation(teleportId);
     }
 
