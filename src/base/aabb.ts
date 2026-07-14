@@ -129,13 +129,136 @@ export class AABB implements BaseAABB {
             this.minZ < other.maxZ && this.maxZ > other.minZ;
     }
 
-    public isFullWide(x: number, y: number, z: number): boolean;
-    public isFullWide(position: Position): boolean;
-    public isFullWide(a: Position | number, b?: number, c?: number): boolean {
-        const { x, y, z } = Vec3.loadArgs(a, b, c);
-        return this.minX < x && x < this.maxX &&
-            this.minY < y && y < this.maxY &&
-            this.minZ < z && z < this.maxZ;
+    public min(axis: BaseAxis) {
+        return Axis.choose(axis,
+            this.minX,
+            this.minY,
+            this.minZ
+        );
+    }
+    public max(axis: BaseAxis) {
+        return Axis.choose(axis,
+            this.maxX,
+            this.maxY,
+            this.maxZ
+        );
+    }
+
+    public static clip(aabbs: AABB[], from: Vec3, to: BaseVec3, pos: BaseVec3) {
+        const scaleReference: [number] = [1]; // Make a mutable var
+        let direction: Direction | null = null;
+        const dx = to.x - from.x,
+            dy = to.y - from.y,
+            dz = to.z - from.z;
+        for (const aabb of aabbs)
+            direction = this.getDirection(aabb.move(pos), from, { x: dx, y: dy, z: dz }, direction, scaleReference);
+        if (direction === null) return null;
+        const scale = scaleReference[0];
+        return BlockHitResult.hit(from.add(scale * dx, scale * dy, scale * dz), direction, pos);
+    }
+
+    public static getDirection(aabb: BaseAABB, from: BaseVec3, delta: BaseVec3, direction_: Direction | null, scaleRef: [number]) {
+        let direction = structuredClone(direction_);
+        const { minX, maxX, minY, maxY, minZ, maxZ } = aabb;
+        if (delta.x > Epsilon)
+            direction = this.clipPoint(
+                direction, Direction.WEST,
+                scaleRef,
+                { a: delta.x, b: delta.y, c: delta.z },
+                minX,
+                minY, maxX,
+                minZ, maxZ,
+                from.x, from.y, from.z
+            );
+        else if (delta.x < -Epsilon)
+            direction = this.clipPoint(
+                direction, Direction.EAST,
+                scaleRef,
+                { a: delta.x, b: delta.y, c: delta.z },
+                maxX,
+                minY, maxX,
+                minZ, maxZ,
+                from.x, from.y, from.z
+            );
+
+        if (delta.y > Epsilon)
+            direction = this.clipPoint(
+                direction, Direction.DOWN,
+                scaleRef,
+                { a: delta.y, b: delta.z, c: delta.x },
+                minY,
+                minZ, maxZ,
+                minX, maxX,
+                from.y, from.z, from.x
+            );
+        else if (delta.y < -Epsilon)
+            direction = this.clipPoint(
+                direction, Direction.UP,
+                scaleRef,
+                { a: delta.y, b: delta.z, c: delta.x },
+                maxY,
+                minZ, maxZ,
+                minX, maxX,
+                from.y, from.z, from.x
+            );
+
+        if (delta.z > Epsilon)
+            direction = this.clipPoint(
+                direction, Direction.NORTH,
+                scaleRef,
+                { a: delta.z, b: delta.x, c: delta.y },
+                minZ,
+                minX, maxX,
+                minY, maxY,
+                from.z, from.x, from.y
+            );
+        else if (delta.z < -Epsilon)
+            direction = this.clipPoint(
+                direction, Direction.SOUTH,
+                scaleRef,
+                { a: delta.z, b: delta.x, c: delta.y },
+                maxZ,
+                minX, maxX,
+                minY, maxY,
+                from.z, from.x, from.y
+            );
+
+        return direction;
+    }
+
+    public static clipPoint(
+        direction: Direction | null, newDiretion: Direction,
+        scaleRef: [number],
+        delta: { a: number, b: number, c: number },
+        point: number,
+        minB: number, maxB: number,
+        minC: number, maxC: number,
+        fromA: number, fromB: number, fromC: number,
+    ) {
+        /**
+         * `s` come from this equation:
+         * ```
+         * fromA + s * deltaA = minA (or point here)
+         * ```
+         * Which find "how far the ray travels to reach a face of this bounding box".
+         * 
+         * Solve it we got
+         * ```
+         * s = minA - fromA / deltaA
+         * ```
+         */
+        const s = (point - fromA) / delta.a,
+            pb = fromB + s * delta.b,
+            pc = fromC + s * delta.c;
+        if (
+            0 < s && s < scaleRef[0] &&
+            minB - Epsilon < pb && pb < maxB + Epsilon &&
+            minC - Epsilon < pc && pc < maxC + Epsilon
+        ) {
+            scaleRef[0] = s;
+            return newDiretion;
+        }
+        return direction;
     }
 }
 
