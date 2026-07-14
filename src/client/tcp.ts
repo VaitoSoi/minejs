@@ -848,7 +848,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
             unsignedContent = decoder.readPrefixedOptional(decoder => decoder.readNBT()), // Text component
             filterType = decoder.readVarInt(),
             filterTypeBits = filterType === 1 ? decoder.readPrefixedArray(decoder => decoder.readLong()) : undefined,
-            chatType = decoder.readChatType(),
+            chatType = decoder.readIdOrX(decoder => decoder.readChatType()),
             senderName = decoder.readNBT(),
             targetName = decoder.readPrefixedOptional(decoder => decoder.readNBT());
 
