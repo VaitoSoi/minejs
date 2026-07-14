@@ -334,6 +334,83 @@ export class VoxelShape {
     private getIndex(x: number, y: number, z: number) {
         return ((x * (this.ys.length - 1)) + y) * (this.zs.length - 1) + z;
     }
+
+    /**
+     * Get coords acording to each axis
+     */
+    public getCoords(axis: BaseAxis) {
+        return Axis.choose(axis, this.xs, this.ys, this.zs);
+    }
+
+    /**
+     * Is the cell at these index filled
+     */
+    public isFullWide(transform: AxisCycle, x: number, y: number, z: number): boolean
+    public isFullWide(x: number, y: number, z: number): boolean
+    public isFullWide(a: number | AxisCycle, b: number, c: number, d?: number): boolean {
+        let x, y, z;
+        if (typeof a === "object") {
+            x = a.cycleCoords(b, c, d!, BaseAxis.X);
+            y = a.cycleCoords(b, c, d!, BaseAxis.Y);
+            z = a.cycleCoords(b, c, d!, BaseAxis.Z);
+        } else {
+            x = a as number;
+            y = b;
+            z = c;
+        }
+
+        if (x < 0 || x >= this.xs.length - 1) return false;
+        if (y < 0 || y >= this.ys.length - 1) return false;
+        if (z < 0 || z >= this.zs.length - 1) return false;
+        return this.storage.get(this.getIndex(x, y, z)) === 1;
+    }
+
+    public getSize(axis: BaseAxis) {
+        return Axis.choose(
+            axis,
+            this.xs.length,
+            this.ys.length,
+            this.zs.length,
+        ) - 1;
+    }
+
+    /** 
+     * Real-world to cells index.
+     * 
+     * The binary search mean: `Find the smallest number that larger than the provided coords`
+     */
+    public findIndex(axis: BaseAxis, coords: number) {
+        const arr = Axis.choose(axis, this.xs, this.ys, this.zs);
+        return lowerBoundBinarySearch(0, arr.length + 1, (index) => coords < arr[index]!) - 1;
+    }
+    /**
+     * Cells index to real world position
+     */
+    public get(axis: BaseAxis, index: number) {
+        return this.getCoords(axis).at(index)!;
+    }
+
+    /**
+     * Is the whole shape is empty
+     * 
+     * One cells filled, or return true, mean this is not empty
+     */
+    public isEmpty() {
+        return this.storage.isEmpty();
+    }
+
+    public move(x: number, y: number, z: number): VoxelShape;
+    public move(position: BaseVec3): VoxelShape;
+    public move(a: BaseVec3 | number, b?: number, c?: number): VoxelShape {
+        const { x, y, z } = Vec3.loadArgs(a, b, c);
+        return new VoxelShape(
+            this.xs.map(v => v + x),
+            this.ys.map(v => v + y),
+            this.zs.map(v => v + z),
+            this.storage.clone()
+        );
+    }
+
     public collide(axis: BaseAxis, moving: AABB, distance: number) {
         return this.collideX(AxisCycle.between(axis, BaseAxis.X), moving, distance);
     }
