@@ -55,9 +55,7 @@ export class EntitiesManager {
      * @param queryBB The querying bounding box
      * @returns
      */
-    public queryAABB(queryBB: AABB) {
-        if (!this.client.isReady())
-            throw new ClientNotReady();
+    public queryAABB(queryBB: AABB, exclude: number[] = []) {
 
         const { minX, minY, minZ, maxX, maxY, maxZ } = queryBB;
         const results: AABB[] = [];
@@ -70,6 +68,7 @@ export class EntitiesManager {
                 for (let sz = sz0; sz <= sz1; sz++) {
                     const bucket = this.sections.get(`${sx},${sy},${sz}`);
                     if (bucket) for (const id of bucket) {
+                        if (exclude.includes(id)) continue;
                         const entity = this.tcp.world!.entities[id];
                         const entityBB = AABB.fromEntityType(entity!.type);
                         if (queryBB.isIntersect(entityBB))
