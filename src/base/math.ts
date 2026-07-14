@@ -61,3 +61,17 @@ export function lowerBoundBinarySearch(from: number, to: number, condition: (ind
         }
     }
 }
+
+export const equal = (a: number, b: number) => Math.abs(a - b) < Epsilon;
+
+export const lerp = (factor: number, min: number, max: number) => min + (max - min) * factor;
+
+export const getSign = (a: number) => a === 0 ? 0 : a > 0 ? 1 : -1;
+
+export const getFrac = (a: number) => a - Math.floor(a);
+
+export function clamp(a: number, min: number, max: number) {
+    if (a < min) return min;
+    if (a > max) return max;
+    return a;
+}
