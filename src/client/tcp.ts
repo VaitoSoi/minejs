@@ -15,7 +15,7 @@ import { deflateSync, inflateSync } from "node:zlib";
 import { TypedEmmiter } from "../base/event";
 import { BinaryDecoder, getTextFromTextComponent } from "../translator/decoder";
 import { BinaryEncoder } from "../translator/encoder";
-import { MissingAuthOption, SockerIsNotWritable } from "../base/error";
+import { ClientNotReady, MissingAuthOption, SockerIsNotWritable } from "../base/error";
 import { computeUUID } from "../base/math";
 import { If } from "../base/typing";
 import { Angle, Position } from "../base/vector";
