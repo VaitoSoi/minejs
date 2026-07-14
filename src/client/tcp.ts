@@ -37,7 +37,6 @@ export interface ServerKnownPack {
 }
 
 export interface ServerWorld {
-    playerId: number,
     hardcore: boolean,
     dimensions: string[],
     maxPlayers: number,
@@ -97,6 +96,7 @@ export enum GameMode {
 export interface ClientPlayer {
     uuid: string,
     username: string,
+    entityId: number,
 
     position: Position,
     velocity: Position,
@@ -457,6 +457,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
         this.player = {
             uuid,
             username,
+            entityId: 0,
 
             position: {
                 x: 0,
@@ -534,7 +535,6 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
         const gameMode = decoder.readUByte();
 
         this.world = {
-            playerId: entityId,
             hardcore: isHardcore,
             dimensions,
             maxPlayers,
@@ -545,6 +545,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
             entities: {}
         } as ServerWorld as any; // To avoid type conflict
         this.player!.dimension = dimensionName;
+        this.player!.entityId = entityId;
 
         this.emit("ready", this as TCPClient<true>);
         this.status = ClientStatus.Ready;
