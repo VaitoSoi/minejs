@@ -84,14 +84,24 @@ export class BlockManager {
     public at(x: number, y: number, z: number): BlockState | null;
     public at(position: BaseVec3): BlockState | null;
     public at(a: BaseVec3 | number, b?: number, c?: number): BlockState | null {
+        this.tcp.checkReady();
+        let { x, y, z } = Vec3.loadArgs(a, b, c);
+        x = Math.floor(x); y = Math.floor(y); z = Math.floor(z);
+        const sx = Math.floor(x / 16), sy = Math.floor((y + 64) / 16), sz = Math.floor(z / 16);
+        const px = ((x % 16) + 16) % 16, py = ((y % 16) + 16) % 16, pz = ((z % 16) + 16) % 16;
+        const section = this.tcp.world!.chunks[`${this.tcp.player!.dimension}:${sx}:${sz}`]?.sections[sy]?.block;
+        if (!section) return null;
+        if (section.data === null) return BlockRegistry.getState(section.palette[0]!.toString())!;
         const dataArray = section.data!;
         const bitsPerEntry = section.bpe;
-        const entryIndex = px + (py * 16) + (pz * 16 * 16);
+        const entryIndex = px + (pz * 16) + (py * 16 * 16);
         const entriesPerLong = Math.floor(64 / bitsPerEntry);
-        const entryMask = (1n << BigInt(bitsPerEntry)) - 1n;
-        const longIndex = entryIndex / entriesPerLong;
+        const entryMask = (1 << bitsPerEntry) - 1;
+        const longIndex = Math.floor(entryIndex / entriesPerLong);
         const bit_index = entryIndex % entriesPerLong * bitsPerEntry;
-        return String((dataArray[longIndex]! >> BigInt(bit_index)) & entryMask);
+        const localId = Number((dataArray[longIndex]! >> BigInt(bit_index)) & BigInt(entryMask));
+        const stateId = bitsPerEntry <= 8 ? section.palette[localId]! : localId;
+        return BlockRegistry.getState(String(stateId))!;
     }
 
     /**
