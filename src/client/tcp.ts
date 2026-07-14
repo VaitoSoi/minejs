@@ -458,6 +458,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
             uuid,
             username,
             entityId: 0,
+            dimension: "",
 
             position: {
                 x: 0,
