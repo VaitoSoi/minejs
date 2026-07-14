@@ -60,41 +60,23 @@ export class Client<IsTCPReady extends boolean = boolean> extends (EventEmitter 
         this.forwardEvent("actionBarRaw");
     }
 
-    private forwardEvent(event: keyof ClientEvents) {
-        this._client.on(event, (...args) => this.emit(event, ...args));
-    }
-
-    private handleEvents() {
-        this.on("disconnect", () => {
-            this.entities.wipe();
-        });
-        this.on("connect", () => {
-            this.entities.wipe();
-        });
-        this.on("spawnEntity", (entity) =>
-            this.entities.add(entity.id, entity.position.x, entity.position.y, entity.position.z)
-        );
-        this.on("updateEntity", (entity) =>
-            this.entities.update(entity.id, entity.position.x, entity.position.y, entity.position.z)
-        );
-        this.on("removeEntity", (id) => this.entities.remove(id));
-    }
-
-    /**
-     * Start a connection to the server
-     */
+    // Start / stop
     public connect() {
-        EntityRegistry.load();
-        BlockStateRegistry.load();
+        this.tcp.connect();
 
-        return this._client.connect();
+        this.tcp.once("ready", () => {
+            this.emit("ready", this as Client<true>);
+            this.player.pruneInitialVal();
+            this.player.setInitialVal();
+            this.tickLoop.start();
+        });
+        this.tcp.once("disconnect", () => {
+            this.tickLoop.stop();
+            this.player.pruneInitialVal();
+        });
     }
-
-    /**
-     * Disconnect from the server
-     */
     public disconnect() {
-        return this._client.disconnect();
+        this.tcp.disconnect();
     }
 
     public move(x: number, y: number, z: number) {
