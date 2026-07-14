@@ -2,17 +2,25 @@ import EventEmitter from "node:events";
 import { TCPClient, TCPClientEvents, TCPClientOption } from "./tcp";
 import { TypedEmmiter } from "../base/event";
 import { EntitiesManager } from "../base/entity";
-import { Vec3 } from "../base/vector";
-import { AABB } from "../base/aabb";
-import { ClientNotReady } from "../base/error";
-import { BlockStateRegistry, EntityRegistry } from "../base/registry";
+export interface ClientEvents {
+    ready: [readyClient: Client<true>],
 
-export type ClientEvents = Omit<TCPClientEvents, "raw">
+    playerPosition: [position: BaseVec3],
 
-export class Client extends (EventEmitter as new () => TypedEmmiter<ClientEvents>) {
-    public _client: TCPClient;
+    loadChunk: [chunkX: number, sectionY: number, chunkZ: number],
+    unloadChunk: [chunkX: number, chunkZ: number],
 
-    public entities: EntitiesManager;
+    spawnEntity: [entity: Entity],
+    updateEntity: [entity: Entity],
+    removeEntity: [entityId: number],
+
+    // Chat
+    message: [message: Message],
+    systemMessage: [message: string],
+    systemMessageRaw: [textComponent: TextComponent],
+    actionBar: [message: string],
+    actionBarRaw: [textComponent: TextComponent],
+}
 
     constructor(option: TCPClientOption) {
         super();
