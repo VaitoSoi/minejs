@@ -308,6 +308,21 @@ export class VoxelShape {
         public xs: number[],
         public ys: number[],
         public zs: number[],
+        cells: boolean[][][] | BitSet
+    ) {
+        if (cells instanceof BitSet)
+            this.storage = cells;
+        else {
+            this.storage = new BitSet();
+            this.storage.setRange(0, (((xs.length - 1) * ys.length) + (ys.length - 1)) * zs.length + (zs.length - 1), 0);
+            for (let x = 0; x < cells.length; x++)
+                for (let y = 0; y < cells[x]!.length; y++)
+                    for (let z = 0; z < cells[x]![y]!.length; z++)
+                        if (cells[x]![y]![z] === true)
+                            this.storage.set(this.getIndex(x, y, z), 1);
+        }
+    }
+
     private getIndex(x: number, y: number, z: number) {
         return ((x * (this.ys.length - 1)) + y) * (this.zs.length - 1) + z;
     }
