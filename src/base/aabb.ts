@@ -323,6 +323,14 @@ export class VoxelShape {
         }
     }
 
+    public copy() {
+        return new VoxelShape(
+            this.xs,
+            this.ys,
+            this.zs,
+            this.storage.clone()
+        );
+    }
     private getIndex(x: number, y: number, z: number) {
         return ((x * (this.ys.length - 1)) + y) * (this.zs.length - 1) + z;
     }
