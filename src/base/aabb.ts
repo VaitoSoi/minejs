@@ -25,7 +25,7 @@ export class AABB implements BaseAABB {
     public static fromEntityType(type: string | number) {
         if (this.EntityBoundingBoxes[type])
             return this.EntityBoundingBoxes[type];
-        if (!(type in EntityRegistry.data) || !(type in EntityRegistry.mapTypeToData))
+        if (!(type in EntityRegistry.data) && !(type in EntityRegistry.mapTypeToData))
             throw new RegistryItemNotFound(`entity type ${type}`);
         const { height, width } = EntityRegistry.get(type)!;
         return this.fromDimension(height, width);
