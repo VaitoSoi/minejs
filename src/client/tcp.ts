@@ -515,7 +515,6 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
         const registry = this.registry as Record<string, any[]>;
         if (!(id in registry)) registry[id] = [];
         registry[id]!.push(...entries);
-        console.dir({ id });
     }
 
     private handleConfiguarionPlayDisconnect(decoder: BinaryDecoder) {
