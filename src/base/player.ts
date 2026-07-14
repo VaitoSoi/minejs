@@ -76,9 +76,14 @@ export class Player {
         this.lastOnGround = true;
     }
 
+    // Inputting, to control current plat
     public input(input: MoveDirection) { this.heldInputs.add(input); }
     public releaseInput(input: MoveDirection) { this.heldInputs.delete(input); }
     public releaseAllInputs() { this.heldInputs.clear(); }
+    public pressShift() { this.isCrouncing = true; }
+    public releaseShift() { this.isCrouncing = false; }
+    public pressSpace() { this.isJumping = true; }
+    public releaseSpace() { this.isJumping = false; }
 
     private getInputVector(): Vec3 {
         let vec = Vec3.Zero;
@@ -87,12 +92,7 @@ export class Player {
         return vec;
     }
 
-    public pressShift() { this.isCrouncing = true; }
-    public releaseShift() { this.isCrouncing = false; }
-    public pressSpace() { this.isJumping = true; }
-    public releaseSpace() { this.isJumping = false; }
-
-    /* Getting things */
+    /* Getting helper, from TCP client */
     private getPos() {
         this.tcp.checkReady();
         return new Vec3(this.tcp.player!.position);
