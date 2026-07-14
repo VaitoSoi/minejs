@@ -1,6 +1,5 @@
 import { TCPClient } from "../client/tcp";
 import { AABB } from "./aabb";
-import { ClientNotReady } from "./error";
 
 export class EntitiesManager {
     /**
