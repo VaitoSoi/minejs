@@ -334,6 +334,58 @@ export class VoxelShape {
     private getIndex(x: number, y: number, z: number) {
         return ((x * (this.ys.length - 1)) + y) * (this.zs.length - 1) + z;
     }
+    public collide(axis: BaseAxis, moving: AABB, distance: number) {
+        return this.collideX(AxisCycle.between(axis, BaseAxis.X), moving, distance);
+    }
+
+    public collideX(transform: AxisCycle, moving: AABB, distance: number) {
+        if (this.isEmpty()) return distance;
+        if (Math.abs(distance) < Epsilon) return 0;
+
+        const inverse = transform.inverse();
+        const aAxis = inverse.cycle(BaseAxis.X),
+            bAxis = inverse.cycle(BaseAxis.Y),
+            cAxis = inverse.cycle(BaseAxis.Z);
+        const minA = moving.min(aAxis),
+            maxA = moving.max(aAxis),
+            minB = moving.min(bAxis),
+            maxB = moving.max(bAxis),
+            minC = moving.min(cAxis),
+            maxC = moving.max(cAxis);
+        const aMin = this.findIndex(aAxis, minA + Epsilon),
+            aMax = this.findIndex(aAxis, maxA - Epsilon),
+            bMin = Math.max(0, this.findIndex(bAxis, minB + Epsilon)),
+            bMax = Math.min(this.getSize(bAxis), this.findIndex(bAxis, maxB - Epsilon) + 1),
+            cMin = Math.max(0, this.findIndex(cAxis, minC + Epsilon)),
+            cMax = Math.min(this.getSize(cAxis), this.findIndex(cAxis, maxC - Epsilon) + 1);
+        // console.log({ type: "COLLIDEX-DEBUG", aAxis, minA, maxA, aMin, ysOrEquivalent: this.getCoords(aAxis) });
+        if (distance > 0) {
+            for (let a = aMax + 1; a < this.getSize(aAxis); a++)
+                for (let b = bMin; b < bMax; b++)
+                    for (let c = cMin; c < cMax; c++) {
+                        // console.log({ type: "COLLIDEX-IS_FULL_WIDE", a, b, c, isFullWide: this.isFullWide(inverse, a, b, c) });
+                        if (this.isFullWide(inverse, a, b, c)) {
+                            const newDistance = this.get(aAxis, a) - maxA;
+                            if (newDistance >= -Epsilon)
+                                distance = Math.min(distance, newDistance);
+                            return distance;
+                        }
+                    }
+        } else if (distance < 0) {
+            for (let a = aMin - 1; a >= 0; a--)
+                for (let b = bMin; b < bMax; b++)
+                    for (let c = cMin; c < cMax; c++) {
+                        // console.log({ type: "COLLIDEX-IS_FULL_WIDE", a, b, c, isFullWide: this.isFullWide(inverse, a, b, c) });
+                        if (this.isFullWide(inverse, a, b, c)) {
+                            const newDistance = this.get(aAxis, a + 1) - minA;
+                            if (newDistance <= Epsilon)
+                                distance = Math.max(distance, newDistance);
+                            return distance;
+                        }
+                    }
+        }
+        return distance;
+    }
 
     public clip(from: Vec3, to: Vec3, pos: BaseVec3) {
         if (this.isEmpty()) return null;
