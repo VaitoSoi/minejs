@@ -1,8 +1,65 @@
 import { TCPClient } from "../client/tcp";
-import { AABB } from "./aabb";
-import { ClientNotReady, RegistryItemNotFound } from "./error";
-import { BlockStateRegistry } from "./registry";
-import { Position, Vec3 } from "./vector";
+export class BlockState {
+    public shape: VoxelShape;
+
+    constructor(
+        public owner: Block,
+        public id: string,
+        public properties: Record<string, any>,
+        public boxes: BaseAABB[]
+    ) {
+        const bbs = boxes.map(val => new AABB(
+            val.minX, val.minY, val.minZ,
+            val.maxX, val.maxY, val.maxZ
+        ));
+
+        this.shape = bbs.reduce(
+            (prevVoxel, currentBox) => VoxelShape.or(prevVoxel, VoxelShape.fromBox(currentBox)),
+            VoxelShape.Empty
+        );
+    }
+
+    private get<T>(field: string): T | null;
+    private get<T>(field: string, defaultVal: T): T;
+    private get<T>(field: string, defaultVal?: T): T | null {
+        if (field in this.properties) return this.properties[field];
+        if (defaultVal) return defaultVal;
+        return null;
+    }
+    public getFacing(): "north" | "south" | "west" | "east" | null { return this.get("facing"); }
+}
+
+export class Block {
+    public states: BlockState[];
+
+    constructor(
+        public type: string,
+        public definitions: Record<"type" | "block_set_type" | string, any>,
+        public properties: Record<string, string[]>,
+        states: Record<string, any> | BlockState[]
+    ) {
+        this.states = [];
+        states.forEach((obj: any) =>
+            this.states.push(
+                obj instanceof BlockState ? obj : new BlockState(this, obj['id'], obj['properties'], obj['boxes'])
+            )
+        );
+    }
+
+    private get<T>(field: string): T | null;
+    private get<T>(field: string, defaultVal: T): T;
+    private get<T>(field: string, defaultVal?: T): T | null {
+        if (field in this.definitions) return this.definitions[field];
+        if (defaultVal) return defaultVal;
+        return null;
+    }
+    public getType() { return this.get("type")!; }
+    public getFriction() { return this.get("friction", 0.6); }
+    public getBounciness() { return this.get("bounciness", 0); }
+    public getSpeedFactor() { return this.get("speed_factor", 1); }
+    public getClimbable() { return this.get("climbable", false); }
+    public getJumpFactor() { return this.get("jump_factor", 1); }
+}
 
 export class BlockManager {
     constructor(private client: TCPClient) { }
