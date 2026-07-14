@@ -69,6 +69,17 @@ export class AABB implements BaseAABB {
         this.maxZ = Math.max(z1, z2);
     }
 
+    public copyBase(): BaseAABB {
+        return {
+            minX: this.minX,
+            minY: this.minY,
+            minZ: this.minZ,
+            maxX: this.maxX,
+            maxY: this.maxY,
+            maxZ: this.maxZ,
+        };
+    }
+
     public equal(aabb: AABB) {
         return this.minX === aabb.minX &&
             this.minY === aabb.minY &&
