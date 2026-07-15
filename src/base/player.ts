@@ -121,9 +121,9 @@ export class Player {
         return this.tcp.player!.dimension;
     }
 
-    public setDeltaMovement(x: number, y: number, z: number): void;
-    public setDeltaMovement(vec: BaseVec3): void;
-    public setDeltaMovement(a: BaseVec3 | number, b?: number, c?: number): void {
+    private setDeltaMovement(x: number, y: number, z: number): void;
+    private setDeltaMovement(vec: BaseVec3): void;
+    private setDeltaMovement(a: BaseVec3 | number, b?: number, c?: number): void {
         const vec3 = a instanceof Vec3 ? a : new Vec3(Vec3.loadArgs(a, b, c));
         if (vec3.isFinite())
             this.deltaMovement = vec3;
