@@ -15,17 +15,26 @@ export class EntitiesManager {
 
     constructor(private tcp: TCPClient) { }
 
+    /**
+     * Clear data
+     */
     public wipe() {
         this.sections = new Map();
         this.entityToSection = new Map();
     }
 
+    /**
+     * Convert real-world position into section key
+     */
     public static getSectionKey(x: number, y: number, z: number) {
         // Divide 2^4 = 16
         const sx = x >> 4, sy = y >> 4, sz = z >> 4;
         return `${sx}:${sy}:${sz}`;
     }
 
+    /**
+     * Add an entity (represented by ID)
+     */
     public add(entityId: number, x: number, y: number, z: number) {
         const key = EntitiesManager.getSectionKey(x, y, z);
         if (!this.sections.has(key)) this.sections.set(key, new Set());
@@ -33,6 +42,9 @@ export class EntitiesManager {
         this.entityToSection.set(entityId, key);
     }
 
+    /**
+     * Remove entity
+     */
     public remove(entityId: number) {
         const key = this.entityToSection.get(entityId);
         if (key) {
@@ -41,6 +53,9 @@ export class EntitiesManager {
         }
     }
 
+    /**
+     * Update entity position
+     */
     public update(entityId: number, x: number, y: number, z: number) {
         const newKey = EntitiesManager.getSectionKey(x, y, z);
         if (this.entityToSection.get(entityId) !== newKey) {

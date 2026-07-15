@@ -66,10 +66,16 @@ export class Player {
         });
     }
 
+    /**
+     * Set initial value
+     */
     public setInitialVal() {
         this.lastPos = this.getPos();
         this.lastAngle = this.getAngle();
     }
+    /**
+     * Prune all value
+     */
     public pruneInitialVal() {
         this.fallDistance = 0;
         this.deltaMovement = Vec3.Zero;
@@ -88,12 +94,33 @@ export class Player {
     }
 
     // Inputting, to control current plat
+    /**
+     * Press and hold a key
+     */
     public input(input: MoveDirection) { this.heldInputs.add(input); }
+    /**
+     * Release a key
+     */
     public releaseInput(input: MoveDirection) { this.heldInputs.delete(input); }
+    /**
+     * Release all key
+     */
     public releaseAllInputs() { this.heldInputs.clear(); }
+    /**
+     * Press and hold shift. Do nothing for now
+     */
     public pressShift() { this.isCrouncing = true; }
+    /**
+     * Release shift
+     */
     public releaseShift() { this.isCrouncing = false; }
+    /**
+     * Press and hold space. Do nothing for now
+     */
     public pressSpace() { this.isJumping = true; }
+    /**
+     * Release shift
+     */
     public releaseSpace() { this.isJumping = false; }
 
     private getInputVector(): Vec3 {
@@ -186,12 +213,15 @@ export class Player {
 
     /* Logics */
 
+    /**
+     * Ticking
+     */
     public tick() {
         if (!this.tcp.isReady()) return;
         if (!this.lastPos || !this.lastAngle) throw new ClientNotReady();
 
-        // // console.log("tick");
-        // // console.log(this.getPos());
+        // console.log("tick");
+        // console.log(this.getPos());
 
         this.aiStep();
         const { x, y, z } = this.getPos(),

@@ -1,5 +1,8 @@
 import BitSet_ from "bitset";
 
+/**
+ * Custom implementation of BitSet to implement missing method
+ */
 export class BitSet extends BitSet_ {
     public nextClearBit(fromIndex: number) {
         fromIndex = fromIndex || 0;

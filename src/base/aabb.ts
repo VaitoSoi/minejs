@@ -24,6 +24,11 @@ export class AABB implements BaseAABB {
 
     public static readonly EntityBoundingBoxes: Record<string, AABB> = {};
 
+    /**
+     * Construct bounding box from entity namespace or type ID
+     * @param type Entity namespace or type ID
+     * @returns 
+     */
     public static fromEntityType(type: string | number) {
         if (this.EntityBoundingBoxes[type])
             return this.EntityBoundingBoxes[type];
@@ -33,6 +38,12 @@ export class AABB implements BaseAABB {
         return this.fromDimension(height, width);
     }
 
+    /**
+     * Construct bounding box from given rectangle
+     * @param height 
+     * @param width 
+     * @returns 
+     */
     public static fromDimension(height: number, width: number) {
         return new AABB(
             - width / 2,
@@ -44,6 +55,11 @@ export class AABB implements BaseAABB {
         );
     }
 
+    /**
+     * Construct bounding box from base interface
+     * @param aabb 
+     * @returns 
+     */
     public static fromAABB(aabb: BaseAABB) {
         return new AABB(
             aabb.minX,
@@ -71,6 +87,10 @@ export class AABB implements BaseAABB {
         this.maxZ = Math.max(z1, z2);
     }
 
+    /**
+     * Return a copy
+     * @returns 
+     */
     public copyBase(): BaseAABB {
         return {
             minX: this.minX,
@@ -82,6 +102,11 @@ export class AABB implements BaseAABB {
         };
     }
 
+    /**
+     * Check if two AABB is equal
+     * @param aabb 
+     * @returns 
+     */
     public equal(aabb: AABB) {
         return this.minX === aabb.minX &&
             this.minY === aabb.minY &&
@@ -91,6 +116,9 @@ export class AABB implements BaseAABB {
             this.maxZ === aabb.maxZ;
     }
 
+    /**
+     * Expand AABB toward a Vector
+     */
     public expandTowards(x: number, y: number, z: number): AABB;
     public expandTowards(aabb: Vec3): AABB;
     public expandTowards(a: Vec3 | number, b?: number, c?: number): AABB {
@@ -117,6 +145,9 @@ export class AABB implements BaseAABB {
         return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
+    /**
+     * Shift this AABB by a given vector, or on the other word, shift each axis by given value 
+     */
     public move(x: number, y: number, z: number): AABB;
     public move(aabb: BaseVec3): AABB;
     public move(a: BaseVec3 | number, b?: number, c?: number): AABB {
@@ -125,12 +156,18 @@ export class AABB implements BaseAABB {
         return new AABB(minX + x, minY + y, minZ + z, maxX + x, maxY + y, maxZ + z);
     }
 
+    /**
+     * Is two AABB intersect each other
+     */
     public isIntersect(other: AABB) {
         return this.minX < other.maxX && this.maxX > other.minX &&
             this.minY < other.maxY && this.maxY > other.minY &&
             this.minZ < other.maxZ && this.maxZ > other.minZ;
     }
 
+    /**
+     * Get min value of an Axis
+     */
     public min(axis: BaseAxis) {
         return Axis.choose(axis,
             this.minX,
@@ -138,6 +175,9 @@ export class AABB implements BaseAABB {
             this.minZ
         );
     }
+    /**
+     * Get max value of an Axis
+     */
     public max(axis: BaseAxis) {
         return Axis.choose(axis,
             this.maxX,
@@ -146,6 +186,9 @@ export class AABB implements BaseAABB {
         );
     }
 
+    /**
+     * Cliping math. Find smallest distance to reach a face of this Shape, which contain multiple AABB.
+     */
     public static clip(aabbs: AABB[], from: Vec3, to: BaseVec3, pos: BaseVec3) {
         const scaleReference: [number] = [1]; // Make a mutable var
         let direction: Direction | null = null;
@@ -159,6 +202,9 @@ export class AABB implements BaseAABB {
         return BlockHitResult.hit(from.add(scale * dx, scale * dy, scale * dz), direction, pos);
     }
 
+    /**
+     * Cliping math. Find smallest distance to reach a face of this AABB.
+     */
     public static getDirection(aabb: BaseAABB, from: BaseVec3, delta: BaseVec3, direction_: Direction | null, scaleRef: [number]) {
         let direction = structuredClone(direction_);
         const { minX, maxX, minY, maxY, minZ, maxZ } = aabb;
@@ -228,6 +274,9 @@ export class AABB implements BaseAABB {
         return direction;
     }
 
+    /**
+     * Calculate the clipping distance
+     */
     public static clipPoint(
         direction: Direction | null, newDiretion: Direction,
         scaleRef: [number],
@@ -264,9 +313,17 @@ export class AABB implements BaseAABB {
     }
 }
 
+/**
+ * Basically, a VoxelShape it a set of multiple AABB.
+ * 
+ * For example, a VoxelShape of a stair is constructed from 2 AABB, lower half and upper half.
+ */
 export class VoxelShape {
     public static Empty = new VoxelShape([], [], [], [[[false]]]);
 
+    /**
+     * Construct VoxelShape from an AABB
+     */
     public static fromBox(bb: BaseAABB) {
         const xs = [bb.minX, bb.maxX],
             ys = [bb.minY, bb.maxY],
@@ -274,6 +331,10 @@ export class VoxelShape {
         const cells = [[[true]]];
         return new VoxelShape(xs, ys, zs, cells);
     }
+
+    /**
+     * Merge two VoxelShape using `OR` operatior
+     */
     public static or(a: VoxelShape, b: VoxelShape) {
         const mergeX = VoxelShape.createMerger(a.xs, b.xs),
             mergeY = VoxelShape.createMerger(a.ys, b.ys),
@@ -325,6 +386,9 @@ export class VoxelShape {
         }
     }
 
+    /**
+     * Make a copy
+     */
     public copy() {
         return new VoxelShape(
             this.xs,
@@ -371,6 +435,9 @@ export class VoxelShape {
         return this.storage.get(this.getIndex(x, y, z)) === 1;
     }
 
+    /**
+     * Get the number of cells of an axis
+     */
     public getSize(axis: BaseAxis) {
         return Axis.choose(
             axis,
@@ -405,6 +472,9 @@ export class VoxelShape {
         return this.storage.isEmpty();
     }
 
+    /**
+     * Shift this Voxel shape by a given vector, or on the other word, shift each axis by given value
+     */
     public move(x: number, y: number, z: number): VoxelShape;
     public move(position: BaseVec3): VoxelShape;
     public move(a: BaseVec3 | number, b?: number, c?: number): VoxelShape {
@@ -417,10 +487,22 @@ export class VoxelShape {
         );
     }
 
+    /**
+     * Collision math.
+     * 
+     * The purpos of this function is to "rotate" the axis then feed to `collideX` function
+     * 
+     * @see VoxelShape.collideX
+     */
     public collide(axis: BaseAxis, moving: AABB, distance: number) {
         return this.collideX(AxisCycle.between(axis, BaseAxis.X), moving, distance);
     }
 
+    /**
+     * Collision math.
+     * 
+     * I don't know how to explain this D:
+     */
     public collideX(transform: AxisCycle, moving: AABB, distance: number) {
         if (this.isEmpty()) return distance;
         if (Math.abs(distance) < Epsilon) return 0;
@@ -470,6 +552,11 @@ export class VoxelShape {
         return distance;
     }
 
+    /**
+     * Clipping math
+     * 
+     * I don't know how to explain this either D:
+     */
     public clip(from: Vec3, to: Vec3, pos: BaseVec3) {
         if (this.isEmpty()) return null;
         const diff = to.subtract(from);
@@ -484,12 +571,14 @@ export class VoxelShape {
         return AABB.clip(this.toAABBs(), from, to, pos);
     }
 
+    /**
+     * Convert this VoxelShape into AABBs
+     */
     public toAABBs() {
         const bbs: AABB[] = [];
         this.forAllBoxes((bb) => bbs.push(AABB.fromAABB(bb)), true);
         return bbs;
     }
-
     private forAllBoxes(consumer: (bb: BaseAABB) => void, mergeNeighbor: boolean) {
         const shape = this.copy();
         for (let y = 0; y < shape.getSize(BaseAxis.Y); y++)
@@ -535,13 +624,11 @@ export class VoxelShape {
                 }
             }
     }
-
     private isZStripFull(startZ: number, endZ: number, x: number, y: number) {
         return x < this.getSize(BaseAxis.X) &&
             y < this.getSize(BaseAxis.Y) &&
             this.storage.nextClearBit(this.getIndex(x, y, startZ)) >= this.getIndex(x, y, endZ);
     }
-
     private isXZRectangleFull(startX: number, endX: number, startZ: number, endZ: number, y: number) {
         for (let x = startX; x < endX; x++) {
             if (!this.isZStripFull(startZ, endZ, x, y))
@@ -549,12 +636,14 @@ export class VoxelShape {
         }
         return true;
     }
-
     private clearZStrip(startZ: number, endZ: number, x: number, y: number) {
         this.storage.clear(this.getIndex(x, y, startZ), this.getIndex(x, y, endZ));
     }
 }
 
+/**
+ * Helper class to do collision math
+ */
 export class Shapes {
     public static collide(axis: BaseAxis, moving: AABB, shapes: VoxelShape[], distance: number): number {
         if (Math.abs(distance) < Epsilon) return 0;

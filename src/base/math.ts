@@ -2,6 +2,11 @@ import { createHash } from "node:crypto";
 
 export const Epsilon = 1.0e-7; // 1^-7
 
+/**
+ * Convert player name into UUID
+ * 
+ * Use for offline account
+ */
 export function computeUUID(playerName: string): Buffer {
     const md5 = createHash("md5").update(playerName).digest();
     md5[6]! &= 0x0f;  /* clear version        */

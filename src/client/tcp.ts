@@ -23,6 +23,11 @@ import { packBlockPos, SectionsPerChunk } from "./static";
 import { AuthClient, AuthOption } from "./auth";
 
 // Minecraft related typing
+/**
+ * Representing a TextComponent
+ * 
+ * @see https://minecraft.wiki/w/Text_component_format
+ */
 export type TextComponent = Record<string, any>;
 
 
@@ -36,11 +41,19 @@ export interface ServerKnownPack {
     version: string
 }
 
+/**
+ * Represent world information
+ */
 export interface ServerWorld {
+    /** Is hardcore enabled */
     hardcore: boolean,
+    /** All dimensions */
     dimensions: string[],
+    /** Max players allowed */
     maxPlayers: number,
+    /** View distances */
     viewDistance: number,
+    /** Simulation distance */
     simulationDistance: number,
 
     /**
@@ -55,6 +68,9 @@ export interface ServerWorld {
     entities: Record<number, Entity>,
 }
 
+/** 
+ * Represent a chunk collumns, which may contains multiple chunks sections 
+ */
 export interface ChunkColumn {
     sections: Record<number, ChunkSection>,
     blockEntities: Record<number, BlockEntity>
@@ -65,17 +81,24 @@ export interface ChunkSection {
     biome: PaletteContainer,
 }
 
+/**
+ * Used for indirect mapping
+ * 
+ * @see https://minecraft.wiki/w/Java_Edition_protocol/Chunk_format#Paletted_Container_structure
+ */
 export interface PaletteContainer {
     bpe: number, // Bit per entry
     palette: number[],
     data: BigInt64Array | null, // null if the whole section contains one 1 type of block
 }
 
+/** Represent a block entity */
 export interface BlockEntity {
     type: number,
     data: Record<string, any>
 }
 
+/** Represent an entity */
 export interface Entity {
     id: number,
     type: number,
@@ -93,8 +116,11 @@ export enum GameMode {
 }
 
 export interface ClientPlayer {
+    /** Player UUID */
     uuid: string,
+    /** Player username */
     username: string,
+    /** Player entity ID */
     entityId: number,
     /** Current game mode */
     gameMode: GameMode,
@@ -103,6 +129,7 @@ export interface ClientPlayer {
     velocity: BaseVec3,
     angle: Angle,
 
+    /** Current dimension */
     dimension: string
 }
 
@@ -113,9 +140,19 @@ export interface ServerRegistryEntry {
 
 // TCP related typing
 export interface TCPClientOption {
+    /** Server host */
     host: string,
+    /** Server port */
     port: number,
+    /**
+     * Server protocol version.
+     * 
+     * Currentlt support `773` or version `1.21.10`
+     * 
+     * @see https://minecraft.wiki/w/Minecraft_Wiki:Projects/wiki.vg_merge/Protocol_version_numbers
+     */
     protocolVersion: number,
+    /** Player name */
     playerName: string,
     /**
      * Set to true only if you are playing in offline server or crack server
@@ -128,7 +165,7 @@ export interface TCPClientOption {
     loadRegistry?: boolean,
 
     debug?: {
-        // Log packet
+        /** Log the incoming packet */
         packetLogger: boolean
     },
 
@@ -142,23 +179,39 @@ export interface TCPClientEvents {
     disconnectRaw: [textComponent: TextComponent],
     raw: [buf: Buffer],
 
+    /** Whenever client is ready to use */
     ready: [readyClient: TCPClient<true>],
 
     // Position
+    /** 
+     * Sync player position.
+     * 
+     * Noted that this fired when recived packet from server, not from the internal movement, meaning that calling `input` function would not fire this event. 
+     */
     playerPosition: [position: BaseVec3],
 
+    /** Load chunk section */
     loadChunk: [chunkX: number, sectionY: number, chunkZ: number],
+    /** Unload chunk column */
     unloadChunk: [chunkX: number, chunkZ: number],
 
+    /** Spawn an entity */
     spawnEntity: [entity: Entity],
+    /** Update spawned entity */
     updateEntity: [entity: Entity],
+    /** Remove entity */
     removeEntity: [entityId: number],
 
     // Chat
+    /** Message, usually sent from player */
     message: [message: Message],
+    /** Parsed system message, usually sent from the console, plugins, etc... */
     systemMessage: [message: string],
+    /** Raw system messgae */
     systemMessageRaw: [textComponent: TextComponent],
+    /** Parsed action bar message, the message appeared above your hot bar */
     actionBar: [message: string],
+    /** Raw action bar */
     actionBarRaw: [textComponent: TextComponent],
 }
 
@@ -194,6 +247,11 @@ export enum ClientState {
 //     Transfer = 3,
 // }
 
+/**
+ * Low-level client. You SHOULD NOT use this client unless you know what are you doing
+ * 
+ * @see https://minecraft.wiki/w/Java_Edition_protocol/Packets?oldid=3445844
+ */
 export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter as new () => TypedEmmiter<TCPClientEvents>) {
     public readonly socket: Socket;
 
@@ -473,6 +531,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
             username,
             entityId: 0,
             dimension: "",
+            gameMode: GameMode.Survival,
 
             position: {
                 x: 0,

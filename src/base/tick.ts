@@ -1,3 +1,8 @@
+/**
+ * Tick manager.
+ * 
+ * Maintaining 20Hz tick like what vanilla does
+ */
 export class TickLoop {
     public static readonly TICK_MS = 50;
     private static readonly TICK_NS = BigInt(this.TICK_MS) * 1_000_000n;

@@ -28,6 +28,9 @@ export interface ClientEvents {
     actionBarRaw: [textComponent: TextComponent],
 }
 
+/**
+ * High-level client.
+ */
 export class Client<IsTCPReady extends boolean = boolean> extends (EventEmitter as new () => TypedEmmiter<ClientEvents>) {
     private tickLoop: TickLoop;
 
@@ -67,6 +70,9 @@ export class Client<IsTCPReady extends boolean = boolean> extends (EventEmitter 
     }
 
     // Start / stop
+    /**
+     * Create a connection to the server
+     */
     public connect() {
         this.tcp.connect();
 
@@ -81,22 +87,37 @@ export class Client<IsTCPReady extends boolean = boolean> extends (EventEmitter 
             this.player.pruneInitialVal();
         });
     }
+    /**
+     * Destroy the connection
+     */
     public disconnect() {
         this.tcp.disconnect();
     }
 
     // Inputs
-    public held(direction: MoveDirection) {
+    /**
+     * Press and hold a key
+     */
+    public hold(direction: MoveDirection) {
         this.player.input(direction);
     }
+    /**
+     * Release a key
+     */
     public release(direction: MoveDirection) {
         this.player.releaseInput(direction);
     }
+    /**
+     * Release all key
+     */
     public stopMoving() {
         this.player.releaseAllInputs();
     }
 
     // World
+    /**
+     * Get the block state at position
+     */
     public at(x: number, y: number, z: number): BlockState | null;
     public at(position: BaseVec3): BlockState | null;
     public at(a: BaseVec3 | number, b?: number, c?: number): BlockState | null {

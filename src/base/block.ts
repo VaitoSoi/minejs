@@ -4,6 +4,9 @@ import { Epsilon, getFrac, getSign, lerp } from "./math";
 import { BlockRegistry } from "./registry";
 import { BaseVec3, Direction, Vec3 } from "./direction";
 
+/**
+ * Represent a state of a block
+ */
 export class BlockState {
     public shape: VoxelShape;
 
@@ -34,6 +37,9 @@ export class BlockState {
     public getFacing(): "north" | "south" | "west" | "east" | null { return this.get("facing"); }
 }
 
+/**
+ * Represent a block
+ */
 export class Block {
     public states: BlockState[];
 
@@ -66,9 +72,15 @@ export class Block {
     public getJumpFactor() { return this.get("jump_factor", 1); }
 }
 
+/**
+ * Somehow, this is an equivalent implementation of Minecraft `Level`
+ */
 export class BlockManager {
     constructor(private tcp: TCPClient) { }
 
+    /**
+     * Check if the chunk section is loaded
+     */
     public hasChunkAt(x: number, y: number, z: number): boolean;
     public hasChunkAt(position: BaseVec3): boolean;
     public hasChunkAt(a: BaseVec3 | number, b?: number, c?: number): boolean {
@@ -85,7 +97,7 @@ export class BlockManager {
     }
 
     /**
-     * Get block at position
+     * Get block state at position
      */
     public at(x: number, y: number, z: number): BlockState | null;
     public at(position: BaseVec3): BlockState | null;
@@ -142,6 +154,9 @@ interface Context {
     to: Vec3
 }
 
+/**
+ * For clipping math
+ */
 export class BlockGetter {
     public static clip(from: Vec3, to: Vec3, context: Context) {
         return this.traverseBlocks(
@@ -217,6 +232,9 @@ export class BlockGetter {
     }
 }
 
+/**
+ * For clipping math
+ */
 export class BlockHitResult {
     constructor(
         public miss: boolean,

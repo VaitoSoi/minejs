@@ -10,6 +10,9 @@ export class Vec3 implements BaseVec3 {
     public static readonly YAxis = new Vec3(0, 1, 0);
     public static readonly ZAxis = new Vec3(0, 0, 1);
 
+    /**
+     * Helper function for loading vec3 args
+     */
     static loadArgs(a: BaseVec3 | number, b?: number, c?: number): BaseVec3 {
         let x = 1, y = 1, z = 1;
         if (typeof a === "object" && "x" in a) {
@@ -45,9 +48,15 @@ export class Vec3 implements BaseVec3 {
         this.z = z;
     }
 
+    /**
+     * Copy this object
+     */
     public copy() {
         return new Vec3(this.copyBase());
     }
+    /**
+     * Copy but just return the base value, not the whole instance
+     */
     public copyBase(): BaseVec3 {
         return {
             x: this.x,
@@ -194,6 +203,9 @@ export enum BaseAxis {
 }
 
 export class Axis {
+    /**
+     * Helper function to return value corresponding to given axis
+     */
     public static choose<T>(axis: BaseAxis, x: T, y: T, z: T): T {
         switch (axis) {
             case BaseAxis.X: return x;
@@ -202,13 +214,24 @@ export class Axis {
         }
     }
 
+    /**
+     * Collision math
+     */
     public static stepOrder(x: number, z: number) {
         if (Math.abs(x) < Math.abs(z)) return [BaseAxis.Y, BaseAxis.Z, BaseAxis.X];
         return [BaseAxis.Y, BaseAxis.X, BaseAxis.Z];
     }
 }
 
+/**
+ * For collision math.
+ * 
+ * This is for "rotating" the Axis
+ */
 export abstract class AxisCycle {
+    /**
+     * Don't rotate the Axis
+     */
     public static NONE: AxisCycle = new class extends AxisCycle {
         public cycle(axis: BaseAxis): BaseAxis {
             return axis;
@@ -220,6 +243,9 @@ export abstract class AxisCycle {
             return this;
         }
     };
+    /**
+     * Move forward 1 unit
+     */
     public static FORWARD: AxisCycle = new class extends AxisCycle {
         public cycle(axis: BaseAxis): BaseAxis {
             return AxisCycle.Axises[(axis + 1) % 3]!;
@@ -232,6 +258,8 @@ export abstract class AxisCycle {
         }
     };
     /**
+     * Move forward 2 units, or backward 1 unit
+     * 
      * For the name explaination, in a cyclic three-value array, move forward 2 steps equals step backward 1 step.
      * 
      * Example:
@@ -279,6 +307,9 @@ export abstract class AxisCycle {
     public static readonly isAxis = true;
 }
 
+/**
+ * For clipping math
+ */
 export class Direction {
     public static readonly DOWN = new Direction(0, BaseAxis.Y, new Vec3(0, -1, 0));
     public static readonly UP = new Direction(1, BaseAxis.Y, new Vec3(0, 1, 0));

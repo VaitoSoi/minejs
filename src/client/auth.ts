@@ -114,6 +114,9 @@ const getFreePort = () => new Promise<number>((resolve) => {
 
 const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
+/**
+ * Auth client, for authenticating Microsoft account
+ */
 export class AuthClient {
     private readonly codeVerifier: string;
     private readonly codeChallenge: string;
