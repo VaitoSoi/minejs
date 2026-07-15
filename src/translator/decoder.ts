@@ -5,19 +5,19 @@ import { Tag } from "./static";
 import { unzipSync } from "zlib";
 import { minBigInt } from "../base/math";
 
-export function getTextFromTextComponent(component: any): string | string[] {
+export function getTextFromTextComponent(component: any): string {
     if (component === null || component === undefined) return "null";
     switch (typeof component) {
         case "string":
             return component;
         case "object": {
             if (Array.isArray(component))
-                return component.map(val => getTextFromTextComponent(val)) as string[];
+                return component.map(val => getTextFromTextComponent(val)).join();
             else if ("text" in component) {
                 if ("extra" in component && Array.isArray(component["extra"]))
-                    return [component["text"], ...component["extra"]];
+                    return component["text"] + component["extra"].map(val => getTextFromTextComponent(val)).join("");
                 else return component["text"];
-            } else if ("translate" in component) {
+            } if ("translate" in component) {
                 if ("fallback" in component) return component["fallback"];
                 else return component["translate"];
             } else if ("keybind" in component)
