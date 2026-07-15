@@ -1,5 +1,4 @@
-import { MoveDirection } from "../../src/base/player";
-import { Client } from "../../src/client/client";
+import { MoveDirection, Client } from "../../src/";
 
 const client = new Client({
     playerName: "bot",
