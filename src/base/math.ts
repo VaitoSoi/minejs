@@ -14,35 +14,6 @@ export function computeUUID(playerName: string): Buffer {
 
 export const minBigInt = (...args: bigint[]) => args.reduce((min, val) => val < min ? val : min);
 
-export function mergeUnique<T = number>(arrA: T[], arrB: T[]): T[] {
-    let i = 0, j = 0;
-    const res: T[] = [];
-
-    while (i < arrA.length && j < arrB.length) {
-        if (arrA[i]! > arrB[j]!) {
-            addUnique(arrB[j]!, res);
-            j++;
-        } else if (arrA[i]! < arrB[j]!) {
-            addUnique(arrA[i]!, res);
-            i++;
-        } else {
-            addUnique(arrA[i]!, res);
-            i++;
-            j++;
-        }
-    }
-
-    for (; i < arrA.length; i++) addUnique(arrA[i]!, res);
-    for (; j < arrB.length; j++) addUnique(arrB[j]!, res);
-
-    return res;
-}
-
-function addUnique<T>(val: T, arr: T[]) {
-    if (arr.at(-1) !== val)
-        arr.push(val);
-}
-
 export function lowerBoundBinarySearch(from: number, to: number, condition: (index: number) => boolean) {
     let i = to - from;
     while (true) {
