@@ -21,6 +21,17 @@ const VectorMovement: Record<MoveDirection, Vec3> = {
     [MoveDirection.Right]: new Vec3(-1, 0, 0),
 };
 
+/**
+ * Not used for now
+ */
+export enum MoverType {
+    SELF,
+    PLAYER,
+    PISTON,
+    SHULKER_BOX,
+    SHULKER
+}
+
 export class Player {
     private fallDistance: number = 0;
     private deltaMovement: Vec3 = Vec3.Zero;
