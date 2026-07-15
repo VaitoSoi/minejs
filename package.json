@@ -10,12 +10,14 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "devDependencies": {
+    "@clean-jsdoc-theme/typedoc": "5.0.5",
     "@eslint/js": "^10.0.1",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "^26.1.1",
     "eslint": "^10.4.1",
     "globals": "^17.6.0",
     "tsx": "^4.22.4",
+    "typedoc": "^0.28.20",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.60.1",
     "@types/bun": "latest"
