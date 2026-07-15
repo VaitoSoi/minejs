@@ -913,7 +913,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
     * Send packet 
     */
 
-    private write(buf: Buffer) {
+    public write(buf: Buffer) {
         if (this.status == ClientStatus.Disconnected || !this.socket.writable)
             throw new SockerIsNotWritable();
 
@@ -924,7 +924,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
         this.socket.write(sendBuffer);
     }
 
-    private sendPacket(packetId: number, content: Buffer) {
+    public sendPacket(packetId: number, content: Buffer) {
         const encodePacketId = new BinaryEncoder();
         encodePacketId.writeVarInt(packetId);
         const sendData = Buffer.concat([encodePacketId.getBuffer(), content]);
