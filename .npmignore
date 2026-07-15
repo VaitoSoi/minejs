@@ -1,0 +1,5 @@
+.yarn/
+.pnp.*
+.gemini
+node_modules/
+.vscode/

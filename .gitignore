@@ -18,3 +18,7 @@ node_modules
 
 # Ignore Gemini CLI workspace data
 .gemini
+
+# Ignore build result
+dist/
+docs_dist/
