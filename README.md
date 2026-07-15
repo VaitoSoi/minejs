@@ -22,7 +22,7 @@ Then write a simple code like this:
 
 ```typescript
 // index.ts
-import { MoveDirection, Client } from "../../src/";
+import { MoveDirection, Client } from "@vaitosoi/minejs";
 
 const client = new Client({
     playerName: "bot",
