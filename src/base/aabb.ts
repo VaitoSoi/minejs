@@ -564,15 +564,15 @@ export class Shapes {
     }
 }
 
-export type IndexMergerConsumer = (i1: number, i2: number, ir: number) => void;
+type IndexMergerConsumer = (i1: number, i2: number, ir: number) => void;
 
-export abstract class IndexMerger {
+abstract class IndexMerger {
     public abstract forMergedIndex(consumer: IndexMergerConsumer): void;
     public abstract get size(): number;
     public abstract get list(): number[];
 }
 
-export class NoneOverlappingMerger extends IndexMerger {
+class NoneOverlappingMerger extends IndexMerger {
     constructor(
         private lower: number[],
         private upper: number[],
@@ -603,7 +603,7 @@ export class NoneOverlappingMerger extends IndexMerger {
     }
 }
 
-export class IdenticalMerger extends IndexMerger {
+class IdenticalMerger extends IndexMerger {
     constructor(
         private coords: number[],
     ) {
@@ -624,7 +624,7 @@ export class IdenticalMerger extends IndexMerger {
     }
 }
 
-export class IndirectMerger extends IndexMerger {
+class IndirectMerger extends IndexMerger {
     private result: number[];
     private resultLength: number;
     private firstIndices: number[];
