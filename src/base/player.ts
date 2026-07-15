@@ -1,4 +1,4 @@
-import { EntitiesManager, MoverType } from "./entity";
+import { EntitiesManager } from "./entity";
 import { Angle, Axis, BaseAxis, BaseVec3, Vec3 } from "./direction";
 import { AABB, Shapes, VoxelShape } from "./aabb";
 import { BlockGetter, BlockManager, BlockState } from "./block";
