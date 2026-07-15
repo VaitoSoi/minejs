@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "description": "A Minecraft package",
   "license": "MIT",
-  "packageManager": "yarn@4.12.0",
   "engines": {
     "node": ">=24"
   },
