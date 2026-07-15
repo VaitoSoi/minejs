@@ -280,7 +280,7 @@ export class Player {
     /* 
      * Travel related methods
      */
-    public travel(input: Vec3) {
+    private travel(input: Vec3) {
         // TODO: Handle other case: flying, water, lava
         return this.travelInAir(input);
     }
