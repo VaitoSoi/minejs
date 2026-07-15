@@ -42,7 +42,6 @@ export interface ServerWorld {
     maxPlayers: number,
     viewDistance: number,
     simulationDistance: number,
-    gameMode: GameMode,
 
     /**
      * The record key is a chunk section position packed as `Player Dimension:Chunk X:Chunk Z[Section Y]`
@@ -97,6 +96,8 @@ export interface ClientPlayer {
     uuid: string,
     username: string,
     entityId: number,
+    /** Current game mode */
+    gameMode: GameMode,
 
     position: BaseVec3,
     velocity: BaseVec3,
@@ -553,12 +554,12 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
             maxPlayers,
             viewDistance,
             simulationDistance,
-            gameMode,
             chunks: {},
             entities: {}
         } satisfies ServerWorld as any; // To avoid type conflict
         this.player!.dimension = dimensionName;
         this.player!.entityId = entityId;
+        this.player!.gameMode = gameMode;
 
         this.status = ClientStatus.Ready;
         this.emit("ready", this as TCPClient<true>);
@@ -609,7 +610,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
 
     private handleChangeGameMode(decoder: BinaryDecoder) {
         const gameMode = decoder.readUByte();
-        this.world!.gameMode = gameMode;
+        this.player!.gameMode = gameMode;
     }
 
     // Chunk
