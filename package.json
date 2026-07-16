@@ -10,7 +10,7 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "engines": {
-    "node": ">=24"
+    "node": ">=22"
   },
   "devDependencies": {
     "@clean-jsdoc-theme/typedoc": "5.0.5",
