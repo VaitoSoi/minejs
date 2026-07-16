@@ -13,7 +13,7 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@v6
 
-      - name: Setup PNPM (Corepack)
+      - name: Setup Corepack (for PNPM)
         run: corepack enable
 
       - name: Install packages
