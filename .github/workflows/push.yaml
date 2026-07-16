@@ -9,15 +9,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
+
       - name: Setup NodeJS
         uses: actions/setup-node@v6
 
       - name: Setup PNPM (Corepack)
         run: corepack enable
 
+      - name: Install packages
+        run: pnpm install --frozen-lockfile
+
       - name: Lint
-        run: pnpm dlx eslint .
+        run: pnpm eslint .
 
       - name: Type check
-        run: pnpm --package=typescipt@7 dlx tsc --noEmit
+        run: pnpm tsc --noEmit
