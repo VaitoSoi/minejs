@@ -27,5 +27,5 @@ export default defineConfig([
             "@typescript-eslint/no-extraneous-class": ["off"]
         }
     },
-    { ignores: ["build/", "node_modules", ".yarn", ".vscode", ".pnp.*"] },
+    { ignores: ["dist/", "docs_dist/", "node_modules", ".vscode"] },
 ]);
