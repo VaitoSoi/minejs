@@ -56,7 +56,7 @@ jobs:
       - name: Build
         run: pnpm tsc
 
-      - name: Install package
+      - name: Publish package
         run: npm publish
   
   gh-page:
