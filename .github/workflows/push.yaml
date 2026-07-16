@@ -11,9 +11,7 @@ jobs:
         uses: actions/setup-node@v6
 
       - name: Setup PNPM (Corepack)
-        run: |
-          corepack enable
-          corepack use PNPM
+        run: corepack enable
 
       - name: Lint
         run: pnpm dlx eslint .
