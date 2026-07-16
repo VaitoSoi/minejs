@@ -20,8 +20,8 @@ jobs:
       - name: Setup Corepack (for PNPM)
         run: corepack enable
 
-      - name: Install package
-        run: pnpm install
+      - name: Install packages
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
         run: pnpm eslint .
