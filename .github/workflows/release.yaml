@@ -47,6 +47,9 @@ jobs:
       - name: Setup Corepack (for PNPM)
         run: corepack enable
 
+      - name: Setup NPM
+        run: npm i -g npm@latest
+
       - name: Build
         run: pnpm tsc
 
