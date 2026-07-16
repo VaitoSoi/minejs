@@ -82,7 +82,10 @@ And run it:
 npm tsx index.ts
 ```
 
+## III. API:
 
-## III. Note:
+See [documentation](https://minejs.vaito.dev)
+
+## IV. Note:
 
 If you are Vaito: Stop being a lazy a$$ and implement new update, here is the link: https://minecraft.wiki/?title=Java_Edition_protocol%2FPackets&diff=3675033&oldid=3445844
