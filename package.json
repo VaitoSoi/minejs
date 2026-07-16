@@ -12,14 +12,15 @@
     "@clean-jsdoc-theme/typedoc": "5.0.5",
     "@eslint/js": "^10.0.1",
     "@stylistic/eslint-plugin": "^5.10.0",
+    "@types/bun": "latest",
     "@types/node": "^26.1.1",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "eslint": "^10.4.1",
     "globals": "^17.6.0",
     "tsx": "^4.22.4",
     "typedoc": "^0.28.20",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.60.1",
-    "@types/bun": "latest"
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "typescript-eslint": "^8.60.1"
   },
   "keywords": [
     "minecraft",
