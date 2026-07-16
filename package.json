@@ -1,13 +1,17 @@
 {
-  "name": "minejs",
-  "version": "0.1.0",
-  "description": "A Minecraft package",
+  "name": "@vaitosoi/minejs",
+  "version": "0.1.1",
+  "description": "A Minecraft client package",
   "license": "MIT",
-  "engines": {
-    "node": ">=24"
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "engines": {
+    "node": ">=24"
+  },
   "devDependencies": {
     "@clean-jsdoc-theme/typedoc": "5.0.5",
     "@eslint/js": "^10.0.1",
@@ -32,5 +36,6 @@
   },
   "dependencies": {
     "bitset": "^5.2.3"
-  }
+  },
+  "packageManager": "pnpm@11.13.1+sha512.b2fc7683b8a6525414e7d13e1ba28caaddde96bf66ec540bfaeb7e702b81f3e0be4d1f295edf7f9fe0396740a8dce4509c582ddf79891f4543fea32d37645f25"
 }
