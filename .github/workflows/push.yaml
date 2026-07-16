@@ -1,0 +1,22 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu
+    steps:
+      - name: Setup NodeJS
+        uses: actions/setup-node@v6
+
+      - name: Setup PNPM (Corepack)
+        run: |
+          corepack enable
+          corepack use PNPM
+
+      - name: Lint
+        run: pnpm dlx eslint .
+
+      - name: Type check
+        run: pnpm --package=typescipt@7 dlx tsc --noEmit
