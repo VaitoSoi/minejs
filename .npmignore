@@ -1,5 +1,6 @@
-.yarn/
-.pnp.*
 .gemini
-node_modules/
-.vscode/
+node_modules/*
+.vscode/*
+dist/*
+docs_dist/*
+.github/
