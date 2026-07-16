@@ -50,6 +50,9 @@ jobs:
       - name: Setup NPM
         run: npm i -g npm@latest
 
+      - name: Install packages
+        run: pnpm install --frozen-lockfile
+
       - name: Build
         run: pnpm tsc
 
