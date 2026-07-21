@@ -434,6 +434,9 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
                 case 0x0A:
                     if (this.state === ClientState.Play) this.handleChangeGameMode(decoder);
                     break;
+                case 0x0E:
+                    if (this.state === ClientState.Configure) this.handleKnownPack(decoder);
+                    break;
                 case 0x20:
                     if (this.state === ClientState.Play) this.handleConfiguarionPlayDisconnect(decoder);
                     break;
@@ -443,43 +446,40 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
                 case 0x23:
                     if (this.state === ClientState.Play) this.handleTeleportEntity(decoder);
                     break;
-                case 0x2C:
-                    if (this.state === ClientState.Play) this.handleChunkData(decoder);
-                    break;
-                case 0x0E:
-                    if (this.state === ClientState.Configure) this.handleKnownPack(decoder);
-                    break;
                 case 0x25:
                     if (this.state === ClientState.Play) this.handleUnloadChunk(decoder);
                     break;
-                case 0x2B:
+                case 0x2D:
+                    if (this.state === ClientState.Play) this.handleChunkData(decoder);
+                    break;
+                case 0x2C:
                     if (this.state === ClientState.Play) this.handleKeepAlive(decoder);
                     break;
-                case 0x30:
+                case 0x31:
                     if (this.state === ClientState.Play) this.handlePlayLogin(decoder);
                     break;
-                case 0x33:
+                case 0x35:
                     if (this.state === ClientState.Play) this.handleUpdateEntityPosition(decoder);
                     break;
-                case 0x34:
+                case 0x36:
                     if (this.state === ClientState.Play) this.handleUpdateEntityPositionRotation(decoder);
                     break;
-                case 0x3F:
+                case 0x41:
                     if (this.state === ClientState.Play) this.handlePlayerChat(decoder);
                     break;
-                case 0x46:
+                case 0x48:
                     if (this.state === ClientState.Play) this.handleSynchronizePlayerPosition(decoder);
                     break;
-                case 0x4B:
+                case 0x4D:
                     if (this.state === ClientState.Play) this.handleRemoveEntity(decoder);
                     break;
-                case 0x55:
+                case 0x57:
                     if (this.state === ClientState.Play) this.handleSetActionBar(decoder);
                     break;
-                case 0x63:
+                case 0x65:
                     if (this.state === ClientState.Play) this.handleSetEntityVelocity(decoder);
                     break;
-                case 0x77:
+                case 0x79:
                     if (this.state === ClientState.Play) this.handleSystemMessage(decoder);
                     break;
             }

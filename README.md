@@ -4,7 +4,7 @@
 
 ## I. Introduction
 
-This is a Minecraft client package, written entirely in Typescript, using NodeJS `node:net` to communicate with Minecraft server. Currently support 1.21.10 and planned to support 26.2.
+This is a Minecraft client package, written entirely in Typescript, using NodeJS `node:net` to communicate with Minecraft server. Currently support 26.2.
 
 ### DISCLAIMER
 
