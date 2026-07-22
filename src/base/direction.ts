@@ -202,6 +202,7 @@ export enum BaseAxis {
     Z
 }
 
+/** @hidden */
 export class Axis {
     /**
      * Helper function to return value corresponding to given axis
@@ -227,6 +228,8 @@ export class Axis {
  * For collision math.
  * 
  * This is for "rotating" the Axis
+ * 
+ * @hidden
  */
 export abstract class AxisCycle {
     /**
@@ -309,6 +312,8 @@ export abstract class AxisCycle {
 
 /**
  * For clipping math
+ * 
+ * @hidden
  */
 export class Direction {
     public static readonly DOWN = new Direction(0, BaseAxis.Y, new Vec3(0, -1, 0));

@@ -643,6 +643,8 @@ export class VoxelShape {
 
 /**
  * Helper class to do collision math
+ * 
+ * @hidden
  */
 export class Shapes {
     public static collide(axis: BaseAxis, moving: AABB, shapes: VoxelShape[], distance: number): number {

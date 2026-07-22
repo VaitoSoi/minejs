@@ -156,6 +156,8 @@ interface Context {
 
 /**
  * For clipping math
+ * 
+ * @hidden
  */
 export class BlockGetter {
     public static clip(from: Vec3, to: Vec3, context: Context) {
@@ -234,6 +236,8 @@ export class BlockGetter {
 
 /**
  * For clipping math
+ * 
+ * @hidden
  */
 export class BlockHitResult {
     constructor(

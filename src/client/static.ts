@@ -1,3 +1,4 @@
+/** @hidden */
 export const SectionsPerChunk: Record<string, number> = {
     "minecraft:overworld": 24,
     "minecraft:overworld_caves": 24,
@@ -5,6 +6,7 @@ export const SectionsPerChunk: Record<string, number> = {
     "minecraft:the_nether": 8,
 };
 
+/** @hidden */
 export const LevelHeightLimit: Record<string, [min: number, max: number]> = {
     "minecraft:overworld": [-64, 320],
     "minecraft:overworld_caves": [-64, 320],
@@ -21,6 +23,7 @@ export const LevelHeightLimit: Record<string, [min: number, max: number]> = {
  * @param x relative within chunk column
  * @param y world height
  * @param z relative within chunk column
+ * @hidden
  */
 export const packBlockPos = (x: number, y: number, z: number) => y << 8 & z << 4 & x;
 
@@ -29,6 +32,7 @@ export const packBlockPos = (x: number, y: number, z: number) => y << 8 & z << 4
  * Unpacked block position within a chunk column from an integer
  * 
  * @returns unpacked position
+ * @hidden
  */
 export const readPackedBlockPos = (packed: number) => ({
     x: packed & 0xF,

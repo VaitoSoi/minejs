@@ -228,7 +228,7 @@ export class BinaryEncoder {
 
 }
 
-export type CompoundField = any | {
+type CompoundField = any | {
     tag: Tag,
     value: any,
 }
@@ -239,7 +239,7 @@ const isFloat = (n: number | bigint) =>
     (typeof (n) == "number" && n % 1 !== 0) ||
     (typeof (n) == "bigint" && n % BigInt(1) !== BigInt(0));
 
-export function getTagOfNumber(n: number | bigint): FixedSizeTag {
+function getTagOfNumber(n: number | bigint): FixedSizeTag {
     if (isFloat(n)) {
         if (-Math.pow(2, 4 * 8 - 1) <= n && n <= Math.pow(2, 4 * 8 - 1) - 1) return Tag.Float;
         else if (BigInt(-Math.pow(2, 8 * 8 - 1)) <= n && n <= BigInt(Math.pow(2, 8 * 8 - 1) - 1)) return Tag.Double;
