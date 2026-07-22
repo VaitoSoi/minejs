@@ -511,13 +511,17 @@ export class NBTDecoder extends BinaryDecoder {
      */
     public decode(isNetwork: boolean = true) {
         const type = this.readByte();
-        if (type !== Tag.Compound && type !== Tag.List)
-            throw new UnexpectedValue("compound tag", type.toString(16), "0x0A or 0x09");
+        if (type === Tag.Compound || type === Tag.List) {
+            if (!isNetwork) this.readCompoundString();
+            const value = this.readCompoundValue(type);
 
-        if (!isNetwork) this.readCompoundString();
-        const value = this.readCompoundValue(type);
-
-        return value;
+            return value;
+        } else if (type === Tag.End) return {};
+        else {
+            if (!isNetwork) this.readCompoundString();
+            const value = this.readCompoundValue(type);
+            return value;
+        }
     }
 }
 
