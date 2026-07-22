@@ -686,7 +686,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
                     y = decoder.readShort(),
                     type = decoder.readVarInt(),
                     nbt = decoder.readNBT();
-                const x = packedXZ >> 4, z = packedXZ & 15;
+                const x = (packedXZ >> 4) & 15, z = packedXZ & 15;
                 const packedPosition = packBlockPos(x, y, z);
                 return { packedPosition, type, nbt };
             });
