@@ -147,7 +147,7 @@ export interface TCPClientOption {
     /**
      * Server protocol version.
      * 
-     * Currentlt support `773` or version `1.21.10`
+     * Currentlt support `776` or version `26.2`
      * 
      * @see https://minecraft.wiki/w/Minecraft_Wiki:Projects/wiki.vg_merge/Protocol_version_numbers
      */
@@ -676,13 +676,13 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
     private handleChunkData(decoder: BinaryDecoder) {
         const chunkX = decoder.readInt(),
             chunkZ = decoder.readInt(),
-            heightMap = decoder.readPrefixedArray(decoder => ({
+            heightMaps = decoder.readPrefixedArray(decoder => ({
                 type: decoder.readVarInt(),
                 data: decoder.readPrefixedArray(decoder => decoder.readLong())
             })), // Not used yet
             chunkData = decoder.readPrefixedArray(decoder => decoder.readByte()),
             blockEntities = decoder.readPrefixedArray(decoder => {
-                const packedXZ = decoder.readUByte(),
+                const packedXZ = decoder.readByte(),
                     y = decoder.readShort(),
                     type = decoder.readVarInt(),
                     nbt = decoder.readNBT();
@@ -697,7 +697,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
         const chunkDataDecoder = new BinaryDecoder(Buffer.from(chunkData));
         for (let height = 0; height < (SectionsPerChunk[this.player!.dimension] || 0); height++) {
             const blockCount = chunkDataDecoder.readShort();
-            // const fluidCount = chunkDataDecoder.readShort(); // Since 21.1
+            const fluidCount = chunkDataDecoder.readShort();
 
             // Blocks
             let blockStateBPE = chunkDataDecoder.readUByte();
@@ -1091,7 +1091,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
     private sendKeepAlive(id: bigint) {
         const encoder = new BinaryEncoder();
         encoder.writeLong(id);
-        this.sendPacket(0x1B, encoder.getBuffer());
+        this.sendPacket(0x1C, encoder.getBuffer());
     }
 
     public sendPlayerPosRot(pos: BaseVec3, rot: Angle, onGround: boolean, pushingWall: boolean) {
@@ -1108,7 +1108,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
         encoder.writeFloat(rot.yaw);
         encoder.writeFloat(rot.pitch);
         encoder.writeByte(flag);
-        this.sendPacket(0x1E, encoder.getBuffer());
+        this.sendPacket(0x1F, encoder.getBuffer());
     }
     public sendPlayerPos(pos: BaseVec3, onGround: boolean, pushingWall: boolean) {
         let flag = 0;
@@ -1122,7 +1122,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
         encoder.writeDouble(pos.y);
         encoder.writeDouble(pos.z);
         encoder.writeByte(flag);
-        this.sendPacket(0x1D, encoder.getBuffer());
+        this.sendPacket(0x1E, encoder.getBuffer());
     }
     public sendPlayerRot(rot: Angle, onGround: boolean, pushingWall: boolean) {
         let flag = 0;
@@ -1135,7 +1135,7 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
         encoder.writeFloat(rot.yaw);
         encoder.writeFloat(rot.pitch);
         encoder.writeByte(flag);
-        this.sendPacket(0x1F, encoder.getBuffer());
+        this.sendPacket(0x20, encoder.getBuffer());
     }
     public sendPlayerStatus(onGround: boolean, pushingWall: boolean) {
         let flag = 0;
@@ -1146,6 +1146,6 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
         // // console.log({ flag });
         const encoder = new BinaryEncoder();
         encoder.writeByte(flag);
-        this.sendPacket(0x20, encoder.getBuffer());
+        this.sendPacket(0x21, encoder.getBuffer());
     }
 }
