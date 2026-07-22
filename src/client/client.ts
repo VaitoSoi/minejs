@@ -10,6 +10,8 @@ import { BaseVec3, Vec3 } from "../base/direction";
 
 export interface ClientEvents {
     ready: [readyClient: Client<true>],
+    disconnect: [reason: string],
+    disconnectRaw: [textComponent: TextComponent],
 
     playerPosition: [position: BaseVec3],
 
@@ -56,6 +58,8 @@ export class Client<IsTCPReady extends boolean = boolean> extends (EventEmitter 
         this.tcp.on(eventName, (...args) => this.emit(eventName, ...args));
     }
     private forwardEvents() {
+        this.forwardEvent("disconnect");
+        this.forwardEvent("disconnectRaw");
         this.forwardEvent("loadChunk");
         this.forwardEvent("unloadChunk");
         this.forwardEvent("playerPosition");
