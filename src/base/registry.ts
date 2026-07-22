@@ -20,7 +20,7 @@ export class EntityRegistry {
         const json = JSON.parse(file);
         for (const entity in json) {
             this.data[entity] = json[entity];
-            this.mapTypeToData[json[entity]["type"]] = entity;
+            this.mapTypeToData[json[entity]["id"]] = entity;
         }
     }
 
