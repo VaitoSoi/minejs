@@ -4,7 +4,7 @@ const client = new Client({
     playerName: "bot",
     host: "localhost",
     port: 25565,
-    protocolVersion: 773,
+    protocolVersion: 776,
     // debug: {
     //     packetLogger: true
     // },
@@ -17,6 +17,8 @@ const client = new Client({
     // }
 });
 client.connect();
+client.on("disconnect", (...args) => console.dir({ name: "disconnect", args }, { depth: null }));
+client.on("disconnectRaw", (...args) => console.dir({ name: "disconnectRaw", args }, { depth: null }));
 // client.on("loadChunk", (...args) => console.dir({ name: "loadChunk", args }, { depth: null }));
 // client.on("unloadChunk", (...args) => console.dir({ name: "unloadChunk", args }, { depth: null }));
 // client.on("spawnEntity", (...args) => console.dir({ name: "spawnEntity", args }, { depth: null }));
@@ -32,17 +34,17 @@ client.on("message", (message) => {
     if (!message.content.startsWith("_")) return;
     const args = message.content.slice(1).split(" ");
     switch (args[0]) {
-        case "w": client.held(MoveDirection.Forward); break;
+        case "w": client.hold(MoveDirection.Forward); break;
         case "sw": client.release(MoveDirection.Forward); break;
         case "ws":
-            client.held(MoveDirection.Forward);
+            client.hold(MoveDirection.Forward);
             setTimeout(() => client.disconnect(), 2000);
             break;
-        case "s": client.held(MoveDirection.Backward); break;
+        case "s": client.hold(MoveDirection.Backward); break;
         case "ss": client.release(MoveDirection.Backward); break;
-        case "a": client.held(MoveDirection.Left); break;
+        case "a": client.hold(MoveDirection.Left); break;
         case "sa": client.release(MoveDirection.Left); break;
-        case "d": client.held(MoveDirection.Right); break;
+        case "d": client.hold(MoveDirection.Right); break;
         case "sd": client.release(MoveDirection.Right); break;
         case "stop": client.stopMoving(); break;
 

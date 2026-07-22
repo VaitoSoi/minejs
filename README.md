@@ -28,19 +28,26 @@ const client = new Client({
     playerName: "bot",
     host: "localhost",
     port: 25565,
-    protocolVersion: 773,
+    protocolVersion: 776,
     // debug: {
     //     packetLogger: true
     // },
     isOffline: true,
     loadRegistry: false,
     // auth: {
-    //     client_id: "<Your Azure app's client_id>",
+    //     client_id: "d86254d8-edf7-4640-90eb-643c99af188e",
     //     method: "loopback",
     //     openBrowser: true
     // }
 });
 client.connect();
+client.on("disconnect", (...args) => console.dir({ name: "disconnect", args }, { depth: null }));
+client.on("disconnectRaw", (...args) => console.dir({ name: "disconnectRaw", args }, { depth: null }));
+// client.on("loadChunk", (...args) => console.dir({ name: "loadChunk", args }, { depth: null }));
+// client.on("unloadChunk", (...args) => console.dir({ name: "unloadChunk", args }, { depth: null }));
+// client.on("spawnEntity", (...args) => console.dir({ name: "spawnEntity", args }, { depth: null }));
+// client.on("updateEntity", (...args) => console.dir({ name: "updateEntity", args }, { depth: null }));
+// client.on("removeEntity", (...args) => console.dir({ name: "removeEntity", args }, { depth: null }));
 client.on("playerPosition", (...args) => console.dir({ name: "playerPosition", args }, { depth: null }));
 client.on("message", (...args) => console.dir({ name: "message", args }, { depth: null }));
 client.on("systemMessage", (...args) => console.dir({ name: "systemMessage", args }, { depth: null }));
@@ -51,13 +58,17 @@ client.on("message", (message) => {
     if (!message.content.startsWith("_")) return;
     const args = message.content.slice(1).split(" ");
     switch (args[0]) {
-        case "w": client.held(MoveDirection.Forward); break;
+        case "w": client.hold(MoveDirection.Forward); break;
         case "sw": client.release(MoveDirection.Forward); break;
-        case "s": client.held(MoveDirection.Backward); break;
+        case "ws":
+            client.hold(MoveDirection.Forward);
+            setTimeout(() => client.disconnect(), 2000);
+            break;
+        case "s": client.hold(MoveDirection.Backward); break;
         case "ss": client.release(MoveDirection.Backward); break;
-        case "a": client.held(MoveDirection.Left); break;
+        case "a": client.hold(MoveDirection.Left); break;
         case "sa": client.release(MoveDirection.Left); break;
-        case "d": client.held(MoveDirection.Right); break;
+        case "d": client.hold(MoveDirection.Right); break;
         case "sd": client.release(MoveDirection.Right); break;
         case "stop": client.stopMoving(); break;
 
