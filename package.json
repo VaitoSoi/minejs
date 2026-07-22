@@ -4,11 +4,19 @@
   "description": "A Minecraft client package",
   "license": "MIT",
   "repository": {
-    "url": "https://github.com/VaitoSoi/minejs"
+    "url": "git+https://github.com/VaitoSoi/minejs"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
+  },
+  "keywords": [
+    "minecraft",
+    "node"
+  ],
+  "author": {
+    "name": "Vaito",
+    "email": "duyduy15456@gmail.com"
   },
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -28,14 +36,6 @@
     "typedoc": "^0.28.20",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "typescript-eslint": "^8.60.1"
-  },
-  "keywords": [
-    "minecraft",
-    "node"
-  ],
-  "author": {
-    "name": "Vaito",
-    "email": "duyduy15456@gmail.com"
   },
   "dependencies": {
     "bitset": "^5.2.3"
