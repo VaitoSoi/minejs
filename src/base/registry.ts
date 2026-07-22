@@ -16,7 +16,7 @@ export class EntityRegistry {
         if (this.loaded) return;
         this.loaded = true;
 
-        const file = await readFile(`${__dirname}/../../assets/minecraft/entity_dimension.json`, { encoding: "utf8" });
+        const file = await readFile(`${__dirname}/../../assets/minecraft/entities.json`, { encoding: "utf8" });
         const json = JSON.parse(file);
         for (const entity in json) {
             this.data[entity] = json[entity];
