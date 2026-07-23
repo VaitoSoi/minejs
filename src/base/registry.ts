@@ -1,8 +1,10 @@
-import { readFile } from "fs/promises";
+import { join } from "node:path";
 import { RegistryItemNotFound } from "./error";
 import { Block, BlockState } from "./block";
 
 export class EntityRegistry {
+    public static readonly RegistryPath = join(__dirname, "..", "..", "assets", "minecraft", "entities.json");
+    
     private static loaded: boolean = false;
     public static readonly data: Record<string, { height: number, width: number, type: number }> = {};
     public static readonly mapTypeToData: Record<number, string> = {};
@@ -16,7 +18,7 @@ export class EntityRegistry {
         if (this.loaded) return;
         this.loaded = true;
 
-        const file = await readFile(`${__dirname}/../../assets/minecraft/entities.json`, { encoding: "utf8" });
+        const file = await readFile(this.RegistryPath, { encoding: "utf8" });
         const json = JSON.parse(file);
         for (const entity in json) {
             this.data[entity] = json[entity];
@@ -38,6 +40,8 @@ export class EntityRegistry {
 };
 
 export class BlockRegistry {
+    public static readonly RegistryPath = join(__dirname, "..", "..", "assets", "minecraft", "blocks.json");
+
     private static loaded: boolean = false;
     /**
      * block id to block
@@ -57,7 +61,7 @@ export class BlockRegistry {
         if (this.loaded) return;
         this.loaded = true;
 
-        const file = await readFile(`${__dirname}/../../assets/minecraft/blocks.json`, { encoding: "utf8" });
+        const file = await readFile(this.RegistryPath, { encoding: "utf8" });
         const json = JSON.parse(file) as Record<string, any>;
         for (const [type, blockRaw] of Object.entries(json)) {
             const block = new Block(type, blockRaw['definition'], blockRaw['properties'], blockRaw['states']);
