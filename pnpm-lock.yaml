@@ -11,6 +11,9 @@ importers:
       bitset:
         specifier: ^5.2.3
         version: 5.2.3
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
     devDependencies:
       '@clean-jsdoc-theme/typedoc':
         specifier: 5.0.5
