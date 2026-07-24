@@ -1,5 +1,5 @@
 import { TCPClient } from "../client/tcp";
-import { AABB } from "./aabb";
+import { AABB } from "../physics/aabb";
 
 export class EntitiesManager {
     /**

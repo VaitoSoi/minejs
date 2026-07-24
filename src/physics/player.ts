@@ -1,10 +1,10 @@
-import { EntitiesManager } from "./entity";
+import { EntitiesManager } from "../world/entity";
 import { Angle, Axis, BaseAxis, BaseVec3, Vec3 } from "./direction";
 import { AABB, Shapes, VoxelShape } from "./aabb";
-import { BlockGetter, BlockManager, BlockState } from "./block";
-import { clamp, Epsilon, equal, lerp } from "./math";
+import { BlockGetter, BlockManager, BlockState } from "../world/block";
+import { clamp, Epsilon, equal, lerp } from "../base/math";
 import { TCPClient } from "../client/tcp";
-import { ClientNotReady } from "./error";
+import { ClientNotReady } from "../base/error";
 import { LevelHeightLimit } from "../client/static";
 
 export enum MoveDirection {

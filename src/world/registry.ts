@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { RegistryItemNotFound } from "./error";
+import { RegistryItemNotFound } from "../base/error";
 import { Block, BlockState } from "./block";
 
 export class EntityRegistry {

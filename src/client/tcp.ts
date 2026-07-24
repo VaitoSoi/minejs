@@ -18,7 +18,7 @@ import { BinaryEncoder } from "../translator/encoder";
 import { ClientNotReady, MissingAuthOption, SockerIsNotWritable } from "../base/error";
 import { computeUUID } from "../base/math";
 import { If } from "../base/typing";
-import { Angle, BaseVec3 } from "../base/direction";
+import { Angle, BaseVec3 } from "../physics/direction";
 import { packBlockPos, SectionsPerChunk } from "./static";
 import { AuthClient, AuthOption } from "./auth";
 

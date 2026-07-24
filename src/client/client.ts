@@ -1,12 +1,12 @@
 import { EventEmitter } from "node:stream";
-import { BlockManager, BlockState } from "../base/block";
-import { EntitiesManager } from "../base/entity";
-import { MoveDirection, Player } from "../base/player";
+import { BlockManager, BlockState } from "../world/block";
+import { EntitiesManager } from "../world/entity";
+import { MoveDirection, Player } from "../physics/player";
 import { TickLoop } from "../base/tick";
 import { Entity, Message, TCPClient, TCPClientEvents, TCPClientOption, TextComponent } from "./tcp";
 import { TypedEmmiter } from "../base/event";
-import { BlockRegistry, EntityRegistry } from "../base/registry";
-import { BaseVec3, Vec3 } from "../base/direction";
+import { BlockRegistry, EntityRegistry } from "../world/registry";
+import { BaseVec3, Vec3 } from "../physics/direction";
 
 export interface ClientEvents {
     ready: [readyClient: Client<true>],

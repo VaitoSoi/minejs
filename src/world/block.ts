@@ -1,8 +1,8 @@
 import { TCPClient } from "../client/tcp";
-import { AABB, BaseAABB, VoxelShape } from "./aabb";
-import { Epsilon, getFrac, getSign, lerp } from "./math";
+import { AABB, BaseAABB, VoxelShape } from "../physics/aabb";
+import { Epsilon, getFrac, getSign, lerp } from "../base/math";
 import { BlockRegistry } from "./registry";
-import { BaseVec3, Direction, Vec3 } from "./direction";
+import { BaseVec3, Direction, Vec3 } from "../physics/direction";
 
 /**
  * Represent a state of a block
