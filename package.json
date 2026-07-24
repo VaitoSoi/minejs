@@ -6,6 +6,7 @@
   "repository": {
     "url": "git+https://github.com/VaitoSoi/minejs"
   },
+  "homepage": "https://minejs.vaito.dev/",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
