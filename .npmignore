@@ -1,6 +1,5 @@
 .gemini
 node_modules/*
 .vscode/*
-dist/*
 docs_dist/*
 .github/
