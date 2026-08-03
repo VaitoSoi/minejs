@@ -3,6 +3,15 @@ import { CONTINUATION_FLAG, CONTINUE_BIT, isFixedSizeTag, isTag, MAX_QUANTIZED_V
 import { InvalidValue, NumberTooBig, UnexpectedValue } from "../base/error";
 import { FixedSizeTag, Tag } from "./static";
 
+export function makeMovementFlag(onGround: boolean, pushingWall: boolean) {
+    let flag = 0;
+    if (onGround)
+        flag &= 1;
+    if (pushingWall)
+        flag |= 1 << 2;
+    return flag;
+}
+
 export class BinaryEncoder {
     private buffer = Buffer.alloc(0);
 
