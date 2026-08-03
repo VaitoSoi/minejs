@@ -1,5 +1,5 @@
-import { TCPClient } from "../client/tcp";
 import { AABB } from "../physics/aabb";
+import { SharedState } from "./state";
 
 export class EntitiesManager {
     /**
@@ -13,7 +13,7 @@ export class EntitiesManager {
      */
     public entityToSection: Map<number, string> = new Map();
 
-    constructor(private tcp: TCPClient) { }
+    constructor(private state: SharedState) { }
 
     /**
      * Clear data
@@ -70,7 +70,7 @@ export class EntitiesManager {
      * @returns
      */
     public queryAABB(queryBB: AABB, exclude: number[] = []) {
-        this.tcp.checkReady();
+        this.state.checkReady();
 
         const { minX, minY, minZ, maxX, maxY, maxZ } = queryBB;
         const results: AABB[] = [];
@@ -84,7 +84,7 @@ export class EntitiesManager {
                     const bucket = this.sections.get(`${sx},${sy},${sz}`);
                     if (bucket) for (const id of bucket) {
                         if (exclude.includes(id)) continue;
-                        const entity = this.tcp.world!.entities[id];
+                        const entity = this.state.world!.entities[id];
                         const entityBB = AABB.fromEntityType(entity!.type);
                         if (queryBB.isIntersect(entityBB))
                             results.push(entityBB);

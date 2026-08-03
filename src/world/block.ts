@@ -1,8 +1,9 @@
 import { TCPClient } from "../client/tcp";
 import { AABB, BaseAABB, VoxelShape } from "../physics/aabb";
 import { Epsilon, getFrac, getSign, lerp } from "../base/math";
-import { BlockRegistry } from "./registry";
+import { BlockRegistry } from "../version/registry";
 import { BaseVec3, Direction, Vec3 } from "../physics/direction";
+import { SharedState } from "./state";
 
 /**
  * Represent a state of a block
@@ -76,7 +77,7 @@ export class Block {
  * Somehow, this is an equivalent implementation of Minecraft `Level`
  */
 export class BlockManager {
-    constructor(private tcp: TCPClient) { }
+    constructor(private state: SharedState) { }
 
     /**
      * Check if the chunk section is loaded
@@ -84,14 +85,14 @@ export class BlockManager {
     public hasChunkAt(x: number, y: number, z: number): boolean;
     public hasChunkAt(position: BaseVec3): boolean;
     public hasChunkAt(a: BaseVec3 | number, b?: number, c?: number): boolean {
-        this.tcp.checkReady();
+        this.state.checkReady();
         const { x, y, z } = Vec3.loadArgs(a, b, c);
         const sx = Math.floor(x / 16), sy = Math.floor((y + 64) / 16), sz = Math.floor(z / 16);
-        // // console.log({
+        // console.log({
         //     key: `${this.tcp.player!.dimension}:${sx}:${sz}`,
         //     hasKey: `${this.tcp.player!.dimension}:${sx}:${sz}` in this.tcp.world!.chunks
         // });
-        const section = this.tcp.world!.chunks[`${this.tcp.player!.dimension}:${sx}:${sz}`]?.sections[sy];
+        const section = this.state.world!.chunks[`${this.state.player!.dimension}:${sx}:${sz}`]?.sections[sy];
         if (!section) return false;
         return true;
     }
@@ -102,12 +103,12 @@ export class BlockManager {
     public at(x: number, y: number, z: number): BlockState | null;
     public at(position: BaseVec3): BlockState | null;
     public at(a: BaseVec3 | number, b?: number, c?: number): BlockState | null {
-        this.tcp.checkReady();
+        this.state.checkReady();
         let { x, y, z } = Vec3.loadArgs(a, b, c);
         x = Math.floor(x); y = Math.floor(y); z = Math.floor(z);
         const sx = Math.floor(x / 16), sy = Math.floor((y + 64) / 16), sz = Math.floor(z / 16);
         const px = ((x % 16) + 16) % 16, py = ((y % 16) + 16) % 16, pz = ((z % 16) + 16) % 16;
-        const section = this.tcp.world!.chunks[`${this.tcp.player!.dimension}:${sx}:${sz}`]?.sections[sy]?.block;
+        const section = this.state.world!.chunks[`${this.state.player!.dimension}:${sx}:${sz}`]?.sections[sy]?.block;
         if (!section) return null;
         if (section.data === null) return BlockRegistry.getState(section.palette[0]!.toString())!;
         const dataArray = section.data!;
@@ -128,7 +129,7 @@ export class BlockManager {
      * @returns 
      */
     public queryAABB(queryBB: AABB) {
-        this.tcp.checkReady();
+        this.state.checkReady();
 
         const { minX, minY, minZ, maxX, maxY, maxZ } = queryBB;
         const sx0 = Math.floor(minX), sx1 = Math.floor(maxX);
