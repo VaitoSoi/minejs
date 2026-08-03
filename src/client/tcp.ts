@@ -133,12 +133,14 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
             this.handlePacket();
         });
         connection.once("end", () => {
+            this.emit("destroy");
             if (this.state.status === ClientStatus.Disconnected) return;
             this.state.status = ClientStatus.Disconnected;
             this.state.state = ConnectionState.Disconnected;
             // this.emit("disconnect", "socket close");
         });
         connection.once("close", () => {
+            this.emit("destroy");
             if (this.state.status === ClientStatus.Disconnected) return;
             this.state.status = ClientStatus.Disconnected;
             this.state.state = ConnectionState.Disconnected;
