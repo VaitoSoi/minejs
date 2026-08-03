@@ -199,7 +199,7 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
     */
 
     public write(buf: Buffer) {
-        if (this.status == ClientStatus.Disconnected || !this.socket.writable)
+        if (!this.socket.writable)
             throw new SockerIsNotWritable();
 
         let sendBuffer = buf;
