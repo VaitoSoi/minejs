@@ -52,44 +52,8 @@ export interface TCPClientOption {
 
 export interface TCPClientEvents {
     connect: [],
-    disconnect: [reason: string],
-    disconnectRaw: [textComponent: TextComponent],
-    raw: [buf: Buffer],
-
-    /** Whenever client is ready to use */
-    ready: [readyClient: TCPClient<true>],
-
-    // Position
-    /** 
-     * Sync player position.
-     * 
-     * Noted that this fired when recived packet from server, not from the internal movement, meaning that calling `input` function would not fire this event. 
-     */
-    playerPosition: [position: BaseVec3],
-
-    /** Load chunk section */
-    loadChunk: [chunkX: number, sectionY: number, chunkZ: number],
-    /** Unload chunk column */
-    unloadChunk: [chunkX: number, chunkZ: number],
-
-    /** Spawn an entity */
-    spawnEntity: [entity: Entity],
-    /** Update spawned entity */
-    updateEntity: [entity: Entity],
-    /** Remove entity */
-    removeEntity: [entityId: number],
-
-    // Chat
-    /** Message, usually sent from player */
-    message: [message: Message],
-    /** Parsed system message, usually sent from the console, plugins, etc... */
-    systemMessage: [message: string],
-    /** Raw system messgae */
-    systemMessageRaw: [textComponent: TextComponent],
-    /** Parsed action bar message, the message appeared above your hot bar */
-    actionBar: [message: string],
-    /** Raw action bar */
-    actionBarRaw: [textComponent: TextComponent],
+    raw: [buffer: Buffer]
+    destroy: [],
 }
 
 export interface Message {
