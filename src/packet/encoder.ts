@@ -234,6 +234,8 @@ export class BinaryEncoder {
                 this.writeVarInt(Number(scaleFactor >> 2n));
             }
         }
+
+        return this;
     }
 
 }
