@@ -2,11 +2,19 @@ import { EventEmitter } from "node:stream";
 import { BlockManager, BlockState } from "../world/block";
 import { EntitiesManager } from "../world/entity";
 import { MoveDirection, Player } from "../physics/player";
-import { TickLoop } from "../base/tick";
-import { Entity, Message, TCPClient, TCPClientEvents, TCPClientOption, TextComponent } from "./tcp";
-import { TypedEmmiter } from "../base/event";
-import { BlockRegistry, EntityRegistry } from "../world/registry";
+import { TickLoop } from "../world/tick";
+import { Message, TCPClient, TCPClientOption } from "./tcp";
+import { TypedEmmiter as TypedEmitter } from "../base/event";
+import { BlockRegistry, EntityRegistry, PacketRegistry, ProtocolVersionMapping } from "../version/registry";
 import { BaseVec3, Vec3 } from "../physics/direction";
+import { TextComponent } from "../base/typing";
+import { EmittedEvent as EmittedEvent, Entity, SharedState } from "../world/state";
+import { Dispatcher } from "../packet/dispatcher";
+import { VersionCodec } from "../version/codec";
+import { AuthClient } from "./auth";
+import { computeUUID } from "../base/math";
+
+export type ClientOption = Omit<TCPClientOption, "protocolVersion"> & { version: string }
 
 export interface ClientEvents {
     connect: [],
@@ -52,6 +60,57 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
     constructor(private options: ClientOption) {
         super();
 
+        // For managing shared data
+        this.state = new SharedState(options, () => this.uuid);
+        // For handling packet
+        const dispatcher = new Dispatcher(this.state, this.emit.bind(this));
+        // For reading packet
+        const versionCodec = new VersionCodec(this.state);
+        // For throwing packet through internet
+        this.tcp = new TCPClient(
+            this.state,
+            {
+                ...options,
+                protocolVersion: ProtocolVersionMapping[options.version]!
+            }
+        );
+
+        this.tcp.forwardPacket = versionCodec.handlePacket.bind(versionCodec);
+        this.tcp.parsePacket = versionCodec.encodePacket.bind(versionCodec);
+        this.tcp.sendInitPacket = () => {
+            dispatcher.sendHandshake();
+            dispatcher.sendLoginStart();
+        };
+        dispatcher.sendPacket = this.tcp.sendPacket.bind(this.tcp);
+        dispatcher.tcpDisconnect = this.tcp.disconnect.bind(this.tcp);
+        versionCodec.consumePacket = dispatcher.handlePacket.bind(dispatcher);
+
+        // For querying data
+        this.blocks = new BlockManager(this.state);
+        this.entities = new EntitiesManager(this.state);
+        // For physics things
+        this.player = new Player(
+            this.state,
+            this.on,
+            this.entities,
+            this.blocks,
+        );
+
+        // For tick-tock tick-tock
+        this.tickLoop = new TickLoop(() => {
+            this.state.drainMutation();
+            this.state.drainEvent()
+                .forEach(event => this.emitEvent(event));
+            this.state.drainPacket()
+                .forEach((packet) => this.tcp.sendPacket(packet.id, packet.data));
+            this.player.tick();
+        });
+    }
+
+    private emitEvent(event: EmittedEvent) {
+        this.emit(event.event, ...event.args);
+    }
+
     private async loadRegistries() {
         if (Client.loadRegistry) return;
         Client.loadRegistry = true;
@@ -61,6 +120,7 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
     }
 
     // Start / stop
+
     /**
      * Create a connection to the server
      */
@@ -78,13 +138,12 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
 
         this.tcp.connect();
 
-        this.tcp.once("ready", () => {
-            this.emit("ready", this as Client<true>);
+        this.once("ready", () => {
             this.player.pruneInitialVal();
             this.player.setInitialVal();
             this.tickLoop.start();
         });
-        this.tcp.once("disconnect", () => {
+        this.once("disconnect", () => {
             this.tickLoop.stop();
             this.player.pruneInitialVal();
         });
