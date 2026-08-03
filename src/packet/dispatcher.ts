@@ -1,13 +1,13 @@
-import zod, { length } from "zod";
+import zod from "zod";
 import { createCipheriv, createDecipheriv, createPublicKey, publicEncrypt, randomBytes, constants as crypto_constants } from "node:crypto";
 import { BlockEntity, ChunkSection, ClientPlayer, ClientStatus, ConnectionState, Entity, GameMode, PaletteContainer, ServerKnownPack, ServerWorld, SharedState } from "../world/state";
-import { BinaryDecoder, getTextFromTextComponent, makeMovementFlag } from "./decoder";
+import { BinaryDecoder, getTextFromTextComponent } from "./decoder";
 import { packBlockPos, SectionsPerChunk } from "../client/static";
 import { Vec3 } from "../physics/direction";
 import { ProtocolVersionMapping } from "../version/registry";
-import { TCPClient } from "../client/tcp";
 import { TypedEmmiter } from "../base/event";
 import { ClientEvents } from "../client/client";
+import { makeMovementFlag } from "./encoder";
 
 function zodParse<Type extends zod.ZodType>(data: object, zod: Type): zod.infer<Type> {
     return zod.parse(data);
