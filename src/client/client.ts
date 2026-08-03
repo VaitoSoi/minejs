@@ -77,7 +77,18 @@ export class Client<IsTCPReady extends boolean = boolean> extends (EventEmitter 
     /**
      * Create a connection to the server
      */
-    public connect() {
+    public async connect() {
+        await this.loadRegistries();
+
+        if (!this.uuid.length) {
+            if (this.options.auth) {
+                const authClient = new AuthClient(this.options.auth);
+                const { uuid } = await authClient.auth();
+                this.uuid = Buffer.from(uuid);
+            } else
+                this.uuid = computeUUID(this.options.playerName);
+        }
+
         this.tcp.connect();
 
         this.tcp.once("ready", () => {

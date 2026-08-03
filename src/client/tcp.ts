@@ -163,16 +163,7 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
      * Connect to server
      */
     public async connect() {
-        if (!this.playerUUID) {
-            if (this.option.auth) {
-                const authClient = new AuthClient(this.option.auth);
-                const { uuid } = await authClient.auth();
-                this.playerUUID = Buffer.from(uuid);
-            } else
-                this.playerUUID = computeUUID(this.option.playerName);
-        }
-
-        this.status = ClientStatus.Connecting;
+        this.state.status = ClientStatus.Connecting;
         const connection = this.socket.connect({
             host: this.option.host,
             port: this.option.port
