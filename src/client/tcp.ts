@@ -95,7 +95,7 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
     constructor(
         private state: SharedState,
         public readonly option: TCPClientOption,
-        socketOption?: SocketConstructorOpts
+        socketOption?: SocketConstructorOpts,
     ) {
         super();
         this.socket = new Socket(socketOption);
@@ -195,9 +195,8 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
     }
 
     /*
-    * Send packet 
-    */
-
+     * Send packet
+     */
     public write(buf: Buffer) {
         if (!this.socket.writable)
             throw new SockerIsNotWritable();
