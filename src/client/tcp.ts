@@ -21,122 +21,13 @@ import { If } from "../base/typing";
 import { Angle, BaseVec3 } from "../physics/direction";
 import { packBlockPos, SectionsPerChunk } from "./static";
 import { AuthClient, AuthOption } from "./auth";
+import { ClientStatus, ConnectionState, Entity, SharedState } from "../world/state";
+import { EncodeResult, VersionCodec } from "../version/codec";
+import { PacketRegistry } from "../version/registry";
 
 // Minecraft related typing
-/**
- * Representing a TextComponent
- * 
- * @see https://minecraft.wiki/w/Text_component_format
- */
-export type TextComponent = Record<string, any>;
 
 
-export interface Server {
-    knownPacks?: ServerKnownPack
-}
-
-export interface ServerKnownPack {
-    namespace: string,
-    id: string,
-    version: string
-}
-
-/**
- * Represent world information
- */
-export interface ServerWorld {
-    /** Is hardcore enabled */
-    hardcore: boolean,
-    /** All dimensions */
-    dimensions: string[],
-    /** Max players allowed */
-    maxPlayers: number,
-    /** View distances */
-    viewDistance: number,
-    /** Simulation distance */
-    simulationDistance: number,
-
-    /**
-     * The record key is a chunk section position packed as `Player Dimension:Chunk X:Chunk Z[Section Y]`
-     * 
-     * For `Section Y`, a chunk is splitted into several cubic 16x16x16 sections, or in other word, a chunk is a bund of 16x16x16 sections stacked on each other.
-     */
-    chunks: Record<string, ChunkColumn>,
-    /**
-     * The record key is entity ID
-     */
-    entities: Record<number, Entity>,
-}
-
-/** 
- * Represent a chunk collumns, which may contains multiple chunks sections 
- */
-export interface ChunkColumn {
-    sections: Record<number, ChunkSection>,
-    blockEntities: Record<number, BlockEntity>
-}
-
-export interface ChunkSection {
-    block: PaletteContainer,
-    biome: PaletteContainer,
-}
-
-/**
- * Used for indirect mapping
- * 
- * @see https://minecraft.wiki/w/Java_Edition_protocol/Chunk_format#Paletted_Container_structure
- */
-export interface PaletteContainer {
-    bpe: number, // Bit per entry
-    palette: number[],
-    data: BigInt64Array | null, // null if the whole section contains one 1 type of block
-}
-
-/** Represent a block entity */
-export interface BlockEntity {
-    type: number,
-    data: Record<string, any>
-}
-
-/** Represent an entity */
-export interface Entity {
-    id: number,
-    type: number,
-    position: BaseVec3,
-    velocity: BaseVec3,
-    angle: Angle,
-    data: number
-}
-
-export enum GameMode {
-    Survival = 0,
-    Creative = 1,
-    Adventure = 2,
-    Spectator = 3
-}
-
-export interface ClientPlayer {
-    /** Player UUID */
-    uuid: string,
-    /** Player username */
-    username: string,
-    /** Player entity ID */
-    entityId: number,
-    /** Current game mode */
-    gameMode: GameMode,
-
-    position: BaseVec3,
-    velocity: BaseVec3,
-    angle: Angle,
-
-    /** Current dimension */
-    dimension: string
-}
-
-export interface ServerRegistryEntry {
-    id: string,
-    data: object
-}
 
 // TCP related typing
 export interface TCPClientOption {
@@ -226,20 +117,6 @@ export interface Message {
     }
 }
 
-export enum ClientStatus {
-    Disconnected,
-    Connecting,
-    Logining,
-    Ready,
-}
-
-export enum ClientState {
-    Disconnected,
-    Handshake,
-    Login,
-    Configure,
-    Play
-}
 
 // export enum TCPServerIntent {
 //     Status = 1,
@@ -252,10 +129,8 @@ export enum ClientState {
  * 
  * @see https://minecraft.wiki/w/Java_Edition_protocol/Packets?oldid=3445844
  */
-export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter as new () => TypedEmmiter<TCPClientEvents>) {
+export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClientEvents>) {
     public readonly socket: Socket;
-
-    public server: Server | undefined = undefined;
 
     // Internal var
     /**
@@ -265,25 +140,10 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
      * | -1    | dont compress |
      * | > 0   | compression threshold |
      */
-    private compressionThreshold: number = 0;
     private bufferPool: Buffer = Buffer.alloc(0);
-    public status: ClientStatus = ClientStatus.Disconnected;
-    private state: ClientState = ClientState.Disconnected;
-
-    // Encryption
-    private sharedSecret: Buffer | undefined = undefined;
-    private cipher: Cipheriv | undefined = undefined;
-    private decipher: Decipheriv | undefined = undefined;
-
-    // Play data
-    public world?: If<IsReady, ServerWorld>;
-    public player?: If<IsReady, ClientPlayer>;
-    public registry?: If<IsReady, Record<string, ServerRegistryEntry[]>>;
-
-    // Initial data
-    private playerUUID?: Buffer;
 
     constructor(
+        private state: SharedState,
         public readonly option: TCPClientOption,
         socketOption?: SocketConstructorOpts
     ) {
@@ -295,11 +155,9 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
             throw new MissingAuthOption();
     }
 
-    private wipePlayData() {
-        this.world = null as any;
-        this.player = null as any;
-        this.registry = null as any;
-    }
+    public sendInitPacket: () => void = () => { throw new Error("method not implemented"); };
+    public forwardPacket: (packetId: number, decoder: BinaryDecoder) => void = (...args) => { throw new Error("method not implemented"); };
+    public parsePacket: (packetId: string | number, data: object) => EncodeResult = (...args) => { throw new Error("method not implemented"); };
 
     /**
      * Connect to server
@@ -336,10 +194,10 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
             this.handlePacket();
         });
         connection.once("end", () => {
-            if (this.status === ClientStatus.Disconnected) return;
-            this.status = ClientStatus.Disconnected;
-            this.state = ClientState.Disconnected;
-            this.emit("disconnect", "socket close");
+            if (this.state.status === ClientStatus.Disconnected) return;
+            this.state.status = ClientStatus.Disconnected;
+            this.state.state = ConnectionState.Disconnected;
+            // this.emit("disconnect", "socket close");
         });
         connection.once("close", () => {
             if (this.status === ClientStatus.Disconnected) return;
@@ -352,16 +210,6 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
     public disconnect() {
         if (!this.socket.closed)
             this.socket.destroy();
-    }
-
-    public isReady(): this is TCPClient<true> {
-        return this.status === ClientStatus.Ready;
-    }
-
-    public checkReady() {
-        if (!this.isReady())
-            throw new ClientNotReady();
-        return true;
     }
 
     /*
@@ -384,9 +232,9 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
             const expectedPacketEnd = decoder.offset + packetLength;
 
             let packetID: number;
-            if (this.compressionThreshold === 0)
+            if (this.state.compressionThreshold === 0)
                 packetID = decoder.readVarInt();
-            else if (this.compressionThreshold === -1) {
+            else if (this.state.compressionThreshold === -1) {
                 decoder.readVarInt();
                 packetID = decoder.readVarInt();
             } else {
@@ -977,23 +825,24 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
             throw new SockerIsNotWritable();
 
         let sendBuffer = buf;
-        if (this.cipher)
-            sendBuffer = this.cipher.update(sendBuffer);
+        if (this.state.cipher)
+            sendBuffer = this.state.cipher.update(sendBuffer);
 
         this.socket.write(sendBuffer);
     }
 
-    public sendPacket(packetId: number, content: Buffer) {
+    public sendPacket(packetId: number | string, data: Record<string, any>) {
+        const { buffer: content, packet } = this.parsePacket(packetId, data);
         const encodePacketId = new BinaryEncoder();
-        encodePacketId.writeVarInt(packetId);
+        encodePacketId.writeVarInt(packet.id);
         const sendData = Buffer.concat([encodePacketId.getBuffer(), content]);
 
-        let packet: Buffer;
-        if (this.compressionThreshold !== 0) {
+        let sendingPacket: Buffer;
+        if (this.state.compressionThreshold !== 0) {
             let data: Buffer;
             let uncompressedLength: number;
 
-            if (this.compressionThreshold > 0 && sendData.length > this.compressionThreshold) {
+            if (this.state.compressionThreshold > 0 && sendData.length > this.state.compressionThreshold) {
                 uncompressedLength = sendData.length;
                 data = deflateSync(sendData);
             } else {
@@ -1007,122 +856,14 @@ export class TCPClient<IsReady extends boolean = boolean> extends (EventEmitter 
 
             const packetLengthEncoder = new BinaryEncoder();
             packetLengthEncoder.writeVarInt(dataLengthBuf.length + data.length);
-            packet = Buffer.concat([packetLengthEncoder.getBuffer(), dataLengthBuf, data]);
+            sendingPacket = Buffer.concat([packetLengthEncoder.getBuffer(), dataLengthBuf, data]);
         } else {
             const packetLengthEncoder = new BinaryEncoder();
             packetLengthEncoder.writeVarInt(sendData.length);
-            packet = Buffer.concat([packetLengthEncoder.getBuffer(), sendData]);
+            sendingPacket = Buffer.concat([packetLengthEncoder.getBuffer(), sendData]);
         }
 
-        this.write(packet);
-    }
-
-    // Login
-
-    private sendHandshake() {
-        this.state = ClientState.Handshake;
-        const encoder = new BinaryEncoder();
-        encoder.writeVarInt(this.option.protocolVersion);
-        encoder.writeString(this.option.host);
-        encoder.writeUShort(this.option.port);
-        encoder.writeVarInt(2);
-        this.sendPacket(0x00, encoder.getBuffer());
-    }
-
-    private sendLoginStart() {
-        this.state = ClientState.Login;
-        this.status = ClientStatus.Logining;
-        const encoder = new BinaryEncoder();
-        const playerName = this.option.playerName;
-        const playerUUID = this.playerUUID!;
-        encoder.writeString(playerName);
-        encoder.concat(playerUUID);
-        this.sendPacket(0x00, encoder.getBuffer());
-    }
-
-    private sendEncryptionResponse(publicKey: Buffer, verifyToken: Buffer) {
-        const encryptedSecret = publicEncrypt({
-            key: createPublicKey({ key: publicKey, format: 'der', type: 'spki' }),
-            padding: crypto_constants.RSA_PKCS1_PADDING
-        }, this.sharedSecret!);
-        const encryptedVerifyToken = publicEncrypt({
-            key: createPublicKey({ key: publicKey, format: 'der', type: 'spki' }),
-            padding: crypto_constants.RSA_PKCS1_PADDING
-        }, verifyToken);
-        const encoder = new BinaryEncoder();
-        encoder.writeRawPrefixedArray(encryptedSecret, 8);
-        encoder.writeRawPrefixedArray(encryptedVerifyToken, 8);
-        this.sendPacket(0x01, encoder.getBuffer());
-    }
-
-    private sendLoginAck() {
-        this.state = ClientState.Configure;
-        this.server = {};
-        this.sendPacket(0x03, Buffer.alloc(0));
-    }
-
-    // Configuring
-
-    private sendKnownPack(knownPacks: ServerKnownPack[]) {
-        const encoder = new BinaryEncoder();
-        encoder.writePrefixedArray(knownPacks.length, (encoder, ind) => {
-            const pack = knownPacks[ind]!;
-            return encoder
-                .writeString(pack.namespace)
-                .writeString(pack.id)
-                .writeString(pack.version);
-        });
-        this.sendPacket(0x07, encoder.getBuffer());
-    }
-
-    private sendConfigureAck() {
-        this.state = ClientState.Play;
-        this.sendPacket(0x3, Buffer.alloc(0));
-    }
-
-    // Play
-
-    private sendConfirmTeleportation(teleportId: number) {
-        const encoder = new BinaryEncoder();
-        encoder.writeVarInt(teleportId);
-        this.sendPacket(0, encoder.getBuffer());
-    }
-
-    private sendKeepAlive(id: bigint) {
-        const encoder = new BinaryEncoder();
-        encoder.writeLong(id);
-        this.sendPacket(0x1C, encoder.getBuffer());
-    }
-
-    public sendPlayerPosRot(pos: BaseVec3, rot: Angle, onGround: boolean, pushingWall: boolean) {
-        let flag = 0;
-        if (onGround)
-            flag |= 1;
-        if (pushingWall)
-            flag |= 1 << 2;
-        // // console.log({ pos, rot, flag });
-        const encoder = new BinaryEncoder();
-        encoder.writeDouble(pos.x);
-        encoder.writeDouble(pos.y);
-        encoder.writeDouble(pos.z);
-        encoder.writeFloat(rot.yaw);
-        encoder.writeFloat(rot.pitch);
-        encoder.writeByte(flag);
-        this.sendPacket(0x1F, encoder.getBuffer());
-    }
-    public sendPlayerPos(pos: BaseVec3, onGround: boolean, pushingWall: boolean) {
-        let flag = 0;
-        if (onGround)
-            flag &= 1;
-        if (pushingWall)
-            flag |= 1 << 2;
-        // // console.log({ pos, flag });
-        const encoder = new BinaryEncoder();
-        encoder.writeDouble(pos.x);
-        encoder.writeDouble(pos.y);
-        encoder.writeDouble(pos.z);
-        encoder.writeByte(flag);
-        this.sendPacket(0x1E, encoder.getBuffer());
+        this.write(sendingPacket);
     }
     public sendPlayerRot(rot: Angle, onGround: boolean, pushingWall: boolean) {
         let flag = 0;
