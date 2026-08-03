@@ -99,7 +99,6 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
     ) {
         super();
         this.socket = new Socket(socketOption);
-        this.wipePlayData();
 
         if (!option.isOffline && !option.auth)
             throw new MissingAuthOption();
