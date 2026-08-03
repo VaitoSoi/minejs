@@ -121,9 +121,7 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
 
         connection.on("connect", () => {
             this.emit("connect");
-            this.wipePlayData();
-            this.sendHandshake();
-            this.sendLoginStart();
+            this.sendInitPacket();
         });
         connection.on("data", (data) => {
             let buf = Buffer.from(data);
