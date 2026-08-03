@@ -1,0 +1,4741 @@
+{
+  "handshaking": {
+    "clientbound": {},
+    "serverbound": {
+      "0x0": {
+        "name": "intention",
+        "id": 0,
+        "structure": {
+          "protocol_version": {
+            "type": "var_int"
+          },
+          "server_address": {
+            "type": "string",
+            "length": 255
+          },
+          "server_port": {
+            "type": "unsigned_short"
+          },
+          "intent": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          }
+        }
+      }
+    }
+  },
+  "status": {
+    "clientbound": {
+      "0x0": {
+        "name": "status_response",
+        "id": 0,
+        "structure": {
+          "json_response": {
+            "type": "string",
+            "length": 32767
+          }
+        }
+      },
+      "0x1": {
+        "name": "pong_response",
+        "id": 1,
+        "structure": {
+          "timestamp": {
+            "type": "long"
+          }
+        }
+      }
+    },
+    "serverbound": {
+      "0x0": {
+        "name": "status_request",
+        "id": 0,
+        "structure": {}
+      },
+      "0x1": {
+        "name": "ping_request",
+        "id": 1,
+        "structure": {
+          "timestamp": {
+            "type": "long"
+          }
+        }
+      }
+    }
+  },
+  "login": {
+    "clientbound": {
+      "0x0": {
+        "name": "login_disconnect",
+        "id": 0,
+        "structure": {
+          "reason": {
+            "type": "json_text"
+          }
+        }
+      },
+      "0x1": {
+        "name": "hello",
+        "id": 1,
+        "structure": {
+          "server_id": {
+            "type": "string",
+            "length": 20
+          },
+          "public_key": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "byte"
+            }
+          },
+          "verify_token": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "byte"
+            }
+          },
+          "should_authenticate": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x2": {
+        "name": "login_finished",
+        "id": 2,
+        "structure": {
+          "profile": {
+            "type": "game_profile"
+          },
+          "session_id": {
+            "type": "uuid"
+          }
+        }
+      },
+      "0x3": {
+        "name": "login_compression",
+        "id": 3,
+        "structure": {
+          "threshold": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x4": {
+        "name": "custom_query",
+        "id": 4,
+        "structure": {
+          "message_id": {
+            "type": "var_int"
+          },
+          "channel": {
+            "type": "string"
+          },
+          "data": {
+            "type": "varies"
+          }
+        }
+      },
+      "0x5": {
+        "name": "cookie_request",
+        "id": 5,
+        "structure": {
+          "key": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "serverbound": {
+      "0x0": {
+        "name": "hello",
+        "id": 0,
+        "structure": {
+          "name": {
+            "type": "string",
+            "length": 16
+          },
+          "player_uuid": {
+            "type": "uuid"
+          }
+        }
+      },
+      "0x1": {
+        "name": "key",
+        "id": 1,
+        "structure": {
+          "shared_secret": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "byte"
+            }
+          },
+          "verify_token": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "byte"
+            }
+          }
+        }
+      },
+      "0x2": {
+        "name": "custom_query_answer",
+        "id": 2,
+        "structure": {
+          "message_id": {
+            "type": "var_int"
+          },
+          "data": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "varies"
+            }
+          }
+        }
+      },
+      "0x3": {
+        "name": "login_acknowledged",
+        "id": 3,
+        "structure": {}
+      },
+      "0x4": {
+        "name": "cookie_response",
+        "id": 4,
+        "structure": {
+          "key": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "prefixed_array",
+              "length": 5120,
+              "subType": {
+                "type": "byte"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "configuration": {
+    "clientbound": {
+      "0x0": {
+        "name": "cookie_request",
+        "id": 0,
+        "structure": {
+          "key": {
+            "type": "string"
+          }
+        }
+      },
+      "0x1": {
+        "name": "custom_payload",
+        "id": 1,
+        "structure": {
+          "channel": {
+            "type": "string"
+          },
+          "data": {
+            "type": "varies"
+          }
+        }
+      },
+      "0x2": {
+        "name": "disconnect",
+        "id": 2,
+        "structure": {
+          "reason": {
+            "type": "nbt"
+          }
+        }
+      },
+      "0x3": {
+        "name": "finish_configuration",
+        "id": 3,
+        "structure": {}
+      },
+      "0x4": {
+        "name": "keep_alive",
+        "id": 4,
+        "structure": {
+          "keep_alive_id": {
+            "type": "long"
+          }
+        }
+      },
+      "0x5": {
+        "name": "ping",
+        "id": 5,
+        "structure": {
+          "id": {
+            "type": "int"
+          }
+        }
+      },
+      "0x6": {
+        "name": "reset_chat",
+        "id": 6,
+        "structure": {}
+      },
+      "0x7": {
+        "name": "registry_data",
+        "id": 7,
+        "structure": {
+          "registry_id": {
+            "type": "string"
+          },
+          "entries": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "entry_id": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "prefixed_optional",
+                  "subType": {
+                    "type": "nbt"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x8": {
+        "name": "resource_pack_pop",
+        "id": 8,
+        "structure": {
+          "uuid": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "uuid"
+            }
+          }
+        }
+      },
+      "0x9": {
+        "name": "resource_pack_push",
+        "id": 9,
+        "structure": {
+          "uuid": {
+            "type": "uuid"
+          },
+          "url": {
+            "type": "string",
+            "length": 32767
+          },
+          "hash": {
+            "type": "string",
+            "length": 40
+          },
+          "forced": {
+            "type": "boolean"
+          },
+          "prompt_message": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "nbt"
+            }
+          }
+        }
+      },
+      "0xA": {
+        "name": "store_cookie",
+        "id": 10,
+        "structure": {
+          "key": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "prefixed_array",
+            "length": 5120,
+            "subType": {
+              "type": "byte"
+            }
+          }
+        }
+      },
+      "0xB": {
+        "name": "transfer",
+        "id": 11,
+        "structure": {
+          "host": {
+            "type": "string",
+            "length": 32767
+          },
+          "port": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0xC": {
+        "name": "update_enabled_features",
+        "id": 12,
+        "structure": {
+          "feature_flags": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "0xD": {
+        "name": "update_tags",
+        "id": 13,
+        "structure": {
+          "tagged_registries": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "registry": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "prefixed_array",
+                  "subType": {
+                    "type": "not_implemented",
+                    "comment": "Tag"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "0xE": {
+        "name": "select_known_packs",
+        "id": 14,
+        "structure": {
+          "known_packs": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "namespace": {
+                  "type": "string",
+                  "length": 32767
+                },
+                "id": {
+                  "type": "string",
+                  "length": 32767
+                },
+                "version": {
+                  "type": "string",
+                  "length": 32767
+                }
+              }
+            }
+          }
+        }
+      },
+      "0xF": {
+        "name": "custom_report_details",
+        "id": 15,
+        "structure": {
+          "details": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "title": {
+                  "type": "string",
+                  "length": 128
+                },
+                "description": {
+                  "type": "string",
+                  "length": 4096
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x10": {
+        "name": "server_links",
+        "id": 16,
+        "structure": {
+          "links": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "label": {
+                  "type": "not_implemented",
+                  "comment": "Either VarInt Enum or Text Component"
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x11": {
+        "name": "clear_dialog",
+        "id": 17,
+        "structure": {}
+      },
+      "0x12": {
+        "name": "show_dialog",
+        "id": 18,
+        "structure": {
+          "dialog": {
+            "type": "nbt"
+          }
+        }
+      },
+      "0x13": {
+        "name": "code_of_conduct",
+        "id": 19,
+        "structure": {
+          "code_of_conduct": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "serverbound": {
+      "0x0": {
+        "name": "client_information",
+        "id": 0,
+        "structure": {
+          "locale": {
+            "type": "string",
+            "length": 16
+          },
+          "view_distance": {
+            "type": "byte"
+          },
+          "chat_mode": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "chat_colors": {
+            "type": "boolean"
+          },
+          "displayed_skin_parts": {
+            "type": "unsigned_byte"
+          },
+          "main_hand": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "enable_text_filtering": {
+            "type": "boolean"
+          },
+          "allow_server_listings": {
+            "type": "boolean"
+          },
+          "particle_status": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          }
+        }
+      },
+      "0x1": {
+        "name": "cookie_response",
+        "id": 1,
+        "structure": {
+          "key": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "prefixed_array",
+              "length": 5120,
+              "subType": {
+                "type": "byte"
+              }
+            }
+          }
+        }
+      },
+      "0x2": {
+        "name": "custom_payload",
+        "id": 2,
+        "structure": {
+          "channel": {
+            "type": "string"
+          },
+          "data": {
+            "type": "varies"
+          }
+        }
+      },
+      "0x3": {
+        "name": "finish_configuration",
+        "id": 3,
+        "structure": {}
+      },
+      "0x4": {
+        "name": "keep_alive",
+        "id": 4,
+        "structure": {
+          "keep_alive_id": {
+            "type": "long"
+          }
+        }
+      },
+      "0x5": {
+        "name": "pong",
+        "id": 5,
+        "structure": {
+          "id": {
+            "type": "int"
+          }
+        }
+      },
+      "0x6": {
+        "name": "resource_pack",
+        "id": 6,
+        "structure": {
+          "uuid": {
+            "type": "uuid"
+          },
+          "result": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          }
+        }
+      },
+      "0x7": {
+        "name": "select_known_packs",
+        "id": 7,
+        "structure": {
+          "known_packs": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "namespace": {
+                  "type": "string",
+                  "length": 32767
+                },
+                "id": {
+                  "type": "string",
+                  "length": 32767
+                },
+                "version": {
+                  "type": "string",
+                  "length": 32767
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x8": {
+        "name": "custom_click_action",
+        "id": 8,
+        "structure": {
+          "id": {
+            "type": "string"
+          },
+          "payload_size": {
+            "type": "var_int"
+          },
+          "payload": {
+            "type": "nbt"
+          }
+        }
+      },
+      "0x9": {
+        "name": "accept_code_of_conduct",
+        "id": 9,
+        "structure": {}
+      }
+    }
+  },
+  "play": {
+    "clientbound": {
+      "0x0": {
+        "name": "bundle_delimiter",
+        "id": 0,
+        "structure": {}
+      },
+      "0x1": {
+        "name": "add_entity",
+        "id": 1,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "entity_uuid": {
+            "type": "uuid"
+          },
+          "type": {
+            "type": "var_int"
+          },
+          "x": {
+            "type": "double"
+          },
+          "y": {
+            "type": "double"
+          },
+          "z": {
+            "type": "double"
+          },
+          "velocity": {
+            "type": "lpvec3"
+          },
+          "pitch": {
+            "type": "angle"
+          },
+          "yaw": {
+            "type": "angle"
+          },
+          "head_yaw": {
+            "type": "angle"
+          },
+          "data": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x2": {
+        "name": "animate",
+        "id": 2,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "animation": {
+            "type": "unsigned_byte"
+          }
+        }
+      },
+      "0x3": {
+        "name": "award_stats",
+        "id": 3,
+        "structure": {
+          "statistics": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "category_id": {
+                  "type": "var_int"
+                },
+                "statistic_id": {
+                  "type": "var_int"
+                },
+                "value": {
+                  "type": "var_int"
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x4": {
+        "name": "block_changed_ack",
+        "id": 4,
+        "structure": {
+          "sequence_id": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x5": {
+        "name": "block_destruction",
+        "id": 5,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "location": {
+            "type": "position"
+          },
+          "destroy_stage": {
+            "type": "unsigned_byte"
+          }
+        }
+      },
+      "0x6": {
+        "name": "block_entity_data",
+        "id": 6,
+        "structure": {
+          "location": {
+            "type": "position"
+          },
+          "type": {
+            "type": "var_int"
+          },
+          "nbt_data": {
+            "type": "nbt"
+          }
+        }
+      },
+      "0x7": {
+        "name": "block_event",
+        "id": 7,
+        "structure": {
+          "location": {
+            "type": "position"
+          },
+          "action_id_byte_1": {
+            "type": "unsigned_byte"
+          },
+          "action_parameter_byte_2": {
+            "type": "unsigned_byte"
+          },
+          "block_type": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x8": {
+        "name": "block_update",
+        "id": 8,
+        "structure": {
+          "location": {
+            "type": "position"
+          },
+          "block_id": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0xA": {
+        "name": "change_difficulty",
+        "id": 10,
+        "structure": {
+          "difficulty": {
+            "type": "enum",
+            "subType": {
+              "type": "unsigned_byte"
+            }
+          },
+          "difficulty_locked": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0xB": {
+        "name": "chunk_batch_finished",
+        "id": 11,
+        "structure": {
+          "batch_size": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0xC": {
+        "name": "chunk_batch_start",
+        "id": 12,
+        "structure": {}
+      },
+      "0xD": {
+        "name": "chunks_biomes",
+        "id": 13,
+        "structure": {
+          "chunk_biome_data": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "chunk_z": {
+                  "type": "int"
+                },
+                "chunk_x": {
+                  "type": "int"
+                },
+                "data": {
+                  "type": "prefixed_array",
+                  "subType": {
+                    "type": "byte"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "0xE": {
+        "name": "clear_titles",
+        "id": 14,
+        "structure": {
+          "reset": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0xF": {
+        "name": "command_suggestions",
+        "id": 15,
+        "structure": {
+          "id": {
+            "type": "var_int"
+          },
+          "start": {
+            "type": "var_int"
+          },
+          "length": {
+            "type": "var_int"
+          },
+          "matches": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "match": {
+                  "type": "string",
+                  "length": 32767
+                },
+                "tooltip": {
+                  "type": "prefixed_optional",
+                  "subType": {
+                    "type": "nbt"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x10": {
+        "name": "commands",
+        "id": 16,
+        "structure": {
+          "nodes": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "not_implemented",
+              "comment": "Node"
+            }
+          },
+          "root_index": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x11": {
+        "name": "container_close",
+        "id": 17,
+        "structure": {
+          "window_id": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x12": {
+        "name": "container_set_content",
+        "id": 18,
+        "structure": {
+          "window_id": {
+            "type": "var_int"
+          },
+          "state_id": {
+            "type": "var_int"
+          },
+          "slot_data": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "not_implemented",
+              "comment": "Slot"
+            }
+          },
+          "carried_item": {
+            "type": "not_implemented",
+            "comment": "Slot"
+          }
+        }
+      },
+      "0x13": {
+        "name": "container_set_data",
+        "id": 19,
+        "structure": {
+          "window_id": {
+            "type": "var_int"
+          },
+          "property": {
+            "type": "short"
+          },
+          "value": {
+            "type": "short"
+          }
+        }
+      },
+      "0x14": {
+        "name": "container_set_slot",
+        "id": 20,
+        "structure": {
+          "window_id": {
+            "type": "var_int"
+          },
+          "state_id": {
+            "type": "var_int"
+          },
+          "slot": {
+            "type": "short"
+          },
+          "slot_data": {
+            "type": "not_implemented",
+            "comment": "Slot"
+          }
+        }
+      },
+      "0x15": {
+        "name": "cookie_request",
+        "id": 21,
+        "structure": {
+          "key": {
+            "type": "string"
+          }
+        }
+      },
+      "0x16": {
+        "name": "cooldown",
+        "id": 22,
+        "structure": {
+          "cooldown_group": {
+            "type": "string"
+          },
+          "cooldown_ticks": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x17": {
+        "name": "custom_chat_completions",
+        "id": 23,
+        "structure": {
+          "action": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "entries": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "string",
+              "length": 32767
+            }
+          }
+        }
+      },
+      "0x18": {
+        "name": "custom_payload",
+        "id": 24,
+        "structure": {
+          "channel": {
+            "type": "string"
+          },
+          "data": {
+            "type": "varies"
+          }
+        }
+      },
+      "0x19": {
+        "name": "damage_event",
+        "id": 25,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "source_type_id": {
+            "type": "var_int"
+          },
+          "source_cause_id": {
+            "type": "var_int"
+          },
+          "source_direct_id": {
+            "type": "var_int"
+          },
+          "source_position": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "x": {
+                  "type": "double"
+                },
+                "y": {
+                  "type": "double"
+                },
+                "z": {
+                  "type": "double"
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x1A": {
+        "name": "debug_block_value",
+        "id": 26,
+        "structure": {
+          "location": {
+            "type": "position"
+          },
+          "update": {
+            "type": "not_implemented",
+            "comment": "Debug Subscription Update"
+          }
+        }
+      },
+      "0x1B": {
+        "name": "debug_chunk_value",
+        "id": 27,
+        "structure": {
+          "chunk_z": {
+            "type": "int"
+          },
+          "chunk_x": {
+            "type": "int"
+          },
+          "update": {
+            "type": "not_implemented",
+            "comment": "Debug Subscription Update"
+          }
+        }
+      },
+      "0x1C": {
+        "name": "debug_entity_value",
+        "id": 28,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "update": {
+            "type": "not_implemented",
+            "comment": "Debug Subscription Update"
+          }
+        }
+      },
+      "0x1D": {
+        "name": "debug_event",
+        "id": 29,
+        "structure": {
+          "event": {
+            "type": "not_implemented",
+            "comment": "Debug Subscription Event"
+          }
+        }
+      },
+      "0x1E": {
+        "name": "debug_sample",
+        "id": 30,
+        "structure": {
+          "sample": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "long"
+            }
+          },
+          "sample_type": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          }
+        }
+      },
+      "0x1F": {
+        "name": "delete_chat",
+        "id": 31,
+        "structure": {
+          "message_id": {
+            "type": "var_int"
+          },
+          "signature": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "not_implemented",
+              "length": 256
+            }
+          }
+        }
+      },
+      "0x20": {
+        "name": "disconnect",
+        "id": 32,
+        "structure": {
+          "reason": {
+            "type": "nbt"
+          }
+        }
+      },
+      "0x21": {
+        "name": "disguised_chat",
+        "id": 33,
+        "structure": {
+          "message": {
+            "type": "nbt"
+          },
+          "chat_type": {
+            "type": "id_or_x",
+            "subType": {
+              "type": "chat_type"
+            }
+          },
+          "sender_name": {
+            "type": "nbt"
+          },
+          "target_name": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "nbt"
+            }
+          }
+        }
+      },
+      "0x22": {
+        "name": "entity_event",
+        "id": 34,
+        "structure": {
+          "entity_id": {
+            "type": "int"
+          },
+          "entity_status": {
+            "type": "enum",
+            "subType": {
+              "type": "byte"
+            }
+          }
+        }
+      },
+      "0x23": {
+        "name": "entity_position_sync",
+        "id": 35,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "x": {
+            "type": "double"
+          },
+          "y": {
+            "type": "double"
+          },
+          "z": {
+            "type": "double"
+          },
+          "velocity_x": {
+            "type": "double"
+          },
+          "velocity_y": {
+            "type": "double"
+          },
+          "velocity_z": {
+            "type": "double"
+          },
+          "yaw": {
+            "type": "float"
+          },
+          "pitch": {
+            "type": "float"
+          },
+          "on_ground": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x24": {
+        "name": "explode",
+        "id": 36,
+        "structure": {
+          "x": {
+            "type": "double"
+          },
+          "y": {
+            "type": "double"
+          },
+          "z": {
+            "type": "double"
+          },
+          "radius": {
+            "type": "float"
+          },
+          "block_count": {
+            "type": "int"
+          },
+          "player_delta_velocity": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "x": {
+                  "type": "double"
+                },
+                "y": {
+                  "type": "double"
+                },
+                "z": {
+                  "type": "double"
+                }
+              }
+            }
+          },
+          "explosion_particle_id": {
+            "type": "var_int"
+          },
+          "explosion_particle_data": {
+            "type": "varies"
+          },
+          "explosion_sound": {
+            "type": "id_or_x",
+            "subType": {
+              "type": "not_implemented",
+              "comment": "Sound Event"
+            }
+          },
+          "block_particle_alternatives": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "particle_id": {
+                  "type": "var_int"
+                },
+                "particle_data": {
+                  "type": "varies"
+                },
+                "scaling": {
+                  "type": "float"
+                },
+                "speed": {
+                  "type": "float"
+                },
+                "weight": {
+                  "type": "var_int"
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x25": {
+        "name": "forget_level_chunk",
+        "id": 37,
+        "structure": {
+          "chunk_z": {
+            "type": "int"
+          },
+          "chunk_x": {
+            "type": "int"
+          }
+        }
+      },
+      "0x26": {
+        "name": "game_event",
+        "id": 38,
+        "structure": {
+          "event": {
+            "type": "unsigned_byte"
+          },
+          "value": {
+            "type": "float"
+          }
+        }
+      },
+      "0x27": {
+        "name": "game_rule_values",
+        "id": 39,
+        "structure": {
+          "rules": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "length": 32767
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x28": {
+        "name": "game_test_highlight_pos",
+        "id": 40,
+        "structure": {
+          "absolute_location": {
+            "type": "position"
+          },
+          "relative_location": {
+            "type": "position"
+          }
+        }
+      },
+      "0x29": {
+        "name": "mount_screen_open",
+        "id": 41,
+        "structure": {
+          "window_id": {
+            "type": "var_int"
+          },
+          "inventory_columns_count": {
+            "type": "var_int"
+          },
+          "entity_id": {
+            "type": "int"
+          }
+        }
+      },
+      "0x2A": {
+        "name": "hurt_animation",
+        "id": 42,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "yaw": {
+            "type": "float"
+          }
+        }
+      },
+      "0x2B": {
+        "name": "initialize_border",
+        "id": 43,
+        "structure": {
+          "center_x": {
+            "type": "double"
+          },
+          "center_z": {
+            "type": "double"
+          },
+          "old_diameter": {
+            "type": "double"
+          },
+          "new_diameter": {
+            "type": "double"
+          },
+          "speed": {
+            "type": "var_long"
+          },
+          "portal_teleport_boundary": {
+            "type": "var_int"
+          },
+          "warning_blocks": {
+            "type": "var_int"
+          },
+          "warning_time": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x2C": {
+        "name": "keep_alive",
+        "id": 44,
+        "structure": {
+          "keep_alive_id": {
+            "type": "long"
+          }
+        }
+      },
+      "0x2D": {
+        "name": "level_chunk_with_light",
+        "id": 45,
+        "structure": {
+          "chunk_x": {
+            "type": "int"
+          },
+          "chunk_z": {
+            "type": "int"
+          },
+          "heightmaps": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "heightmap"
+            }
+          },
+          "data": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "byte"
+            }
+          },
+          "block_entities": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "packed_xz": {
+                  "type": "unsigned_byte"
+                },
+                "y": {
+                  "type": "short"
+                },
+                "type": {
+                  "type": "var_int"
+                },
+                "data": {
+                  "type": "nbt"
+                }
+              }
+            }
+          },
+          "light": {
+            "type": "not_implemented",
+            "comment": "Light Data"
+          }
+        }
+      },
+      "0x2E": {
+        "name": "level_event",
+        "id": 46,
+        "structure": {
+          "event": {
+            "type": "int"
+          },
+          "location": {
+            "type": "position"
+          },
+          "data": {
+            "type": "int"
+          },
+          "disable_relative_volume": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x2F": {
+        "name": "level_particles",
+        "id": 47,
+        "structure": {
+          "long_distance": {
+            "type": "boolean"
+          },
+          "always_visible": {
+            "type": "boolean"
+          },
+          "x": {
+            "type": "double"
+          },
+          "y": {
+            "type": "double"
+          },
+          "z": {
+            "type": "double"
+          },
+          "offset_x": {
+            "type": "float"
+          },
+          "offset_y": {
+            "type": "float"
+          },
+          "offset_z": {
+            "type": "float"
+          },
+          "max_speed": {
+            "type": "float"
+          },
+          "particle_count": {
+            "type": "int"
+          },
+          "particle_id": {
+            "type": "var_int"
+          },
+          "data": {
+            "type": "varies"
+          }
+        }
+      },
+      "0x30": {
+        "name": "light_update",
+        "id": 48,
+        "structure": {
+          "chunk_x": {
+            "type": "var_int"
+          },
+          "chunk_z": {
+            "type": "var_int"
+          },
+          "data": {
+            "type": "not_implemented",
+            "comment": "Light Data"
+          }
+        }
+      },
+      "0x31": {
+        "name": "login",
+        "id": 49,
+        "structure": {
+          "entity_id": {
+            "type": "int"
+          },
+          "is_hardcore": {
+            "type": "boolean"
+          },
+          "dimension_names": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "string"
+            }
+          },
+          "max_players": {
+            "type": "var_int"
+          },
+          "view_distance": {
+            "type": "var_int"
+          },
+          "simulation_distance": {
+            "type": "var_int"
+          },
+          "reduced_debug_info": {
+            "type": "boolean"
+          },
+          "enable_respawn_screen": {
+            "type": "boolean"
+          },
+          "do_limited_crafting": {
+            "type": "boolean"
+          },
+          "dimension_type": {
+            "type": "var_int"
+          },
+          "dimension_name": {
+            "type": "string"
+          },
+          "hashed_seed": {
+            "type": "long"
+          },
+          "game_mode": {
+            "type": "unsigned_byte"
+          },
+          "previous_game_mode": {
+            "type": "byte"
+          },
+          "is_debug": {
+            "type": "boolean"
+          },
+          "is_flat": {
+            "type": "boolean"
+          },
+          "has_death_location": {
+            "type": "boolean"
+          },
+          "death_dimension_name": {
+            "type": "switch",
+            "dependsOn": "has_death_location",
+            "cases": [
+              [
+                true,
+                {
+                  "type": "boolean"
+                }
+              ],
+              [
+                false,
+                {
+                  "type": "null"
+                }
+              ]
+            ],
+            "default": {
+              "type": "null"
+            }
+          },
+          "death_location": {
+            "type": "switch",
+            "dependsOn": "has_death_location",
+            "cases": [
+              [
+                true,
+                {
+                  "type": "position"
+                }
+              ],
+              [
+                false,
+                {
+                  "type": "null"
+                }
+              ]
+            ],
+            "default": {
+              "type": "null"
+            }
+          },
+          "portal_cooldown": {
+            "type": "var_int"
+          },
+          "sea_level": {
+            "type": "var_int"
+          },
+          "online_mode": {
+            "type": "boolean"
+          },
+          "enforces_secure_chat": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x32": {
+        "name": "low_disk_space_warning",
+        "id": 50,
+        "structure": {}
+      },
+      "0x33": {
+        "name": "map_item_data",
+        "id": 51,
+        "structure": {
+          "map_id": {
+            "type": "var_int"
+          },
+          "scale": {
+            "type": "byte"
+          },
+          "locked": {
+            "type": "boolean"
+          },
+          "color_patch": {
+            "type": "unsigned_byte",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "columns": {
+                  "type": "not_implemented",
+                  "comment": "Number of columns updated"
+                },
+                "rows": {
+                  "type": "prefixed_optional",
+                  "subType": {
+                    "type": "unsigned_byte"
+                  }
+                },
+                "x": {
+                  "type": "prefixed_optional",
+                  "subType": {
+                    "type": "unsigned_byte"
+                  }
+                },
+                "z": {
+                  "type": "prefixed_optional",
+                  "subType": {
+                    "type": "unsigned_byte"
+                  }
+                },
+                "data": {
+                  "type": "prefixed_optional",
+                  "subType": {
+                    "type": "prefixed_array",
+                    "subType": {
+                      "type": "unsigned_byte"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x34": {
+        "name": "merchant_offers",
+        "id": 52,
+        "structure": {
+          "window_id": {
+            "type": "var_int"
+          },
+          "trades": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "input_item_1": {
+                  "type": "not_implemented",
+                  "comment": "Trade Item"
+                },
+                "output_item": {
+                  "type": "not_implemented",
+                  "comment": "Slot"
+                },
+                "input_item_2": {
+                  "type": "prefixed_optional",
+                  "subType": {
+                    "type": "not_implemented",
+                    "comment": "Trade Item"
+                  }
+                },
+                "trade_disabled": {
+                  "type": "boolean"
+                },
+                "number_of_trade_uses": {
+                  "type": "int"
+                },
+                "maximum_number_of_trade_uses": {
+                  "type": "int"
+                },
+                "xp": {
+                  "type": "int"
+                },
+                "special_price": {
+                  "type": "int"
+                },
+                "price_multiplier": {
+                  "type": "float"
+                },
+                "demand": {
+                  "type": "int"
+                }
+              }
+            }
+          },
+          "villager_level": {
+            "type": "var_int"
+          },
+          "experience": {
+            "type": "var_int"
+          },
+          "is_regular_villager": {
+            "type": "boolean"
+          },
+          "can_restock": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x35": {
+        "name": "move_entity_pos",
+        "id": 53,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "delta_x": {
+            "type": "short"
+          },
+          "delta_y": {
+            "type": "short"
+          },
+          "delta_z": {
+            "type": "short"
+          },
+          "on_ground": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x36": {
+        "name": "move_entity_pos_rot",
+        "id": 54,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "delta_x": {
+            "type": "short"
+          },
+          "delta_y": {
+            "type": "short"
+          },
+          "delta_z": {
+            "type": "short"
+          },
+          "yaw": {
+            "type": "angle"
+          },
+          "pitch": {
+            "type": "angle"
+          },
+          "on_ground": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x37": {
+        "name": "move_minecart_along_track",
+        "id": 55,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "steps": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "x": {
+                  "type": "double"
+                },
+                "y": {
+                  "type": "double"
+                },
+                "z": {
+                  "type": "double"
+                },
+                "velocity_x": {
+                  "type": "double"
+                },
+                "velocity_y": {
+                  "type": "double"
+                },
+                "velocity_z": {
+                  "type": "double"
+                },
+                "yaw": {
+                  "type": "angle"
+                },
+                "pitch": {
+                  "type": "angle"
+                },
+                "weight": {
+                  "type": "float"
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x38": {
+        "name": "move_entity_rot",
+        "id": 56,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "yaw": {
+            "type": "angle"
+          },
+          "pitch": {
+            "type": "angle"
+          },
+          "on_ground": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x39": {
+        "name": "move_vehicle",
+        "id": 57,
+        "structure": {
+          "x": {
+            "type": "double"
+          },
+          "y": {
+            "type": "double"
+          },
+          "z": {
+            "type": "double"
+          },
+          "yaw": {
+            "type": "float"
+          },
+          "pitch": {
+            "type": "float"
+          }
+        }
+      },
+      "0x3A": {
+        "name": "open_book",
+        "id": 58,
+        "structure": {
+          "hand": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          }
+        }
+      },
+      "0x3B": {
+        "name": "open_screen",
+        "id": 59,
+        "structure": {
+          "window_id": {
+            "type": "var_int"
+          },
+          "window_type": {
+            "type": "var_int"
+          },
+          "window_title": {
+            "type": "nbt"
+          }
+        }
+      },
+      "0x3C": {
+        "name": "open_sign_editor",
+        "id": 60,
+        "structure": {
+          "location": {
+            "type": "position"
+          },
+          "is_front_text": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x3D": {
+        "name": "ping",
+        "id": 61,
+        "structure": {
+          "id": {
+            "type": "int"
+          }
+        }
+      },
+      "0x3E": {
+        "name": "pong_response",
+        "id": 62,
+        "structure": {}
+      },
+      "0x3F": {
+        "name": "place_ghost_recipe",
+        "id": 63,
+        "structure": {
+          "window_id": {
+            "type": "var_int"
+          },
+          "recipe_display": {
+            "type": "not_implemented",
+            "comment": "Recipe Display"
+          }
+        }
+      },
+      "0x40": {
+        "name": "player_abilities",
+        "id": 64,
+        "structure": {
+          "flags": {
+            "type": "byte"
+          },
+          "flying_speed": {
+            "type": "float"
+          },
+          "field_of_view_modifier": {
+            "type": "float"
+          }
+        }
+      },
+      "0x41": {
+        "name": "player_chat",
+        "id": 65,
+        "structure": {
+          "global_index": {
+            "type": "var_int"
+          },
+          "sender": {
+            "type": "uuid"
+          },
+          "index": {
+            "type": "var_int"
+          },
+          "message_signature_bytes": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "array",
+              "length": 256,
+              "subType": {
+                "type": "byte"
+              }
+            }
+          },
+          "message": {
+            "type": "string",
+            "length": 256
+          },
+          "timestamp": {
+            "type": "long"
+          },
+          "salt": {
+            "type": "long"
+          },
+          "previous_messages": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "message_id": {
+                  "type": "var_int"
+                },
+                "signature": {
+                  "type": "prefixed_optional",
+                  "subType": {
+                    "type": "array",
+                    "length": 256,
+                    "subType": {
+                      "type": "byte"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "unsigned_content": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "nbt"
+            }
+          },
+          "filter_type": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "filter_type_bits": {
+            "type": "switch",
+            "dependsOn": "filter_type",
+            "cases": [
+              [
+                2,
+                {
+                  "type": "bitset"
+                }
+              ]
+            ],
+            "default": {
+              "type": "null"
+            }
+          },
+          "chat_type": {
+            "type": "id_or_x",
+            "subType": {
+              "type": "chat_type"
+            }
+          },
+          "sender_name": {
+            "type": "nbt"
+          },
+          "target_name": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "nbt"
+            }
+          }
+        }
+      },
+      "0x42": {
+        "name": "player_combat_end",
+        "id": 66,
+        "structure": {
+          "duration": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x43": {
+        "name": "player_combat_enter",
+        "id": 67,
+        "structure": {}
+      },
+      "0x44": {
+        "name": "player_combat_kill",
+        "id": 68,
+        "structure": {
+          "player_id": {
+            "type": "var_int"
+          },
+          "message": {
+            "type": "nbt"
+          }
+        }
+      },
+      "0x45": {
+        "name": "player_info_remove",
+        "id": 69,
+        "structure": {
+          "uui_ds": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "uuid"
+            }
+          }
+        }
+      },
+      "0x46": {
+        "name": "player_info_update",
+        "id": 70,
+        "structure": {
+          "actions": {
+            "type": "unsigned_byte"
+          },
+          "players": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "uuid": {
+                  "type": "uuid"
+                },
+                "player_actions": {
+                  "type": "not_implemented",
+                  "comment": "Array of Player Actions"
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x47": {
+        "name": "player_look_at",
+        "id": 71,
+        "structure": {
+          "feet_eyes": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "target_x": {
+            "type": "double"
+          },
+          "target_y": {
+            "type": "double"
+          },
+          "target_z": {
+            "type": "double"
+          },
+          "is_entity": {
+            "type": "boolean"
+          },
+          "entity_id": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "entity_feet_eyes": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "enum",
+              "subType": {
+                "type": "var_int"
+              }
+            }
+          }
+        }
+      },
+      "0x48": {
+        "name": "player_position",
+        "id": 72,
+        "structure": {
+          "teleport_id": {
+            "type": "var_int"
+          },
+          "x": {
+            "type": "double"
+          },
+          "y": {
+            "type": "double"
+          },
+          "z": {
+            "type": "double"
+          },
+          "velocity_x": {
+            "type": "double"
+          },
+          "velocity_y": {
+            "type": "double"
+          },
+          "velocity_z": {
+            "type": "double"
+          },
+          "yaw": {
+            "type": "float"
+          },
+          "pitch": {
+            "type": "float"
+          },
+          "flags": {
+            "type": "teleport_flag"
+          }
+        }
+      },
+      "0x49": {
+        "name": "player_rotation",
+        "id": 73,
+        "structure": {
+          "yaw": {
+            "type": "float"
+          },
+          "relative_yaw": {
+            "type": "boolean"
+          },
+          "pitch": {
+            "type": "float"
+          },
+          "relative_pitch": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x4A": {
+        "name": "recipe_book_add",
+        "id": 74,
+        "skipForNow": true,
+        "structure": {
+          "recipes": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "recipe_id": {
+                  "type": "var_int"
+                },
+                "display": {
+                  "type": "not_implemented",
+                  "comment": "Recipe Display"
+                },
+                "group_id": {
+                  "type": "var_int"
+                },
+                "category_id": {
+                  "type": "var_int"
+                },
+                "ingredients": {
+                  "type": "prefixed_optional",
+                  "subType": {
+                    "type": "prefixed_array",
+                    "subType": {
+                      "type": "not_implemented",
+                      "comment": "ID Set"
+                    }
+                  }
+                },
+                "flags": {
+                  "type": "byte"
+                }
+              }
+            }
+          },
+          "replace": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x4B": {
+        "name": "recipe_book_remove",
+        "id": 75,
+        "structure": {
+          "recipes": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "var_int"
+            }
+          }
+        }
+      },
+      "0x4C": {
+        "name": "recipe_book_settings",
+        "id": 76,
+        "structure": {
+          "crafting_recipe_book_open": {
+            "type": "boolean"
+          },
+          "crafting_recipe_book_filter_active": {
+            "type": "boolean"
+          },
+          "smelting_recipe_book_open": {
+            "type": "boolean"
+          },
+          "smelting_recipe_book_filter_active": {
+            "type": "boolean"
+          },
+          "blast_furnace_recipe_book_open": {
+            "type": "boolean"
+          },
+          "blast_furnace_recipe_book_filter_active": {
+            "type": "boolean"
+          },
+          "smoker_recipe_book_open": {
+            "type": "boolean"
+          },
+          "smoker_recipe_book_filter_active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x4D": {
+        "name": "remove_entities",
+        "id": 77,
+        "structure": {
+          "entity_ids": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "var_int"
+            }
+          }
+        }
+      },
+      "0x4E": {
+        "name": "remove_mob_effect",
+        "id": 78,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "effect_id": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x4F": {
+        "name": "reset_score",
+        "id": 79,
+        "structure": {
+          "entity_name": {
+            "type": "string",
+            "length": 32767
+          },
+          "objective_name": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "string",
+              "length": 32767
+            }
+          }
+        }
+      },
+      "0x50": {
+        "name": "resource_pack_pop",
+        "id": 80,
+        "structure": {
+          "uuid": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "uuid"
+            }
+          }
+        }
+      },
+      "0x51": {
+        "name": "resource_pack_push",
+        "id": 81,
+        "structure": {
+          "uuid": {
+            "type": "uuid"
+          },
+          "url": {
+            "type": "string",
+            "length": 32767
+          },
+          "hash": {
+            "type": "string",
+            "length": 40
+          },
+          "forced": {
+            "type": "boolean"
+          },
+          "prompt_message": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "nbt"
+            }
+          }
+        }
+      },
+      "0x52": {
+        "name": "respawn",
+        "id": 82,
+        "structure": {
+          "dimension_type": {
+            "type": "var_int"
+          },
+          "dimension_name": {
+            "type": "string"
+          },
+          "hashed_seed": {
+            "type": "long"
+          },
+          "game_mode": {
+            "type": "unsigned_byte"
+          },
+          "previous_game_mode": {
+            "type": "byte"
+          },
+          "is_debug": {
+            "type": "boolean"
+          },
+          "is_flat": {
+            "type": "boolean"
+          },
+          "has_death_location": {
+            "type": "boolean"
+          },
+          "death_dimension_name": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "string"
+            }
+          },
+          "death_location": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "position"
+            }
+          },
+          "portal_cooldown": {
+            "type": "var_int"
+          },
+          "sea_level": {
+            "type": "var_int"
+          },
+          "data_kept": {
+            "type": "byte"
+          }
+        }
+      },
+      "0x53": {
+        "name": "rotate_head",
+        "id": 83,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "head_yaw": {
+            "type": "angle"
+          }
+        }
+      },
+      "0x54": {
+        "name": "section_blocks_update",
+        "id": 84,
+        "structure": {
+          "chunk_section_position": {
+            "type": "long"
+          },
+          "blocks": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "var_long"
+            }
+          }
+        }
+      },
+      "0x55": {
+        "name": "select_advancements_tab",
+        "id": 85,
+        "structure": {
+          "identifier": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "0x56": {
+        "name": "server_data",
+        "id": 86,
+        "structure": {
+          "motd": {
+            "type": "nbt"
+          },
+          "icon": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "prefixed_array",
+              "subType": {
+                "type": "byte"
+              }
+            }
+          }
+        }
+      },
+      "0x57": {
+        "name": "set_action_bar_text",
+        "id": 87,
+        "structure": {
+          "action_bar_text": {
+            "type": "nbt"
+          }
+        }
+      },
+      "0x58": {
+        "name": "set_border_center",
+        "id": 88,
+        "structure": {
+          "x": {
+            "type": "double"
+          },
+          "z": {
+            "type": "double"
+          }
+        }
+      },
+      "0x59": {
+        "name": "set_border_lerp_size",
+        "id": 89,
+        "structure": {
+          "old_diameter": {
+            "type": "double"
+          },
+          "new_diameter": {
+            "type": "double"
+          },
+          "speed": {
+            "type": "var_long"
+          }
+        }
+      },
+      "0x5A": {
+        "name": "set_border_size",
+        "id": 90,
+        "structure": {
+          "diameter": {
+            "type": "double"
+          }
+        }
+      },
+      "0x5B": {
+        "name": "set_border_warning_delay",
+        "id": 91,
+        "structure": {
+          "warning_time": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x5C": {
+        "name": "set_border_warning_distance",
+        "id": 92,
+        "structure": {
+          "warning_blocks": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x5D": {
+        "name": "set_camera",
+        "id": 93,
+        "structure": {
+          "camera_id": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x5E": {
+        "name": "set_chunk_cache_center",
+        "id": 94,
+        "structure": {
+          "chunk_x": {
+            "type": "var_int"
+          },
+          "chunk_z": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x5F": {
+        "name": "set_chunk_cache_radius",
+        "id": 95,
+        "structure": {
+          "view_distance": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x60": {
+        "name": "set_cursor_item",
+        "id": 96,
+        "structure": {
+          "carried_item": {
+            "type": "not_implemented",
+            "comment": "Slot"
+          }
+        }
+      },
+      "0x61": {
+        "name": "set_default_spawn_position",
+        "id": 97,
+        "structure": {
+          "dimension_name": {
+            "type": "string"
+          },
+          "location": {
+            "type": "position"
+          },
+          "yaw": {
+            "type": "float"
+          },
+          "pitch": {
+            "type": "float"
+          }
+        }
+      },
+      "0x62": {
+        "name": "set_display_objective",
+        "id": 98,
+        "structure": {
+          "position": {
+            "type": "var_int"
+          },
+          "score_name": {
+            "type": "string",
+            "length": 32767
+          }
+        }
+      },
+      "0x63": {
+        "name": "set_entity_data",
+        "id": 99,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "metadata": {
+            "type": "not_implemented",
+            "comment": "Entity Metadata"
+          }
+        }
+      },
+      "0x64": {
+        "name": "set_entity_link",
+        "id": 100,
+        "structure": {
+          "attached_entity_id": {
+            "type": "int"
+          },
+          "holding_entity_id": {
+            "type": "int"
+          }
+        }
+      },
+      "0x65": {
+        "name": "set_entity_motion",
+        "id": 101,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "velocity": {
+            "type": "lpvec3"
+          }
+        }
+      },
+      "0x66": {
+        "name": "set_equipment",
+        "id": 102,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "equipment": {
+            "type": "not_implemented",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "slot": {
+                  "type": "enum",
+                  "subType": {
+                    "type": "byte"
+                  }
+                },
+                "item": {
+                  "type": "not_implemented",
+                  "comment": "Slot"
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x67": {
+        "name": "set_experience",
+        "id": 103,
+        "structure": {
+          "experience_bar": {
+            "type": "float"
+          },
+          "level": {
+            "type": "var_int"
+          },
+          "total_experience": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x68": {
+        "name": "set_health",
+        "id": 104,
+        "structure": {
+          "health": {
+            "type": "float"
+          },
+          "food": {
+            "type": "var_int"
+          },
+          "food_saturation": {
+            "type": "float"
+          }
+        }
+      },
+      "0x69": {
+        "name": "set_held_slot",
+        "id": 105,
+        "structure": {
+          "slot": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x6B": {
+        "name": "set_passengers",
+        "id": 107,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "passengers": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "var_int"
+            }
+          }
+        }
+      },
+      "0x6C": {
+        "name": "set_player_inventory",
+        "id": 108,
+        "structure": {
+          "slot": {
+            "type": "var_int"
+          },
+          "slot_data": {
+            "type": "not_implemented",
+            "comment": "Slot"
+          }
+        }
+      },
+      "0x6D": {
+        "name": "set_player_team",
+        "id": 109,
+        "structure": {
+          "team_name": {
+            "type": "string",
+            "length": 32767
+          },
+          "method": {
+            "type": "byte"
+          },
+          "0_create_team": {
+            "type": "nbt",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "team_display_name": {
+                  "type": "not_implemented",
+                  "comment": ""
+                },
+                "team_prefix": {
+                  "type": "nbt"
+                },
+                "team_suffix": {
+                  "type": "nbt"
+                },
+                "name_tag_visibility": {
+                  "type": "enum",
+                  "subType": {
+                    "type": "var_int"
+                  }
+                },
+                "collision_rule": {
+                  "type": "enum",
+                  "subType": {
+                    "type": "var_int"
+                  }
+                },
+                "team_color": {
+                  "type": "enum",
+                  "subType": {
+                    "type": "var_int"
+                  }
+                },
+                "friendly_flags": {
+                  "type": "byte"
+                },
+                "entities": {
+                  "type": "prefixed_array",
+                  "subType": {
+                    "type": "string",
+                    "length": 32767
+                  }
+                }
+              }
+            }
+          },
+          "no_fields": {
+            "type": "not_implemented",
+            "comment": "no fields"
+          },
+          "2_update_team_info": {
+            "type": "nbt",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "team_display_name": {
+                  "type": "not_implemented",
+                  "comment": ""
+                },
+                "team_prefix": {
+                  "type": "nbt"
+                },
+                "team_suffix": {
+                  "type": "nbt"
+                },
+                "name_tag_visibility": {
+                  "type": "enum",
+                  "subType": {
+                    "type": "var_int"
+                  }
+                },
+                "collision_rule": {
+                  "type": "enum",
+                  "subType": {
+                    "type": "var_int"
+                  }
+                },
+                "team_color": {
+                  "type": "enum",
+                  "subType": {
+                    "type": "var_int"
+                  }
+                },
+                "friendly_flags": {
+                  "type": "byte"
+                }
+              }
+            }
+          },
+          "entities": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "string",
+              "length": 32767
+            }
+          }
+        }
+      },
+      "0x6F": {
+        "name": "set_simulation_distance",
+        "id": 111,
+        "structure": {
+          "simulation_distance": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x70": {
+        "name": "set_subtitle_text",
+        "id": 112,
+        "structure": {
+          "subtitle_text": {
+            "type": "nbt"
+          }
+        }
+      },
+      "0x71": {
+        "name": "set_time",
+        "id": 113,
+        "structure": {
+          "world_age": {
+            "type": "long"
+          },
+          "clocks": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "clock_id": {
+                  "type": "var_int"
+                },
+                "time": {
+                  "type": "var_long"
+                },
+                "fractional_time": {
+                  "type": "float"
+                },
+                "rate": {
+                  "type": "float"
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x72": {
+        "name": "set_title_text",
+        "id": 114,
+        "structure": {
+          "title_text": {
+            "type": "nbt"
+          }
+        }
+      },
+      "0x73": {
+        "name": "set_titles_animation",
+        "id": 115,
+        "structure": {
+          "fade_in": {
+            "type": "int"
+          },
+          "stay": {
+            "type": "int"
+          },
+          "fade_out": {
+            "type": "int"
+          }
+        }
+      },
+      "0x74": {
+        "name": "sound_entity",
+        "id": 116,
+        "structure": {
+          "sound_event": {
+            "type": "id_or_x",
+            "subType": {
+              "type": "not_implemented",
+              "comment": "Sound Event"
+            }
+          },
+          "sound_category": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "entity_id": {
+            "type": "var_int"
+          },
+          "volume": {
+            "type": "float"
+          },
+          "pitch": {
+            "type": "float"
+          },
+          "seed": {
+            "type": "long"
+          }
+        }
+      },
+      "0x75": {
+        "name": "sound",
+        "id": 117,
+        "structure": {
+          "sound_event": {
+            "type": "id_or_x",
+            "subType": {
+              "type": "not_implemented",
+              "comment": "Sound Event"
+            }
+          },
+          "sound_category": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "effect_position_x": {
+            "type": "int"
+          },
+          "effect_position_y": {
+            "type": "int"
+          },
+          "effect_position_z": {
+            "type": "int"
+          },
+          "volume": {
+            "type": "float"
+          },
+          "pitch": {
+            "type": "float"
+          },
+          "seed": {
+            "type": "long"
+          }
+        }
+      },
+      "0x76": {
+        "name": "start_configuration",
+        "id": 118,
+        "structure": {}
+      },
+      "0x77": {
+        "name": "stop_sound",
+        "id": 119,
+        "structure": {
+          "flags": {
+            "type": "byte"
+          },
+          "source": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "enum",
+              "subType": {
+                "type": "var_int"
+              }
+            }
+          },
+          "sound": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "0x78": {
+        "name": "store_cookie",
+        "id": 120,
+        "structure": {
+          "key": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "prefixed_array",
+            "length": 5120,
+            "subType": {
+              "type": "byte"
+            }
+          }
+        }
+      },
+      "0x79": {
+        "name": "system_chat",
+        "id": 121,
+        "structure": {
+          "content": {
+            "type": "nbt"
+          },
+          "overlay": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x7A": {
+        "name": "tab_list",
+        "id": 122,
+        "structure": {
+          "header": {
+            "type": "nbt"
+          },
+          "footer": {
+            "type": "nbt"
+          }
+        }
+      },
+      "0x7B": {
+        "name": "tag_query",
+        "id": 123,
+        "structure": {
+          "transaction_id": {
+            "type": "var_int"
+          },
+          "nbt": {
+            "type": "nbt"
+          }
+        }
+      },
+      "0x7C": {
+        "name": "take_item_entity",
+        "id": 124,
+        "structure": {
+          "collected_entity_id": {
+            "type": "var_int"
+          },
+          "collector_entity_id": {
+            "type": "var_int"
+          },
+          "pickup_item_count": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x7D": {
+        "name": "teleport_entity",
+        "id": 125,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "x": {
+            "type": "double"
+          },
+          "y": {
+            "type": "double"
+          },
+          "z": {
+            "type": "double"
+          },
+          "velocity_x": {
+            "type": "double"
+          },
+          "velocity_y": {
+            "type": "double"
+          },
+          "velocity_z": {
+            "type": "double"
+          },
+          "yaw": {
+            "type": "float"
+          },
+          "pitch": {
+            "type": "float"
+          },
+          "flags": {
+            "type": "teleport_flag"
+          },
+          "on_ground": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x7E": {
+        "name": "test_instance_block_status",
+        "id": 126,
+        "structure": {
+          "status": {
+            "type": "nbt"
+          },
+          "has_size": {
+            "type": "boolean"
+          },
+          "size_x": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "double"
+            }
+          },
+          "size_y": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "double"
+            }
+          },
+          "size_z": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "double"
+            }
+          }
+        }
+      },
+      "0x7F": {
+        "name": "ticking_state",
+        "id": 127,
+        "structure": {
+          "tick_rate": {
+            "type": "float"
+          },
+          "is_frozen": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x80": {
+        "name": "ticking_step",
+        "id": 128,
+        "structure": {
+          "tick_steps": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x81": {
+        "name": "transfer",
+        "id": 129,
+        "structure": {
+          "host": {
+            "type": "string",
+            "length": 32767
+          },
+          "port": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x82": {
+        "name": "update_advancements",
+        "id": 130,
+        "skipForNow": true,
+        "structure": {
+          "reset_clear": {
+            "type": "boolean"
+          },
+          "advancement_mapping": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "key": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "not_implemented",
+                  "comment": "Advancement"
+                }
+              }
+            }
+          },
+          "identifiers": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "string"
+            }
+          },
+          "progress_mapping": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "key": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "not_implemented",
+                  "comment": "Advancement progress"
+                }
+              }
+            }
+          },
+          "show_advancements": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x83": {
+        "name": "update_attributes",
+        "id": 131,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "property": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "id": {
+                  "type": "var_int"
+                },
+                "value": {
+                  "type": "double"
+                },
+                "modifiers": {
+                  "type": "prefixed_array",
+                  "subType": {
+                    "type": "not_implemented",
+                    "comment": "Modifier Data"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x84": {
+        "name": "update_mob_effect",
+        "id": 132,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "effect_id": {
+            "type": "var_int"
+          },
+          "amplifier": {
+            "type": "var_int"
+          },
+          "duration": {
+            "type": "var_int"
+          },
+          "flags": {
+            "type": "byte"
+          }
+        }
+      },
+      "0x85": {
+        "name": "update_recipes",
+        "id": 133,
+        "structure": {
+          "stonecutter_recipes": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "ingredients": {
+                  "type": "not_implemented",
+                  "comment": "ID Set"
+                },
+                "slot_display": {
+                  "type": "not_implemented",
+                  "comment": "Slot Display"
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x86": {
+        "name": "update_tags",
+        "id": 134,
+        "structure": {
+          "tagged_registries": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "registry": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "prefixed_array",
+                  "subType": {
+                    "type": "not_implemented",
+                    "comment": "Tag"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x87": {
+        "name": "projectile_power",
+        "id": 135,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "power": {
+            "type": "double"
+          }
+        }
+      },
+      "0x88": {
+        "name": "custom_report_details",
+        "id": 136,
+        "structure": {
+          "details": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "title": {
+                  "type": "string",
+                  "length": 128
+                },
+                "description": {
+                  "type": "string",
+                  "length": 4096
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x89": {
+        "name": "server_links",
+        "id": 137,
+        "structure": {
+          "links": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "label": {
+                  "type": "not_implemented",
+                  "comment": "Either VarInt Enum or Text Component"
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x8A": {
+        "name": "waypoint",
+        "id": 138,
+        "structure": {
+          "operation": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "identifier": {
+            "type": "not_implemented",
+            "comment": "Either Uuid or String"
+          },
+          "icon_style": {
+            "type": "string"
+          },
+          "red": {
+            "type": "unsigned_byte",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "prefixed_optional": {
+                  "type": "not_implemented",
+                  "comment": "The color of the waypoint icon."
+                },
+                "green": {
+                  "type": "unsigned_byte"
+                },
+                "blue": {
+                  "type": "unsigned_byte"
+                }
+              }
+            }
+          },
+          "waypoint_type": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "2_chunk": {
+            "type": "var_int",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "x": {
+                  "type": "not_implemented",
+                  "comment": "The chunk coordinates that the waypoint will point to."
+                },
+                "z": {
+                  "type": "var_int"
+                }
+              }
+            }
+          },
+          "angle": {
+            "type": "float"
+          }
+        }
+      },
+      "0x8B": {
+        "name": "clear_dialog",
+        "id": 139,
+        "structure": {}
+      },
+      "0x8C": {
+        "name": "show_dialog",
+        "id": 140,
+        "structure": {
+          "dialog": {
+            "type": "id_or_x",
+            "subType": {
+              "type": "nbt"
+            }
+          }
+        }
+      }
+    },
+    "serverbound": {
+      "0x0": {
+        "name": "accept_teleportation",
+        "id": 0,
+        "structure": {
+          "teleport_id": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x1": {
+        "name": "attack",
+        "id": 1,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x2": {
+        "name": "block_entity_tag_query",
+        "id": 2,
+        "structure": {
+          "transaction_id": {
+            "type": "var_int"
+          },
+          "location": {
+            "type": "position"
+          }
+        }
+      },
+      "0x3": {
+        "name": "bundle_item_selected",
+        "id": 3,
+        "structure": {
+          "slot_of_bundle": {
+            "type": "var_int"
+          },
+          "slot_in_bundle": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x4": {
+        "name": "change_difficulty",
+        "id": 4,
+        "structure": {
+          "difficulty": {
+            "type": "enum",
+            "subType": {
+              "type": "unsigned_byte"
+            }
+          },
+          "difficulty_locked": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x5": {
+        "name": "change_game_mode",
+        "id": 5,
+        "structure": {
+          "game_mode": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          }
+        }
+      },
+      "0x6": {
+        "name": "chat_ack",
+        "id": 6,
+        "structure": {
+          "message_count": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x7": {
+        "name": "chat_command",
+        "id": 7,
+        "structure": {
+          "command": {
+            "type": "string",
+            "length": 32767
+          }
+        }
+      },
+      "0x8": {
+        "name": "chat_command_signed",
+        "id": 8,
+        "structure": {
+          "command": {
+            "type": "string",
+            "length": 32767
+          },
+          "timestamp": {
+            "type": "long"
+          },
+          "salt": {
+            "type": "long"
+          },
+          "array_of_argument_signatures": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "argument_name": {
+                  "type": "string",
+                  "length": 16
+                },
+                "signature": {
+                  "type": "not_implemented",
+                  "length": 256
+                }
+              }
+            }
+          },
+          "message_count": {
+            "type": "var_int"
+          },
+          "acknowledged": {
+            "type": "not_implemented",
+            "length": 20
+          },
+          "checksum": {
+            "type": "byte"
+          }
+        }
+      },
+      "0x9": {
+        "name": "chat",
+        "id": 9,
+        "structure": {
+          "message": {
+            "type": "string",
+            "length": 256
+          },
+          "timestamp": {
+            "type": "long"
+          },
+          "salt": {
+            "type": "long"
+          },
+          "signature": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "not_implemented",
+              "length": 256
+            }
+          },
+          "message_count": {
+            "type": "var_int"
+          },
+          "acknowledged": {
+            "type": "not_implemented",
+            "length": 20
+          },
+          "checksum": {
+            "type": "byte"
+          }
+        }
+      },
+      "0xA": {
+        "name": "chat_session_update",
+        "id": 10,
+        "structure": {
+          "session_id": {
+            "type": "uuid"
+          },
+          "public_key": {
+            "type": "long",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "expires_at": {
+                  "type": "not_implemented",
+                  "comment": "The time the play session key expires in epoch milliseconds."
+                },
+                "public_key": {
+                  "type": "prefixed_array",
+                  "length": 512,
+                  "subType": {
+                    "type": "byte"
+                  }
+                },
+                "key_signature": {
+                  "type": "prefixed_array",
+                  "length": 4096,
+                  "subType": {
+                    "type": "byte"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "0xB": {
+        "name": "chunk_batch_received",
+        "id": 11,
+        "structure": {
+          "chunks_per_tick": {
+            "type": "float"
+          }
+        }
+      },
+      "0xC": {
+        "name": "client_command",
+        "id": 12,
+        "structure": {
+          "action_id": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          }
+        }
+      },
+      "0xD": {
+        "name": "client_tick_end",
+        "id": 13,
+        "structure": {}
+      },
+      "0xE": {
+        "name": "client_information",
+        "id": 14,
+        "structure": {
+          "locale": {
+            "type": "string",
+            "length": 16
+          },
+          "view_distance": {
+            "type": "byte"
+          },
+          "chat_mode": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "chat_colors": {
+            "type": "boolean"
+          },
+          "displayed_skin_parts": {
+            "type": "unsigned_byte"
+          },
+          "main_hand": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "enable_text_filtering": {
+            "type": "boolean"
+          },
+          "allow_server_listings": {
+            "type": "boolean"
+          },
+          "particle_status": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          }
+        }
+      },
+      "0xF": {
+        "name": "command_suggestion",
+        "id": 15,
+        "structure": {
+          "transaction_id": {
+            "type": "var_int"
+          },
+          "text": {
+            "type": "string",
+            "length": 32500
+          }
+        }
+      },
+      "0x10": {
+        "name": "configuration_acknowledged",
+        "id": 16,
+        "structure": {}
+      },
+      "0x11": {
+        "name": "container_button_click",
+        "id": 17,
+        "structure": {
+          "window_id": {
+            "type": "var_int"
+          },
+          "button_id": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x12": {
+        "name": "container_click",
+        "id": 18,
+        "structure": {
+          "window_id": {
+            "type": "var_int"
+          },
+          "state_id": {
+            "type": "var_int"
+          },
+          "slot": {
+            "type": "short"
+          },
+          "button": {
+            "type": "byte"
+          },
+          "mode": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "array_of_changed_slots": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "slot_number": {
+                  "type": "short"
+                },
+                "slot_data": {
+                  "type": "not_implemented",
+                  "comment": "Hashed Slot"
+                }
+              }
+            }
+          },
+          "carried_item": {
+            "type": "not_implemented",
+            "comment": "Hashed Slot"
+          }
+        }
+      },
+      "0x13": {
+        "name": "container_close",
+        "id": 19,
+        "structure": {
+          "window_id": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x14": {
+        "name": "container_slot_state_changed",
+        "id": 20,
+        "structure": {
+          "slot_id": {
+            "type": "var_int"
+          },
+          "window_id": {
+            "type": "var_int"
+          },
+          "state": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x15": {
+        "name": "cookie_response",
+        "id": 21,
+        "structure": {
+          "key": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "prefixed_array",
+              "length": 5120,
+              "subType": {
+                "type": "byte"
+              }
+            }
+          }
+        }
+      },
+      "0x16": {
+        "name": "custom_payload",
+        "id": 22,
+        "structure": {
+          "channel": {
+            "type": "string"
+          },
+          "data": {
+            "type": "varies"
+          }
+        }
+      },
+      "0x17": {
+        "name": "debug_subscription_request",
+        "id": 23,
+        "structure": {
+          "subscriptions": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "var_int"
+            }
+          }
+        }
+      },
+      "0x18": {
+        "name": "edit_book",
+        "id": 24,
+        "structure": {
+          "slot": {
+            "type": "var_int"
+          },
+          "entries": {
+            "type": "prefixed_array",
+            "length": 100,
+            "subType": {
+              "type": "string",
+              "length": 1024
+            }
+          },
+          "title": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "string",
+              "length": 32
+            }
+          }
+        }
+      },
+      "0x19": {
+        "name": "entity_tag_query",
+        "id": 25,
+        "structure": {
+          "transaction_id": {
+            "type": "var_int"
+          },
+          "entity_id": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x1A": {
+        "name": "interact",
+        "id": 26,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "hand": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "target_offset": {
+            "type": "lpvec3"
+          },
+          "sneak_key_pressed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x1B": {
+        "name": "jigsaw_generate",
+        "id": 27,
+        "structure": {
+          "location": {
+            "type": "position"
+          },
+          "levels": {
+            "type": "var_int"
+          },
+          "keep_jigsaws": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x1C": {
+        "name": "keep_alive",
+        "id": 28,
+        "structure": {
+          "keep_alive_id": {
+            "type": "long"
+          }
+        }
+      },
+      "0x1D": {
+        "name": "lock_difficulty",
+        "id": 29,
+        "structure": {
+          "locked": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x1E": {
+        "name": "move_player_pos",
+        "id": 30,
+        "structure": {
+          "x": {
+            "type": "double"
+          },
+          "feet_y": {
+            "type": "double"
+          },
+          "z": {
+            "type": "double"
+          },
+          "flags": {
+            "type": "byte"
+          }
+        }
+      },
+      "0x1F": {
+        "name": "move_player_pos_rot",
+        "id": 31,
+        "structure": {
+          "x": {
+            "type": "double"
+          },
+          "feet_y": {
+            "type": "double"
+          },
+          "z": {
+            "type": "double"
+          },
+          "yaw": {
+            "type": "float"
+          },
+          "pitch": {
+            "type": "float"
+          },
+          "flags": {
+            "type": "byte"
+          }
+        }
+      },
+      "0x20": {
+        "name": "move_player_rot",
+        "id": 32,
+        "structure": {
+          "yaw": {
+            "type": "float"
+          },
+          "pitch": {
+            "type": "float"
+          },
+          "flags": {
+            "type": "byte"
+          }
+        }
+      },
+      "0x21": {
+        "name": "move_player_status_only",
+        "id": 33,
+        "structure": {
+          "flags": {
+            "type": "byte"
+          }
+        }
+      },
+      "0x22": {
+        "name": "move_vehicle",
+        "id": 34,
+        "structure": {
+          "x": {
+            "type": "double"
+          },
+          "y": {
+            "type": "double"
+          },
+          "z": {
+            "type": "double"
+          },
+          "yaw": {
+            "type": "float"
+          },
+          "pitch": {
+            "type": "float"
+          },
+          "on_ground": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x23": {
+        "name": "paddle_boat",
+        "id": 35,
+        "structure": {
+          "left_paddle_turning": {
+            "type": "boolean"
+          },
+          "right_paddle_turning": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x24": {
+        "name": "pick_item_from_block",
+        "id": 36,
+        "structure": {
+          "location": {
+            "type": "position"
+          },
+          "include_data": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x25": {
+        "name": "pick_item_from_entity",
+        "id": 37,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "include_data": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x26": {
+        "name": "ping_request",
+        "id": 38,
+        "structure": {}
+      },
+      "0x27": {
+        "name": "place_recipe",
+        "id": 39,
+        "structure": {
+          "window_id": {
+            "type": "var_int"
+          },
+          "recipe_id": {
+            "type": "var_int"
+          },
+          "make_all": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x28": {
+        "name": "player_abilities",
+        "id": 40,
+        "structure": {
+          "flags": {
+            "type": "byte"
+          }
+        }
+      },
+      "0x29": {
+        "name": "player_action",
+        "id": 41,
+        "structure": {
+          "status": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "location": {
+            "type": "position"
+          },
+          "face": {
+            "type": "enum",
+            "subType": {
+              "type": "byte"
+            }
+          },
+          "sequence": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x2A": {
+        "name": "player_command",
+        "id": 42,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "action_id": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "jump_boost": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x2B": {
+        "name": "player_input",
+        "id": 43,
+        "structure": {
+          "flags": {
+            "type": "unsigned_byte"
+          }
+        }
+      },
+      "0x2C": {
+        "name": "player_loaded",
+        "id": 44,
+        "structure": {}
+      },
+      "0x2D": {
+        "name": "pong",
+        "id": 45,
+        "structure": {
+          "id": {
+            "type": "int"
+          }
+        }
+      },
+      "0x2E": {
+        "name": "recipe_book_change_settings",
+        "id": 46,
+        "structure": {
+          "book_id": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "book_open": {
+            "type": "boolean"
+          },
+          "filter_active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x2F": {
+        "name": "recipe_book_seen_recipe",
+        "id": 47,
+        "structure": {
+          "recipe_id": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x30": {
+        "name": "rename_item",
+        "id": 48,
+        "structure": {
+          "item_name": {
+            "type": "string",
+            "length": 32767
+          }
+        }
+      },
+      "0x31": {
+        "name": "resource_pack",
+        "id": 49,
+        "structure": {
+          "uuid": {
+            "type": "uuid"
+          },
+          "result": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          }
+        }
+      },
+      "0x32": {
+        "name": "seen_advancements",
+        "id": 50,
+        "structure": {
+          "action": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "tab_id": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "0x33": {
+        "name": "select_trade",
+        "id": 51,
+        "structure": {
+          "selected_slot": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x34": {
+        "name": "set_beacon",
+        "id": 52,
+        "structure": {
+          "primary_effect": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "secondary_effect": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "var_int"
+            }
+          }
+        }
+      },
+      "0x35": {
+        "name": "set_carried_item",
+        "id": 53,
+        "structure": {
+          "slot": {
+            "type": "short"
+          }
+        }
+      },
+      "0x36": {
+        "name": "set_command_block",
+        "id": 54,
+        "structure": {
+          "location": {
+            "type": "position"
+          },
+          "command": {
+            "type": "string",
+            "length": 32767
+          },
+          "mode": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "flags": {
+            "type": "byte"
+          }
+        }
+      },
+      "0x37": {
+        "name": "set_command_minecart",
+        "id": 55,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "command": {
+            "type": "string",
+            "length": 32767
+          },
+          "track_output": {
+            "type": "boolean"
+          }
+        }
+      },
+      "0x38": {
+        "name": "set_creative_mode_slot",
+        "id": 56,
+        "structure": {
+          "slot": {
+            "type": "short"
+          },
+          "clicked_item": {
+            "type": "not_implemented",
+            "comment": "Slot"
+          }
+        }
+      },
+      "0x39": {
+        "name": "set_game_rule",
+        "id": 57,
+        "structure": {
+          "rules": {
+            "type": "prefixed_array",
+            "subType": {
+              "type": "object",
+              "fields": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "length": 32767
+                }
+              }
+            }
+          }
+        }
+      },
+      "0x3A": {
+        "name": "set_jigsaw_block",
+        "id": 58,
+        "structure": {
+          "location": {
+            "type": "position"
+          },
+          "name": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          },
+          "pool": {
+            "type": "string"
+          },
+          "final_state": {
+            "type": "string",
+            "length": 32767
+          },
+          "joint_type": {
+            "type": "string",
+            "length": 32767
+          },
+          "selection_priority": {
+            "type": "var_int"
+          },
+          "placement_priority": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x3B": {
+        "name": "set_structure_block",
+        "id": 59,
+        "structure": {
+          "location": {
+            "type": "position"
+          },
+          "action": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "mode": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "name": {
+            "type": "string",
+            "length": 32767
+          },
+          "offset_x": {
+            "type": "byte"
+          },
+          "offset_y": {
+            "type": "byte"
+          },
+          "offset_z": {
+            "type": "byte"
+          },
+          "size_x": {
+            "type": "byte"
+          },
+          "size_y": {
+            "type": "byte"
+          },
+          "size_z": {
+            "type": "byte"
+          },
+          "mirror": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "rotation": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "metadata": {
+            "type": "string",
+            "length": 128
+          },
+          "integrity": {
+            "type": "float"
+          },
+          "seed": {
+            "type": "var_long"
+          },
+          "flags": {
+            "type": "byte"
+          }
+        }
+      },
+      "0x3C": {
+        "name": "set_test_block",
+        "id": 60,
+        "structure": {
+          "position": {
+            "type": "position"
+          },
+          "mode": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "0x3D": {
+        "name": "sign_update",
+        "id": 61,
+        "structure": {
+          "location": {
+            "type": "position"
+          },
+          "is_front_text": {
+            "type": "boolean"
+          },
+          "line_1": {
+            "type": "string",
+            "length": 384
+          },
+          "line_2": {
+            "type": "string",
+            "length": 384
+          },
+          "line_3": {
+            "type": "string",
+            "length": 384
+          },
+          "line_4": {
+            "type": "string",
+            "length": 384
+          }
+        }
+      },
+      "0x3E": {
+        "name": "spectator_action",
+        "id": 62,
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x3F": {
+        "name": "swing",
+        "id": 63,
+        "structure": {
+          "hand": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          }
+        }
+      },
+      "0x40": {
+        "name": "teleport_to_entity",
+        "id": 64,
+        "structure": {
+          "target_player": {
+            "type": "uuid"
+          }
+        }
+      },
+      "0x41": {
+        "name": "test_instance_block_action",
+        "id": 65,
+        "structure": {
+          "position": {
+            "type": "position"
+          },
+          "action": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "test": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "string"
+            }
+          },
+          "size_x": {
+            "type": "var_int"
+          },
+          "size_y": {
+            "type": "var_int"
+          },
+          "size_z": {
+            "type": "var_int"
+          },
+          "rotation": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "ignore_entities": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "error_message": {
+            "type": "prefixed_optional",
+            "subType": {
+              "type": "nbt"
+            }
+          }
+        }
+      },
+      "0x42": {
+        "name": "use_item_on",
+        "id": 66,
+        "structure": {
+          "hand": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "location": {
+            "type": "position"
+          },
+          "face": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "cursor_position_x": {
+            "type": "float"
+          },
+          "cursor_position_y": {
+            "type": "float"
+          },
+          "cursor_position_z": {
+            "type": "float"
+          },
+          "inside_block": {
+            "type": "boolean"
+          },
+          "world_border_hit": {
+            "type": "boolean"
+          },
+          "sequence": {
+            "type": "var_int"
+          }
+        }
+      },
+      "0x43": {
+        "name": "use_item",
+        "id": 67,
+        "structure": {
+          "hand": {
+            "type": "enum",
+            "subType": {
+              "type": "var_int"
+            }
+          },
+          "sequence": {
+            "type": "var_int"
+          },
+          "yaw": {
+            "type": "float"
+          },
+          "pitch": {
+            "type": "float"
+          }
+        }
+      },
+      "0x44": {
+        "name": "custom_click_action",
+        "id": 68,
+        "structure": {
+          "id": {
+            "type": "string"
+          },
+          "payload_size": {
+            "type": "var_int"
+          },
+          "payload": {
+            "type": "nbt"
+          }
+        }
+      }
+    }
+  }
+}
