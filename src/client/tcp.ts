@@ -1,29 +1,15 @@
 import { Socket, SocketConstructorOpts } from "node:net";
 import { EventEmitter } from "node:events";
-import {
-    constants as crypto_constants,
-    createPublicKey,
-    publicEncrypt,
-    randomBytes,
-    createDecipheriv,
-    createCipheriv,
-    Cipheriv,
-    Decipheriv
-} from "node:crypto";
 import { deflateSync, inflateSync } from "node:zlib";
 
 import { TypedEmmiter } from "../base/event";
-import { BinaryDecoder, getTextFromTextComponent } from "../translator/decoder";
-import { BinaryEncoder } from "../translator/encoder";
-import { ClientNotReady, MissingAuthOption, SockerIsNotWritable } from "../base/error";
-import { computeUUID } from "../base/math";
-import { If } from "../base/typing";
-import { Angle, BaseVec3 } from "../physics/direction";
-import { packBlockPos, SectionsPerChunk } from "./static";
-import { AuthClient, AuthOption } from "./auth";
-import { ClientStatus, ConnectionState, Entity, SharedState } from "../world/state";
-import { EncodeResult, VersionCodec } from "../version/codec";
-import { PacketRegistry } from "../version/registry";
+import { BinaryDecoder } from "../packet/decoder";
+import { BinaryEncoder } from "../packet/encoder";
+import { AuthOption } from "./auth";
+import { ClientStatus, ConnectionState, SharedState } from "../world/state";
+import { EncodeResult } from "../version/codec";
+import { TextComponent } from "../base/typing";
+import { MissingAuthOption, SockerIsNotWritable } from "../base/error";
 
 // Minecraft related typing
 
