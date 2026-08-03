@@ -24,6 +24,9 @@
   "engines": {
     "node": ">=22"
   },
+  "scripts": {
+    "prepare": "eslint . --fix && tsc --noEmit"
+  },
   "devDependencies": {
     "@clean-jsdoc-theme/typedoc": "5.0.5",
     "@eslint/js": "^10.0.1",
