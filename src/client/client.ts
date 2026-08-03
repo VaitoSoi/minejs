@@ -36,15 +36,18 @@ export interface ClientEvents {
 /**
  * High-level client.
  */
-export class Client<IsTCPReady extends boolean = boolean> extends (EventEmitter as new () => TypedEmmiter<ClientEvents>) {
+export class Client<IsReady extends boolean = boolean> extends (EventEmitter as new () => TypedEmitter<ClientEvents>) {
     private tickLoop: TickLoop;
 
-    private tcp: TCPClient<IsTCPReady>;
     private blocks: BlockManager;
     private entities: EntitiesManager;
     private player: Player;
+    private uuid: Buffer = Buffer.alloc(0);
 
-    constructor(options: TCPClientOption) {
+    private tcp: TCPClient;
+    private state: SharedState<IsReady>;
+
+    constructor(private options: ClientOption) {
         super();
         BlockRegistry.load();
         EntityRegistry.load();
