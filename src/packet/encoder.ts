@@ -237,7 +237,6 @@ export class BinaryEncoder {
 
         return this;
     }
-
 }
 
 type CompoundField = any | {
