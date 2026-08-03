@@ -4,7 +4,7 @@ const client = new Client({
     playerName: "bot",
     host: "localhost",
     port: 25565,
-    protocolVersion: 776,
+    version: "26.2",
     // debug: {
     //     packetLogger: true
     // },
