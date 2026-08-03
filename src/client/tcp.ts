@@ -58,12 +58,12 @@ export interface TCPClientEvents {
 
 export interface Message {
     sender: string,
-    target?: string,
+    target: string | undefined,
     content: string,
     raw: {
         sender: TextComponent,
-        target?: TextComponent,
-        content?: TextComponent
+        target: TextComponent | undefined,
+        content: TextComponent | undefined
     }
 }
 
