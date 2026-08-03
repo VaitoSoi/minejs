@@ -4,8 +4,7 @@ import { StringSizeExceedLimit, UnexpectedValue } from "../base/error";
 import { Tag } from "./static";
 import { unzipSync } from "zlib";
 import { minBigInt } from "../base/math";
-import { BlockEntity, ChunkSection, ClientPlayer } from "../client/tcp";
-import { packBlockPos, SectionsPerChunk } from "../client/static";
+import { inspect } from "util";
 
 export function getTextFromTextComponent(component: any): string {
     if (component === null || component === undefined) return "null";
@@ -423,100 +422,6 @@ export class BinaryDecoder {
             chat: this.readChatTypeDecoration(),
             narration: this.readChatTypeDecoration()
         };
-    }
-
-    public readChunkData(currentDimension: string) {
-        const chunkX = this.readInt(),
-            chunkZ = this.readInt(),
-            heightMaps = this.readPrefixedArray(decoder => ({
-                type: decoder.readVarInt(),
-                data: decoder.readPrefixedArray(decoder => decoder.readLong())
-            })), // Not used yet
-            chunkData = this.readPrefixedArray(decoder => decoder.readByte()),
-            blockEntities = this.readPrefixedArray(decoder => {
-                const packedXZ = decoder.readByte(),
-                    y = decoder.readShort(),
-                    type = decoder.readVarInt(),
-                    nbt = decoder.readNBT();
-                const x = (packedXZ >> 4) & 15, z = packedXZ & 15;
-                const packedPosition = packBlockPos(x, y, z);
-                return { packedPosition, type, nbt };
-            });
-
-        // this.world!.chunks[`${this.player!.dimension}:${chunkX}:${chunkZ}`] = [];
-        const chunkSections: Record<number, ChunkSection> = {};
-
-        const chunkDataDecoder = new BinaryDecoder(Buffer.from(chunkData));
-        for (let height = 0; height < (SectionsPerChunk[currentDimension] || 0); height++) {
-            const blockCount = chunkDataDecoder.readShort();
-            const fluidCount = chunkDataDecoder.readShort();
-
-            // Blocks
-            let blockStateBPE = chunkDataDecoder.readUByte();
-            let blockStatePalettes: number[] = [];
-
-            if (blockStateBPE === 0) {
-                blockStatePalettes = [chunkDataDecoder.readVarInt()];
-            } else if (blockStateBPE <= 8) {
-                // Indirect palette
-                if (blockStateBPE < 4) blockStateBPE = 4; // BPE smaller than 4 will be rounđe up to 4
-                blockStatePalettes = chunkDataDecoder.readPrefixedArray(decoder => decoder.readVarInt());
-            } else {
-                // Direct palette (no palette array)
-            }
-
-            const blockEntriesPerSection = 4096;
-            const blockEntriesPerLong = Math.floor(64 / blockStateBPE);
-            let blockDataArray: BigInt64Array | null = null;
-            if (blockStateBPE !== 0) {
-                const blockDataArrayLength = Math.floor((blockEntriesPerSection + blockEntriesPerLong - 1) / blockEntriesPerLong);
-                blockDataArray = new BigInt64Array(chunkDataDecoder.readArray(blockDataArrayLength, (decoder) => decoder.readLong()));
-            }
-
-            // Biomes - Not used yet, but need to be read to advance decoder
-            const biomeBPE = chunkDataDecoder.readUByte();
-            let biomePalettes: number[] = [];
-            if (biomeBPE === 0) {
-                biomePalettes = [chunkDataDecoder.readVarInt()]; // Palette value
-            } else if (biomeBPE <= 3) {
-                // Indirect palette
-                biomePalettes = chunkDataDecoder.readPrefixedArray(decoder => decoder.readVarInt());
-            } else {
-                // Direct palette (no palette array)
-            }
-
-            const biomeEntriesPerSection = 64;
-            const biomeEntriesPerLong = Math.floor(64 / biomeBPE);
-            let biomeDataArray: BigInt64Array | null = null;
-            if (biomeBPE !== 0) {
-                const biomeDataArrayLength = Math.floor((biomeEntriesPerSection + biomeEntriesPerLong - 1) / biomeEntriesPerLong);
-                biomeDataArray = new BigInt64Array(chunkDataDecoder.readArray(biomeDataArrayLength, (decoder) => decoder.readLong()));
-            }
-
-            chunkSections[height] = {
-                block: {
-                    bpe: blockStateBPE,
-                    palette: blockStatePalettes,
-                    data: blockDataArray
-                },
-                biome: {
-                    bpe: biomeBPE,
-                    palette: biomePalettes,
-                    data: biomeDataArray
-                }
-            };
-        }
-
-        const blockEntitiesObj: Record<number, BlockEntity> = Object.fromEntries(
-            blockEntities.map(val => [val.packedPosition, { type: val.type, data: val.nbt }])
-        );
-
-        return {
-            position: { x: chunkX, z: chunkZ },
-            sections: chunkSections,
-            blockEntities: blockEntitiesObj
-        };
-
     }
 }
 
