@@ -24,7 +24,7 @@ export function getTextFromTextComponent(component: any): string {
             } else if ("keybind" in component)
                 return component["keybind"];
             else
-                throw new UnexpectedValue("type of component", "string or object", typeof component);
+                throw new UnexpectedValue("value of component", "text component object", inspect(component, undefined, null));
         }
         default:
             throw new UnexpectedValue("type of component", "string or object", typeof component);
