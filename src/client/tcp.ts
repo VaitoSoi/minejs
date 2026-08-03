@@ -125,8 +125,8 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
         });
         connection.on("data", (data) => {
             let buf = Buffer.from(data);
-            if (this.decipher) {
-                buf = this.decipher.update(buf);
+            if (this.state.decipher) {
+                buf = this.state.decipher.update(buf);
             }
             this.emit("raw", Buffer.from(buf));
             this.bufferPool = Buffer.concat([this.bufferPool, buf]);
@@ -139,10 +139,10 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
             // this.emit("disconnect", "socket close");
         });
         connection.once("close", () => {
-            if (this.status === ClientStatus.Disconnected) return;
-            this.status = ClientStatus.Disconnected;
-            this.state = ClientState.Disconnected;
-            this.emit("disconnect", "socket close");
+            if (this.state.status === ClientStatus.Disconnected) return;
+            this.state.status = ClientStatus.Disconnected;
+            this.state.state = ConnectionState.Disconnected;
+            // this.emit("disconnect", "socket close");
         });
     }
 
