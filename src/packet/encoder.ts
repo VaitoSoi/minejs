@@ -23,8 +23,9 @@ export class BinaryEncoder {
         this.buffer = Buffer.alloc(0);
     }
 
-    public concat(buf: Buffer) {
+    public writeRaw(buf: Buffer) {
         this.buffer = Buffer.concat([this.buffer, buf]);
+        return this;
     }
 
 
@@ -36,7 +37,7 @@ export class BinaryEncoder {
     public write(size: number, val: any, writeFunc: (buf: Buffer) => ((val: any) => void)) {
         const buf = Buffer.alloc(size);
         writeFunc(buf).bind(buf)(val);
-        this.concat(buf);
+        this.writeRaw(buf);
         return this;
     }
 
@@ -138,7 +139,7 @@ export class BinaryEncoder {
      */
     public writeString(str: string) {
         this.writeVarInt(str.length);
-        this.concat(Buffer.from(str));
+        this.writeRaw(Buffer.from(str));
         return this;
     }
 
@@ -180,7 +181,7 @@ export class BinaryEncoder {
             else return val;
         });
         this.writeVarInt(length);
-        this.concat(Buffer.concat(array));
+        this.writeRaw(Buffer.concat(array));
         return this;
     }
 
@@ -196,7 +197,7 @@ export class BinaryEncoder {
     public writeRawPrefixedArray(data: Buffer, size: number) {
         const length = Math.ceil(data.length / size);
         this.writeVarInt(length);
-        this.concat(data);
+        this.writeRaw(data);
         return this;
     }
 
@@ -315,7 +316,7 @@ export class NBTEncoder extends BinaryEncoder {
     public writeString(str: string) {
         this.writeUShort(str.length);
         if (str.length === 0) return this;
-        this.concat(Buffer.from(str));
+        this.writeRaw(Buffer.from(str));
         return this;
     }
 
@@ -331,7 +332,7 @@ export class NBTEncoder extends BinaryEncoder {
             for (const item of arr)
                 this.writeString(item);
         else
-            this.concat(Buffer.from(arr));
+            this.writeRaw(Buffer.from(arr));
         return this;
     }
 
