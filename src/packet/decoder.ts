@@ -610,7 +610,6 @@ export class SNBTDecoder {
         outer:
         while (true) {
             ch = this.source[this.offset]!;
-            console.dir({ ch, type });
 
             switch (ch) {
                 case "[":
