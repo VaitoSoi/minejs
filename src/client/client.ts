@@ -9,7 +9,10 @@ import { BlockRegistry, EntityRegistry } from "../world/registry";
 import { BaseVec3, Vec3 } from "../physics/direction";
 
 export interface ClientEvents {
-    ready: [readyClient: Client<true>],
+    connect: [],
+    destroy: [],
+
+    ready: [],
     disconnect: [reason: string],
     disconnectRaw: [textComponent: TextComponent],
 
@@ -19,7 +22,7 @@ export interface ClientEvents {
     unloadChunk: [chunkX: number, chunkZ: number],
 
     spawnEntity: [entity: Entity],
-    updateEntity: [entity: Entity],
+    updateEntity: [entityId: number],
     removeEntity: [entityId: number],
 
     // Chat
