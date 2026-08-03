@@ -3,9 +3,12 @@ import { Angle, Axis, BaseAxis, BaseVec3, Vec3 } from "./direction";
 import { AABB, Shapes, VoxelShape } from "./aabb";
 import { BlockGetter, BlockManager, BlockState } from "../world/block";
 import { clamp, Epsilon, equal, lerp } from "../base/math";
-import { TCPClient } from "../client/tcp";
 import { ClientNotReady } from "../base/error";
 import { LevelHeightLimit } from "../client/static";
+import { SharedState } from "../world/state";
+import { TypedEmmiter } from "../base/event";
+import { ClientEvents } from "../client/client";
+import { makeMovementFlag } from "../packet/encoder";
 
 export enum MoveDirection {
     Forward = "W",
@@ -54,15 +57,16 @@ export class Player {
     private lastOnGround: boolean = true;
 
     constructor(
+        private state: SharedState,
+        private on: TypedEmmiter<ClientEvents>["on"],
         private entities: EntitiesManager,
         private blocks: BlockManager,
-        private tcp: TCPClient
     ) {
-        this.tcp.on("playerPosition", () => {
+        this.on("playerPosition", () => {
             this.onGround = true;
             this.horizontalCollision = false;
             this.fallDistance = 0;
-            this.deltaMovement = new Vec3(this.tcp.player!.velocity);
+            this.deltaMovement = new Vec3(this.state.player!.velocity);
         });
     }
 
@@ -132,20 +136,20 @@ export class Player {
 
     /* Getting helper, from TCP client */
     private getPos() {
-        this.tcp.checkReady();
-        return new Vec3(this.tcp.player!.position);
+        this.state.checkReady();
+        return new Vec3(this.state.player!.position);
     }
     private setPos(pos: Vec3) {
-        this.tcp.checkReady();
-        this.tcp.player!.position = pos.copyBase();
+        this.state.checkReady();
+        this.state.player!.position = pos.copyBase();
     }
     private getAngle() {
-        this.tcp.checkReady();
-        return this.tcp.player!.angle;
+        this.state.checkReady();
+        return this.state.player!.angle;
     }
     private getDimension() {
-        this.tcp.checkReady();
-        return this.tcp.player!.dimension;
+        this.state.checkReady();
+        return this.state.player!.dimension;
     }
 
     private setDeltaMovement(x: number, y: number, z: number): void;
@@ -217,7 +221,7 @@ export class Player {
      * Ticking
      */
     public tick() {
-        if (!this.tcp.isReady()) return;
+        if (!this.state.isReady()) return;
         if (!this.lastPos || !this.lastAngle) throw new ClientNotReady();
 
         // console.log("tick");
@@ -226,7 +230,7 @@ export class Player {
         this.aiStep();
         const { x, y, z } = this.getPos(),
             { x: xLast, y: yLast, z: zLast } = this.lastPos,
-            { yaw: xRot, pitch: yRot } = this.getAngle(),
+            { yaw, yaw: xRot, pitch, pitch: yRot } = this.getAngle(),
             { yaw: xRotLast, pitch: yRotLast } = this.lastAngle;
         const deltaX = x - xLast,
             deltaY = y - yLast,
@@ -237,16 +241,28 @@ export class Player {
         const move = new Vec3(deltaX, deltaY, deltaZ).lengthSqr() > (2e-4 * 2e-4) || this.positionReminder > 20,
             rot = deltaXRot !== 0 || deltaYRot !== 0;
         if (move && rot)
-            this.tcp.sendPlayerPosRot(this.getPos(), this.getAngle(), this.onGround, this.horizontalCollision);
+            this.state.enqueuePacket("move_player_pos_rot", {
+                x, feet_y: y, z,
+                yaw, pitch,
+                flags: makeMovementFlag(this.onGround, this.horizontalCollision)
+            });
         else if (move)
-            this.tcp.sendPlayerPos(this.getPos(), this.onGround, this.horizontalCollision);
+            this.state.enqueuePacket("move_player_pos", {
+                x, feet_y: y, z,
+                flags: makeMovementFlag(this.onGround, this.horizontalCollision)
+            });
         else if (rot)
-            this.tcp.sendPlayerRot(this.getAngle(), this.onGround, this.horizontalCollision);
+            this.state.enqueuePacket("move_player_rot", {
+                yaw, pitch,
+                flags: makeMovementFlag(this.onGround, this.horizontalCollision)
+            });
         else if (
             this.onGround !== this.lastOnGround ||
             this.horizontalCollision !== this.lastHorizontalCollision
         )
-            this.tcp.sendPlayerStatus(this.onGround, this.horizontalCollision);
+            this.state.enqueuePacket("move_player_status_only", {
+                flags: makeMovementFlag(this.onGround, this.horizontalCollision)
+            });
 
         if (move) {
             this.lastPos = this.getPos();
@@ -503,7 +519,7 @@ export class Player {
 
     private collide(movement: Vec3): Vec3 {
         // Get player's bounding box
-        const { x: playerX, y: playerY, z: playerZ } = this.tcp.player!.position;
+        const { x: playerX, y: playerY, z: playerZ } = this.state.player!.position;
         const playerBB = AABB.fromEntityType("minecraft:player")
             .move(playerX, playerY, playerZ);
         const expandedBB = playerBB.expandTowards(movement);
@@ -515,7 +531,7 @@ export class Player {
         // });
 
         // Collect all colliders
-        const colliders = this.collectColliders(expandedBB, [this.tcp.player!.entityId]);
+        const colliders = this.collectColliders(expandedBB, [this.state.player!.entityId]);
         // // console.log('nonEmptyColliders', colliders.filter(c => !c.isEmpty()).length);
 
         // Get the farest distance can move
@@ -535,7 +551,7 @@ export class Player {
             if (!onGroundAfterCollision)
                 stepUpAABB = stepUpAABB.expandTowards(0, -1e-5, 0);
 
-            const colliders = this.collectColliders(stepUpAABB, [this.tcp.player!.entityId]);
+            const colliders = this.collectColliders(stepUpAABB, [this.state.player!.entityId]);
             const stepHeightToSkip = movementStep.y;
             const stepUpCandidateSet: Set<number> = new Set();
             for (const collider of colliders) {
