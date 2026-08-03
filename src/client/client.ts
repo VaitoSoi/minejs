@@ -37,6 +37,8 @@ export interface ClientEvents {
  * High-level client.
  */
 export class Client<IsReady extends boolean = boolean> extends (EventEmitter as new () => TypedEmitter<ClientEvents>) {
+    private static loadRegistry: boolean = false;
+
     private tickLoop: TickLoop;
 
     private blocks: BlockManager;
@@ -49,34 +51,13 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
 
     constructor(private options: ClientOption) {
         super();
-        BlockRegistry.load();
-        EntityRegistry.load();
 
-        this.tcp = new TCPClient(options);
-        this.blocks = new BlockManager(this.tcp);
-        this.entities = new EntitiesManager(this.tcp);
-        this.player = new Player(this.entities, this.blocks, this.tcp);
-        this.tickLoop = new TickLoop(() => this.player.tick());
-        this.forwardEvents();
-    }
-
-    private forwardEvent(eventName: keyof ClientEvents & keyof TCPClientEvents) {
-        this.tcp.on(eventName, (...args) => this.emit(eventName, ...args));
-    }
-    private forwardEvents() {
-        this.forwardEvent("disconnect");
-        this.forwardEvent("disconnectRaw");
-        this.forwardEvent("loadChunk");
-        this.forwardEvent("unloadChunk");
-        this.forwardEvent("playerPosition");
-        this.forwardEvent("spawnEntity");
-        this.forwardEvent("updateEntity");
-        this.forwardEvent("removeEntity");
-        this.forwardEvent("message");
-        this.forwardEvent("systemMessage");
-        this.forwardEvent("systemMessageRaw");
-        this.forwardEvent("actionBar");
-        this.forwardEvent("actionBarRaw");
+    private async loadRegistries() {
+        if (Client.loadRegistry) return;
+        Client.loadRegistry = true;
+        await BlockRegistry.load(this.options.version);
+        await EntityRegistry.load(this.options.version);
+        await PacketRegistry.load(this.options.version);
     }
 
     // Start / stop
