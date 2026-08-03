@@ -116,3 +116,39 @@ export class ClientNotReady extends Error {
         super(`client is not ready`);
     }
 }
+
+/** @hidden */
+export class VersionNotSupport extends Error {
+    constructor(public version: string) {
+        super(`version ${version} is not supported`);
+    }
+}
+
+/** @hidden */
+export class CantReadFile extends Error {
+    constructor(public path: string) {
+        super(`can't read file at "${path}"`);
+    }
+}
+
+/** @hidden */
+export class InvalidPacketStructure extends Error {
+    constructor(public path: string, public zodIssue?: any[]) {
+        super(`packet structure in file "${path}" is invalid` + (zodIssue?.length ? ", zod issue: " + JSON.stringify(zodIssue, null, 4) : ""));
+    }
+}
+
+
+/** @hidden */
+export class MissingPacketField extends Error {
+    constructor(public packetId: number, public field: string, public need: string) {
+        super(`${packetId}: ${field} need ${need}, but not found`);
+    }
+}
+
+/** @hidden */
+export class MissingField extends Error {
+    constructor(public field: string, public where: string) {
+        super(`missing ${field} in ${where}`);
+    }
+}
