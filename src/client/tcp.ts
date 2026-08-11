@@ -96,9 +96,9 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
         this.socket = new Socket(socketOption);
     }
 
-    public sendInitPacket: () => void = () => { throw new Error("method not implemented"); };
-    public forwardPacket: (packetId: number, decoder: BinaryDecoder) => void = (...args) => { throw new Error("method not implemented"); };
-    public parsePacket: (packetId: string | number, data: object) => EncodeResult = (...args) => { throw new Error("method not implemented"); };
+    public sendInitPacket: () => void = () => { throw new NotImplemented(); };
+    public forwardPacket: (packetId: number, decoder: BinaryDecoder) => void = () => { throw new NotImplemented(); };
+    public parsePacket: (packetId: string | number, data: object) => EncodeResult = () => { throw new NotImplemented(); };
 
     /**
      * Connect to server
