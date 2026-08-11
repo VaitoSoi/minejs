@@ -136,6 +136,65 @@ export class AuthClient {
         this.codeChallenge = hashed;
     }
 
+    /**
+     * Send a auth notify to Minecraft server, after receive Encryption Request
+     * 
+     * @see https://minecraft.wiki/w/Java_Edition_protocol/Encryption#Authentication
+     */
+    public async sendAuth(
+        // Sever things
+        serverId: string,
+        sharedSecret: Buffer,
+        publicKey: Buffer,
+    ) {
+        const hash = minecraftSha1(serverId, sharedSecret, publicKey);
+        const response = await fetch(
+            "https://sessionserver.mojang.com/session/minecraft/join",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    accessToken: this.accessToken,
+                    selectedProfile: this.uuid,
+                    serverId: hash,
+                })
+            }
+        );
+        console.log({
+            accessToken: this.accessToken,
+            selectedProfile: this.uuid,
+            serverId: hash,
+        });
+        if (response.status === 204) return;
+        const json = await getJson(response, "send auth request") as Record<string, string>;
+        throw new AuthClientError(json["error"]! + ("errorMessage" in json ? `: ${json["errorMessage"]}` : ""));
+    }
+
+    /**
+     * Get player key pair for signing stuff
+     * 
+     * @see https://minecraft.wiki/w/Mojang_API#Get_keypair_for_signature
+     */
+    public async getKeyPair() {
+        const response = await fetch(
+            "https://api.minecraftservices.com/player/certificates",
+            {
+                headers: {
+                    Authorization: `Bearer ${this.accessToken}`
+                }
+            }
+        );
+        if (response.status !== 200) throw new AuthClientError("can't get the auth key", await response.text());
+        const json = await getJson(response, "get key pair") as any;
+        console.log(json);
+        return {
+            publicKey: String(json["keyPair"]["publicKey"]),
+            signature: String(json["publicKeySignatureV2"]),
+            expiresAt: Number(json["expiresAt"]),
+        };
+    }
 
 
     /**
