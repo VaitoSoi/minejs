@@ -182,8 +182,7 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
      */
     public async connect() {
         await this.loadRegistries();
-
-        if (!this.uuid.length) {
+        if (!this.state.playerUUID) {
             if (this.options.auth) {
                 const authClient = new AuthClient(this.options.auth);
                 const { uuid } = await authClient.auth();
