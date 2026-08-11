@@ -768,4 +768,52 @@ export class Dispatcher {
             keep_alive_id: id
         });
     }
+
+    public sendPlayerPos(
+        position: BaseVec3,
+        onGround: boolean,
+        horizontalCollision: boolean
+    ) {
+        const { x, y, z } = position;
+        this.state.enqueuePacket("move_player_pos", {
+            x, feet_y: y, z,
+            flags: makeMovementFlag(onGround, horizontalCollision)
+        });
+    }
+
+    public sendPlayerPosRot(
+        position: BaseVec3,
+        angle: Angle,
+        onGround: boolean,
+        horizontalCollision: boolean
+    ) {
+        const { x, y, z } = position,
+            { yaw, pitch } = angle;
+        this.state.enqueuePacket("move_player_pos_rot", {
+            x, feet_y: y, z,
+            yaw, pitch,
+            flags: makeMovementFlag(onGround, horizontalCollision)
+        });
+    }
+
+    public sendPlayerRot(
+        angle: Angle,
+        onGround: boolean,
+        horizontalCollision: boolean
+    ) {
+        const { yaw, pitch } = angle;
+        this.state.enqueuePacket("move_player_rot", {
+            yaw, pitch,
+            flags: makeMovementFlag(onGround, horizontalCollision)
+        });
+    }
+
+    public sendPlayerStatus(
+        onGround: boolean,
+        horizontalCollision: boolean
+    ) {
+        this.state.enqueuePacket("move_player_status_only", {
+            flags: makeMovementFlag(onGround, horizontalCollision)
+        });
+    }
 }
