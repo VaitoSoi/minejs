@@ -806,9 +806,11 @@ export class Dispatcher {
             key: createPublicKey({ key: publicKey, format: 'der', type: 'spki' }),
             padding: crypto_constants.RSA_PKCS1_PADDING
         }, verifyToken);
+        const secretBuf = sliceBuffer(encryptedSecret, 1, (buf) => buf.readInt8());
+        const token = sliceBuffer(encryptedVerifyToken, 1, (buf) => buf.readInt8());
         this.sendPacket("key", {
-            shared_secret: { value: encryptedSecret, length: 8 },
-            verify_token: { value: encryptedVerifyToken, length: 8 }
+            shared_secret: { value: secretBuf, length: secretBuf.length },
+            verify_token: { value: token, length: token.length }
         });
     }
 
