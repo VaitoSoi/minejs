@@ -244,7 +244,7 @@ export class AuthClient {
         this.option.log!(message);
 
         let msToken;
-        const msTokenUrl = new URL("https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token");
+        const msTokenUrl = new URL("https://login.microsoftonline.com/consumers/oauth2/v2.0/token");
         const msTokenBody = new URLSearchParams();
         msTokenBody.set("grant_type", "urn:ietf:params:oauth:grant-type:device_code");
         msTokenBody.set("client_id", this.option.client_id);
