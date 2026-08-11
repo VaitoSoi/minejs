@@ -114,6 +114,7 @@ export class VersionCodec {
             }
             case "angle": return decoder.readAngle();
             case "id_or_x": return decoder.readIdOrX((decoder) => this.readField(packetId, readObject, fieldName, field.subType, decoder));
+            case "id_set": return decoder.readIdSet();
             case "chat_type_decoration": return decoder.readChatTypeDecoration();
             case "chat_type": return decoder.readChatType();
             case "enum": return this.readField(packetId, readObject, fieldName, field.subType, decoder);

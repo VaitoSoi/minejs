@@ -398,6 +398,27 @@ export class BinaryDecoder {
     }
 
     /**
+     * Represents a set of IDs in a certain registry (implied by context), either directly (enumerated IDs) or indirectly (tag name).
+     * | Field Name | Field Type | Meaning |
+     * |------------|------------|---------|
+     * | Type       | VarInt     | Value used to determine the data that follows. It can be either: 0 - Represents a named set of IDs defined by a tag. Anything else - Represents an ad-hoc set of IDs enumerated inline. |
+     * | Tag Name   | Optional Identifier | The registry tag defining the ID set. Only present if Type is 0. |
+     * | IDs        | Optional Array of VarInt | An array of registry IDs. Only present if Type is not 0. The size of the array is equal to Type - 1. |
+     */
+    public readIdSet() {
+        const type = this.readVarInt();
+        let tagName: string | null = null,
+            ids: number[] | null = null;
+        if (type === 0) tagName = this.readString();
+        else ids = this.readArray(type - 1, decoder => decoder.readVarInt());
+        return {
+            type,
+            tagName,
+            ids
+        };
+    }
+
+    /**
      * Read Chat Type Decoration
      * 
      * The chat type decorations look like:
