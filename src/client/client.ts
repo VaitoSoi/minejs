@@ -225,14 +225,14 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
     /**
      * Press and hold a key
      */
-    public hold(direction: MoveDirection) {
-        this.player.input(direction);
+    public hold(inout: Input) {
+        this.player.input(inout);
     }
     /**
      * Release a key
      */
-    public release(direction: MoveDirection) {
-        this.player.releaseInput(direction);
+    public release(input: Input) {
+        this.player.releaseInput(input);
     }
     /**
      * Release all key
