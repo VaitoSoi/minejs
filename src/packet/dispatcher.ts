@@ -50,7 +50,7 @@ export class Dispatcher {
         };
     }
 
-    public sendPacket: (packetId: string, data: object) => void = (...args) => { throw new Error("method not implemented"); };
+    public sendPacket: (packetId: string, data: object) => void = () => { throw new NotImplemented(); };
     public disconnect: (reason: string, reasonRaw?: TextComponent) => void = () => { throw new NotImplemented(); };
 
 
