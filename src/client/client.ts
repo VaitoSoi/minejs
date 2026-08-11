@@ -199,9 +199,9 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
             this.player.setInitialVal();
             this.tickLoop.start();
         });
-        this.once("disconnect", () => {
-            this.tickLoop.stop();
-            this.player.pruneInitialVal();
+        this.tcp.once("destroy", () => {
+            if (this.state.state === ConnectionState.Disconnected) return;
+            this.disconnect("socket close");
         });
     }
     /**
