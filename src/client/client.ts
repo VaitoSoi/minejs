@@ -14,7 +14,21 @@ import { VersionCodec } from "../version/codec";
 import { AuthClient } from "./auth";
 import { computeUUID } from "../base/math";
 
-export type ClientOption = Omit<TCPClientOption, "protocolVersion"> & { version: string }
+export type ClientOption = Omit<TCPClientOption, "protocolVersion"> & {
+    version: string,
+
+    /**
+     * Whenever should the client verify the message against the signature, if any
+     * 
+     * When set this option to true, you HAVE TO set `shouldVerifyMessageOrder` to true
+     */
+    shouldVerifyMessageSignature?: boolean
+
+    /**
+     * Should verify the message orders to keep the sync with server.
+     */
+    shouldVerifyMessageOrder?: boolean
+}
 
 export interface ClientEvents {
     connect: [],
@@ -58,6 +72,9 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
     private state: SharedState<IsReady>;
 
     constructor(private options: ClientOption) {
+        if (options.shouldVerifyMessageSignature === true && options.shouldVerifyMessageOrder !== true)
+            throw new HaveSignatureButNotIndex();
+
         super();
 
         // For managing shared data
