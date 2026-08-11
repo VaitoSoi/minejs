@@ -166,6 +166,8 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
                 } else {
                     const dataBuffer = this.bufferPool.subarray(decoder.offset, expectedPacketEnd);
                     const decompressed = inflateSync(dataBuffer);
+                    if (decompressed.length !== dataLength)
+                        throw new UnexpectedValue("decompressed packet data", decompressed.length.toString(), dataLength.toString());
                     decoder = new BinaryDecoder(decompressed);
                     packetID = decoder.readVarInt();
                 }
