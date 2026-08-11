@@ -103,7 +103,7 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
     /**
      * Connect to server
      */
-    public async connect() {
+    public connect() {
         this.state.status = ClientStatus.Connecting;
         const connection = this.socket.connect({
             host: this.option.host,
