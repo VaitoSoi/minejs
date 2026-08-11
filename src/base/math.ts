@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 
 /** @hidden */
 export const Epsilon = 1.0e-7; // 1^-7
@@ -19,6 +19,28 @@ export function computeUUID(playerName: string): Buffer {
 
     return md5;
 }
+
+/**
+ * Create random UUID but in bytes
+ * 
+ * @hidden
+ * @see https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/UUID.java#L144
+ */
+export function randomUUIDBytes(): Buffer {
+    const buffer = randomBytes(16);
+    buffer[6]! &= 0x0f;  /* clear version        */
+    buffer[6]! |= 0x40;  /* set to version 4     */
+    buffer[8]! &= 0x3f;  /* clear variant        */
+    buffer[8]! |= 0x80;  /* set to IETF variant  */
+    return buffer;
+}
+
+/**
+ * Transform UUID string into Buffer
+ * 
+ * @hidden
+ */
+export const uuidToBuffer = (uuid: string) => Buffer.from(uuid.replaceAll("-", ""), "hex");
 
 /** @hidden */
 export const minBigInt = (...args: bigint[]) => args.reduce((min, val) => val < min ? val : min);
