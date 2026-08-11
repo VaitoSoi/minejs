@@ -32,11 +32,6 @@ export interface TCPClientOption {
     /** Player name */
     playerName: string,
     /**
-     * Set to true only if you are playing in offline server or crack server
-     */
-    isOffline?: boolean,
-
-    /**
      * Send empty `Known Packet` to let server send all Registry data, which may consume a lot of bandwith
      */
     loadRegistry?: boolean,
@@ -99,9 +94,6 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
     ) {
         super();
         this.socket = new Socket(socketOption);
-
-        if (!option.isOffline && !option.auth)
-            throw new MissingAuthOption();
     }
 
     public sendInitPacket: () => void = () => { throw new Error("method not implemented"); };
