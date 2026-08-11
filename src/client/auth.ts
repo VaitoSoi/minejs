@@ -335,6 +335,8 @@ export class AuthClient {
             method: "POST"
         });
         const minecraftResponse = await getJson(minecraftRequest, "minecraft request") as Record<string, any>;
+        if ("errorMessage" in minecraftResponse)
+            throw new MinecraftError(minecraftResponse["errorMessage"]);
         const minecraftToken = minecraftResponse["access_token"];
 
         const mcProfileRequest = await fetch("https://api.minecraftservices.com/minecraft/profile", {
