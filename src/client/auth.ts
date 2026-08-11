@@ -255,7 +255,8 @@ export class AuthClient {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
-                method: "POST"
+                method: "POST",
+                body: msTokenBody.toString()
             });
             const msTokenResponse = await msTokenRequest.json() as Record<string, any>;
             if ("error" in msTokenResponse)
