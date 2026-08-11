@@ -215,7 +215,7 @@ export class AuthClient {
             method: "POST",
             body: msTokenBody.toString()
         });
-        const msTokenResponse = await msTokenRequest.json() as Record<string, any>;
+        const msTokenResponse = await getJson(msTokenRequest, "microsoft token request") as Record<string, any>;
         if ("error" in msTokenResponse)
             throw new OAuthError(msTokenResponse["error"]);
         const msToken = msTokenResponse["access_token"];
@@ -299,7 +299,7 @@ export class AuthClient {
             }),
             method: "POST"
         });
-        const xboxReponse = await xboxRequest.json() as Record<string, any>;
+        const xboxReponse = await getJson(xboxRequest, "xbox request") as Record<string, any>;
         const xboxToken = xboxReponse["Token"];
         const userHash = xboxReponse["DisplayClaims"]["xui"][0]["uhs"];
 
@@ -318,7 +318,7 @@ export class AuthClient {
             }),
             method: "POST"
         });
-        const xboxSecurityReponse = await xboxSecurityRequest.json() as Record<string, any>;
+        const xboxSecurityReponse = await getJson(xboxSecurityRequest, "xbox security request") as Record<string, any>;
         if ("XErr" in xboxSecurityReponse)
             throw new XboxError(xboxSecurityReponse["XErr"]);
         const xboxSecurityToken = xboxSecurityReponse["Token"];
@@ -333,7 +333,7 @@ export class AuthClient {
             }),
             method: "POST"
         });
-        const minecraftResponse = await minecraftRequest.json() as Record<string, any>;
+        const minecraftResponse = await getJson(minecraftRequest, "minecraft request") as Record<string, any>;
         const minecraftToken = minecraftResponse["access_token"];
 
         const mcProfileRequest = await fetch("https://api.minecraftservices.com/minecraft/profile", {
@@ -342,7 +342,7 @@ export class AuthClient {
             },
             method: "GET"
         });
-        const mcProfileResponse = await mcProfileRequest.json() as Record<string, any>;
+        const mcProfileResponse = await getJson(mcProfileRequest, "minecraft profile request") as Record<string, any>;
         if ("error" in mcProfileResponse) {
             if (mcProfileResponse["error"] === "NOT_FOUND")
                 throw new ProfileNotFound();
