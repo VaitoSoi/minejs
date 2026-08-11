@@ -6,10 +6,10 @@ import { TypedEmmiter } from "../base/event";
 import { BinaryDecoder } from "../packet/decoder";
 import { BinaryEncoder } from "../packet/encoder";
 import { AuthOption } from "./auth";
-import { ClientStatus, ConnectionState, SharedState } from "../world/state";
+import { ClientStatus, SharedState } from "../world/state";
 import { EncodeResult } from "../version/codec";
 import { TextComponent } from "../base/typing";
-import { MissingAuthOption, SockerIsNotWritable } from "../base/error";
+import { NotImplemented, SockerIsNotWritable, UnexpectedValue } from "../base/error";
 
 // Minecraft related typing
 
