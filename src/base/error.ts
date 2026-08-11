@@ -1,4 +1,11 @@
 /** @hidden */
+export class ClientNotReady extends Error {
+    constructor() {
+        super(`client is not ready`);
+    }
+}
+
+/** @hidden */
 export class UnexpectedValue extends Error {
     constructor(
         public type: string,
@@ -33,12 +40,20 @@ export class InvalidValue extends Error {
     }
 }
 
+/*
+ * TCP connection
+ */
+
 /** @hidden */
 export class SockerIsNotWritable extends Error {
     constructor() {
         super("socket is not writable, do you connect it before?");
     }
 }
+
+/*
+ * Authenticating... 
+ */
 
 /** @hidden */
 export class CantGetMsAuthToken extends Error {
@@ -55,9 +70,16 @@ export class CantGetMsAccessToken extends Error {
 }
 
 /** @hidden */
-export class AuthError extends Error {
-    constructor(public error: string) {
+export class OAuthError extends Error {
+    constructor(public error: string, public detail?: any) {
         super(`got oauth error: ${error}, for more info: https://datatracker.ietf.org/doc/html/rfc6749#section-5.2`);
+    }
+}
+
+/** @hidden */
+export class AuthClientError extends Error {
+    constructor(public error: string, public detail?: any) {
+        super(error, detail);
     }
 }
 
@@ -68,6 +90,12 @@ export class XboxError extends Error {
     }
 }
 
+/** @hidden */
+export class MinecraftError extends Error {
+    constructor(public error: string) {
+        super(`minecraft auth error: ${error}`);
+    }
+}
 /** @hidden */
 export class ProfileNotFound extends Error {
     constructor() {
@@ -103,20 +131,22 @@ export class MissingAuthOption extends Error {
     }
 }
 
+export class AuthRelatedNotFound extends Error {
+    constructor(public component: string) {
+        super(`auth option is enabled, but the auth related component (${component}) is not found`);
+    }
+}
+
+/*
+ * Packets
+ */
+
 /** @hidden */
 export class RegistryItemNotFound extends Error {
     constructor(public item: string) {
         super(`cant find registry item: ${item}`);
     }
 }
-
-/** @hidden */
-export class ClientNotReady extends Error {
-    constructor() {
-        super(`client is not ready`);
-    }
-}
-
 /** @hidden */
 export class VersionNotSupport extends Error {
     constructor(public version: string) {
@@ -150,5 +180,28 @@ export class MissingPacketField extends Error {
 export class MissingField extends Error {
     constructor(public field: string, public where: string) {
         super(`missing ${field} in ${where}`);
+    }
+}
+
+/** @hidden */
+export class NotImplemented extends Error {
+    constructor() {
+        super("if you are dev, please create an issue on github. if you are vaito, hey, this function is not injected >:(");
+    }
+}
+
+/*
+ * Messages
+ */
+
+export class MessageLinkNotFound extends Error {
+    constructor(public senderUUID: string) {
+        super(`message link of sender ${senderUUID} not found, maybe because server has sent out of order packet`);
+    }
+}
+
+export class HaveSignatureButNotIndex extends Error {
+    constructor() {
+        super (`expecting both shouldVerifyMessageOrder set to true when shouldVerifyMessageSignature set to true`);
     }
 }
