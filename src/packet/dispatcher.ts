@@ -73,12 +73,12 @@ export class Dispatcher {
             server_id,
             public_key,
             verify_token,
-            shoudl_call_mojang
+            should_authenticate
         } = zodParse(data, zod.object({
             server_id: zod.string(),
             public_key: zod.array(zod.number()),
             verify_token: zod.array(zod.number()),
-            shoudl_call_mojang: zod.boolean()
+            should_authenticate: zod.boolean()
         }));
 
         const sharedSecret = randomBytes(16);
