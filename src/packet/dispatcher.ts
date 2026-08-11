@@ -51,7 +51,7 @@ export class Dispatcher {
     }
 
     public sendPacket: (packetId: string, data: object) => void = (...args) => { throw new Error("method not implemented"); };
-    public tcpDisconnect: () => void = () => { throw new Error("method not implemented"); };
+    public disconnect: (reason: string, reasonRaw?: TextComponent) => void = () => { throw new NotImplemented(); };
 
 
     public handlePacket(packetId: string, data: object) {
@@ -65,15 +65,7 @@ export class Dispatcher {
         const { reason } = zodParse(data, zod.object({ reason: zod.record(zod.string(), zod.any()) }));
         const text = getTextFromTextComponent(reason);
 
-        this.state.enqueueMutation((state) => {
-            state.status = ClientStatus.Disconnected;
-            state.state = ConnectionState.Disconnected;
-            state.pruneStates();
-        });
-
-        this.emit("disconnect", text.toString());
-        this.emit("disconnectRaw", reason);
-        this.tcpDisconnect();
+        this.disconnect(text, reason);
     }
 
     private handleEncryption(data: object) {
@@ -176,13 +168,7 @@ export class Dispatcher {
         const { reason } = zodParse(data, zod.object({ reason: zod.record(zod.string(), zod.any()) }));
         const text = getTextFromTextComponent(reason);
 
-        this.state.status = ClientStatus.Disconnected;
-        this.state.state = ConnectionState.Disconnected;
-        this.state.pruneStates();
-
-        this.emit("disconnect", text.toString());
-        this.emit("disconnectRaw", reason);
-        this.tcpDisconnect();
+        this.disconnect(text, reason);
     }
 
     // Play
