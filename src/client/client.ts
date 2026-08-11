@@ -251,4 +251,13 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
         const vec3 = Vec3.loadArgs(a, b, c);
         return this.blocks.at(vec3);
     }
+
+    /**
+     * Rotate your face
+     * @param yaw In degree
+     * @param pitch In degree
+     */
+    public lookAt(yaw: number, pitch: number) {
+        this.player.setAngle(yaw, pitch);
+    }
 }
