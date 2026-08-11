@@ -143,6 +143,10 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
             this.entities,
             this.blocks,
         );
+        this.player.sendPlayerPos = dispatcher.sendPlayerPos;
+        this.player.sendPlayerPosRot = dispatcher.sendPlayerPosRot;
+        this.player.sendPlayerRot = dispatcher.sendPlayerRot;
+        this.player.sendPlayerStatus = dispatcher.sendPlayerStatus;
 
         // For tick-tock tick-tock
         this.tickLoop = new TickLoop(() => {
