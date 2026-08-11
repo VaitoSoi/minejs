@@ -153,6 +153,10 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
                 .forEach((packet) => this.tcp.sendPacket(packet.id, packet.data));
             this.player.tick();
         });
+
+        // Forward TCP events
+        this.tcp.on("connect", () => this.emit("connect"));
+        this.tcp.on("destroy", () => this.emit("destroy"));
     }
 
     private emitEvent(event: EmittedEvent) {
