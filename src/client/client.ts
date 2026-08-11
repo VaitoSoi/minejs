@@ -184,11 +184,12 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
         await this.loadRegistries();
         if (!this.state.playerUUID) {
             if (this.options.auth) {
-                const authClient = new AuthClient(this.options.auth);
-                const { uuid } = await authClient.auth();
-                this.uuid = Buffer.from(uuid);
+                this.state.authClient = new AuthClient(this.options.auth);
+                const { uuid } = await this.state.authClient.getUUID();
+                this.state.playerUUID = uuid.replaceAll("-", "");
+                await this.state.startSignatureLoop();
             } else
-                this.uuid = computeUUID(this.options.playerName);
+                this.state.playerUUID = computeUUID(this.options.playerName);
         }
 
         this.tcp.connect();
