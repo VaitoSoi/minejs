@@ -82,13 +82,10 @@ export class Dispatcher {
         }));
 
         const sharedSecret = randomBytes(16);
-        this.state.enqueueMutation((state) => {
-            state.sharedSecret = sharedSecret;
-            state.cipher = createCipheriv("aes-128-cfb8", state.sharedSecret, state.sharedSecret);
-            state.decipher = createDecipheriv("aes-128-cfb8", state.sharedSecret, state.sharedSecret);
-        });
-
-        this.sendEncryptionResponse(Buffer.from(public_key), Buffer.from(verify_token));
+        this.state.sharedSecret = sharedSecret;
+        this.state.cipher = createCipheriv("aes-128-cfb8", sharedSecret, sharedSecret);
+        this.state.decipher = createDecipheriv("aes-128-cfb8", sharedSecret, sharedSecret);
+        this.state.useEncryption = true;
     }
 
     private handleSetCompression(data: object) {
