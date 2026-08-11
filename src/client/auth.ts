@@ -128,15 +128,20 @@ export class AuthClient {
     private uuid: string = "";
 
     constructor(private option: AuthOption) {
-        const codeVerifier = cryto.randomBytes(32).toString("hex");
-        const hashed = cryto.hash("sha256", codeVerifier, "base64url");
+        const codeVerifier = crypto.randomBytes(32).toString("hex");
+        const hashed = crypto.createHash("sha256").update(codeVerifier).digest("base64url");
         this.option.log ||= console.log;
 
         this.codeVerifier = codeVerifier;
         this.codeChallenge = hashed;
     }
 
-    public async auth() {
+
+
+    /**
+     * Get player UUID
+     */
+    public async getUUID() {
         if (this.option.method === "loopback") return this.loopback();
         else return this.deviceCode();
     }
@@ -153,7 +158,7 @@ export class AuthClient {
         authUrl.searchParams.append("code_challenge_method", "S256");
         authUrl.searchParams.append("state", expectState);
 
-        if (this.option.openBrowser === true)
+        if (option.openBrowser === true)
             open(authUrl.toString(), this.option.log!);
         else
             this.option.log!(`please open this url in your browser: ${authUrl.toString()}`);
@@ -195,8 +200,8 @@ export class AuthClient {
         const msTokenUrl = new URL("https://login.microsoftonline.com/consumers/oauth2/v2.0/token");
         const msTokenBody = new URLSearchParams();
         msTokenBody.append("client_id", this.option.client_id);
-        msTokenBody.append("code", msAuthToken);
         msTokenBody.append("scope", "XboxLive.signin offline_access");
+        msTokenBody.append("code", msAuthToken);
         msTokenBody.append("redirect_uri", `http://localhost:${option.port}`);
         msTokenBody.append("grant_type", "authorization_code");
         msTokenBody.append("code_verifier", this.codeVerifier);
@@ -209,7 +214,7 @@ export class AuthClient {
         });
         const msTokenResponse = await msTokenRequest.json() as Record<string, any>;
         if ("error" in msTokenResponse)
-            throw new AuthError(msTokenResponse["error"]);
+            throw new OAuthError(msTokenResponse["error"]);
         const msToken = msTokenResponse["access_token"];
 
         return this.getMcToken(msToken);
@@ -256,7 +261,7 @@ export class AuthClient {
                     case "slow_down": interval += 5; continue;
                     case "auth_denied": throw new AuthDenied();
                     case "expired_token": throw new AuthTokenExpired();
-                    default: throw new AuthError(msTokenResponse["error"]);
+                    default: throw new OAuthError(msTokenResponse["error"]);
                 }
             else {
                 msToken = msTokenResponse["access_token"];
@@ -268,7 +273,7 @@ export class AuthClient {
             throw new CantGetMsAccessToken();
 
         return this.getMcToken(msToken);
-    } 
+    }
 
     private async getMcToken(msToken: string): Promise<{
         uuid: string,
