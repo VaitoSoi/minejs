@@ -328,6 +328,7 @@ export class AuthClient {
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json",
+                'User-Agent': 'MinecraftLauncher/2.2.10675'
             },
             body: JSON.stringify({
                 "identityToken": `XBL3.0 x=${userHash};${xboxSecurityToken}`,
