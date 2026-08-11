@@ -330,7 +330,7 @@ export class AuthClient {
                 "Accept": "application/json",
             },
             body: JSON.stringify({
-                "identityToken": `XBL3.0 x=${userHash};${xboxSecurityToken}"`
+                "identityToken": `XBL3.0 x=${userHash};${xboxSecurityToken}`,
             }),
             method: "POST"
         });
