@@ -166,9 +166,12 @@ export class AuthClient {
         const msAuthToken = await new Promise<string | null>((resolve) => {
             const server = http.createServer((req, res) => {
                 const end = (html: string, result: any = null) => {
-                    res.end(html);
-                    server.close();
-                    return resolve(result);
+                    if (res.writable)
+                        res.end(html);
+                    if (server.listening) {
+                        server.close();
+                        return resolve(result);
+                    }
                 };
 
                 const url = new URL(req.url || "", `http://localhost:${option.port}`);
