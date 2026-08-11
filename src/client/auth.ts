@@ -4,18 +4,33 @@ import net from "node:net";
 import { exec } from "node:child_process";
 import { AuthDenied, AuthError, AuthTokenExpired, CantGetMsAccessToken, ProfileError, ProfileNotFound, XboxError } from "../base/error";
 
-export interface AuthOption {
+interface Loopback {
     /**
-     * `"loopback"` - open a browser to login
-     * `"device_code"` - provide a device code to login
+     * This method will provide you a url to click on and do the authentication.
+     * 
+     * This will require an opening port in order to receive the response from Microsoft. If you cant, considering using `device_code` method.
      */
-    method: "loopback" | "device_code",
+    method: "loopback",
+
+    /**
+     * The opening port for listening the response
+     */
+    port: number
 
     /**
      * Automatedly open browser or print a URL to click on.
      */
     openBrowser: boolean,
+}
 
+interface DeviceCode {
+    /**
+     * This method will provide you a device code, then you have to type this code in the given URL.
+     */
+    method: "device_code",
+}
+
+export type AuthOption = (Loopback | DeviceCode) & {
     /**
      * The Client ID
      * 
