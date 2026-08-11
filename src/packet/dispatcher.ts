@@ -637,16 +637,84 @@ export class Dispatcher {
         const senderNameText = getTextFromTextComponent(sender_name).toString(),
             targetNameText = target_name ? getTextFromTextComponent(target_name).toString() : undefined;
 
-        this.emit("message", {
+        const emitObject = {
             sender: senderNameText,
             target: targetNameText,
-            content: message,
+            content: getTextFromTextComponent(unsigned_content),
             raw: {
                 sender: sender_name,
                 target: target_name || undefined,
                 content: unsigned_content || undefined,
             }
-        });
+        };
+
+        let link: MessageLink | undefined = undefined;
+        if (this.state.clientOptions.shouldVerifyMessageOrder && this.state.messageLinks) {
+            if (index === 0) {
+                if (this.state.sessionID)
+                    link = MessageLink.root(sender, this.state.sessionID.toString("hex"));
+                else
+                    link = MessageLink.unsinged(sender);
+                this.state.messageLinks[sender] = link;
+            } else {
+                const oldLink = this.state.messageLinks[sender];
+                if (!oldLink)
+                    throw new MessageLinkNotFound(sender);
+                let newLink;
+                if (this.state.sessionID)
+                    newLink = new MessageLink(global_index, sender, this.state.sessionID.toString("hex"));
+                else
+                    newLink = MessageLink.unsinged(sender);
+                if (!newLink.isDescendantOf(oldLink))
+                    throw new UnexpectedValue("message order", newLink.index.toString(), (oldLink.index + 1).toString());
+                this.state.messageLinks[sender] = newLink;
+                link = newLink;
+            }
+        }
+
+        if (this.state.clientOptions.shouldVerifyMessageSignature === true && message_signature_bytes) {
+            if (!this.state.sessionID)
+                throw new AuthRelatedNotFound("session uuid");
+            if (!this.state.messageSignatureCache)
+                throw new AuthRelatedNotFound("signature cache");
+            if (!link)
+                throw new HaveSignatureButNotIndex();
+            const { publicKey } = this.state.getSignature();
+
+            const formatVersion = Buffer.alloc(4); formatVersion.writeInt32BE(1);
+            const senderUUIDBuf = uuidToBuffer(sender);
+            const sessionUUIDBuf = this.state.sessionID;
+            const indexBuf = Buffer.alloc(4); indexBuf.writeInt32BE(link.index);
+            const saltBuf = Buffer.alloc(8); saltBuf.writeBigInt64BE(salt);
+            const timestampBuf = Buffer.alloc(8); timestampBuf.writeBigInt64BE(timestamp);
+            const _messageBuf = Buffer.from(message, "utf-8");
+            const lengthBuf = Buffer.alloc(4); lengthBuf.writeInt32BE(_messageBuf.length);
+            const messageBuf = _messageBuf;
+            const previousMessagesLenghtBuf = Buffer.alloc(4); previousMessagesLenghtBuf.writeInt32BE(previous_messages.length);
+            const previousMessagesBuf = Buffer.concat(this.state.messageSignatureCache.unpack(previous_messages));
+            const signaturePayload = Buffer.concat([
+                formatVersion,
+                senderUUIDBuf,
+                sessionUUIDBuf,
+                indexBuf,
+                saltBuf,
+                timestampBuf,
+                lengthBuf,
+                messageBuf,
+                previousMessagesLenghtBuf,
+                previousMessagesBuf
+            ]);
+
+            const verify = createVerify("RSA-SHA256");
+            verify.update(signaturePayload);
+            verify.end();
+            const signature = Buffer.from(message_signature_bytes);
+
+            if (!verify.verify(publicKey!, signature))
+                this.emit("failedMessage", emitObject);
+        }
+
+        this.emit("message", emitObject);
     }
 
     private handleSystemMessage(data: object) {
