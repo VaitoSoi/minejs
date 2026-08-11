@@ -1,7 +1,9 @@
 import http from "node:http";
 import crypto from "node:crypto";
 import { exec } from "node:child_process";
-import { AuthDenied, AuthError, AuthTokenExpired, CantGetMsAccessToken, ProfileError, ProfileNotFound, XboxError } from "../base/error";
+import { AuthDenied, OAuthError, AuthTokenExpired, CantGetMsAccessToken, ProfileError, ProfileNotFound, XboxError, AuthClientError, MinecraftError } from "../base/error";
+import { minecraftSha1 } from "../base/math";
+import { getJson } from "../base/http";
 
 interface Loopback {
     /**
