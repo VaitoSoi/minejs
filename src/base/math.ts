@@ -83,3 +83,33 @@ export function clamp(a: number, min: number, max: number) {
     if (a > max) return max;
     return a;
 }
+
+/**
+ * Compute SHA1 for authenticating client with Mojang server
+ * 
+ * @see https://gist.github.com/andrewrk/4425843?permalink_comment_id=5445918#gistcomment-5445918
+ * @hidden
+ */
+export function minecraftSha1(
+    serverId: string,
+    sharedSecret: Buffer,
+    publicKey: Buffer,
+): string {
+    const sha1 = createHash('sha1');
+    sha1.update(Buffer.from(serverId, 'ascii'));
+    sha1.update(sharedSecret);
+    sha1.update(publicKey);
+
+    return mcHexDigest(sha1.digest());
+}
+
+/**
+ * Compute the hex digest
+ * 
+ * @see https://gist.github.com/andrewrk/4425843?permalink_comment_id=5445918#gistcomment-5445918 
+ * @hidden
+ */
+function mcHexDigest(digest: Buffer | Uint8Array): string {
+    const bigint = BigInt(`0x${digest.toString('hex')}`);
+    return BigInt.asIntN(digest.length * 8, bigint).toString(16);
+}
