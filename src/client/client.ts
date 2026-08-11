@@ -130,7 +130,7 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
             dispatcher.sendLoginStart();
         };
         dispatcher.sendPacket = this.tcp.sendPacket.bind(this.tcp);
-        dispatcher.tcpDisconnect = this.tcp.disconnect.bind(this.tcp);
+        dispatcher.disconnect = this.disconnect.bind(this);
         versionCodec.consumePacket = dispatcher.handlePacket.bind(dispatcher);
 
         // For querying data
@@ -203,8 +203,18 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
     /**
      * Destroy the connection
      */
-    public disconnect() {
+    public disconnect(reason: string = "Disconnect", raw?: TextComponent) {
+        this.state.state = ConnectionState.Disconnected;
+        this.state.status = ClientStatus.Disconnected;
+        this.tickLoop.stop();
+        this.player.pruneInitialVal();
+        this.state.pruneStates();
+        this.emit("disconnect", reason);
+        if (raw)
+            this.emit("disconnectRaw", raw);
         this.tcp.disconnect();
+        if (this.options.auth)
+            this.state.stopSignatureLoop();
     }
 
     // Inputs
