@@ -1,6 +1,5 @@
 import http from "node:http";
-import cryto from "node:crypto";
-import net from "node:net";
+import crypto from "node:crypto";
 import { exec } from "node:child_process";
 import { AuthDenied, AuthError, AuthTokenExpired, CantGetMsAccessToken, ProfileError, ProfileNotFound, XboxError } from "../base/error";
 
@@ -116,17 +115,6 @@ function open(url: string, log: (message: string) => any) {
     }
 }
 
-// Got this from https://github.com/sindresorhus/get-port/blob/main/index.js#L47
-const getFreePort = () => new Promise<number>((resolve) => {
-    const server = net.createServer();
-    server.listen(0, () => {
-        const port = (server.address() as net.AddressInfo).port;
-        server.close(() =>
-            resolve(port)
-        );
-    });
-});
-
 const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 /**
@@ -152,12 +140,12 @@ export class AuthClient {
     }
 
     private async loopback() {
-        const freePort = await getFreePort();
-        const expectState = cryto.randomBytes(8).toString("hex");
+        const option = this.option as Loopback;
+        const expectState = crypto.randomBytes(8).toString("hex");
         const authUrl = new URL("https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize");
         authUrl.searchParams.append("client_id", this.option.client_id);
         authUrl.searchParams.append("response_type", "code");
-        authUrl.searchParams.append("redirect_uri", `http://127.0.0.1:${freePort}`);
+        authUrl.searchParams.append("redirect_uri", `http://localhost:${option.port}`);
         authUrl.searchParams.append("scope", "XboxLive.signin offline_access");
         authUrl.searchParams.append("code_challenge", this.codeChallenge);
         authUrl.searchParams.append("code_challenge_method", "S256");
@@ -176,7 +164,7 @@ export class AuthClient {
                     return resolve(result);
                 };
 
-                const url = new URL(req.url || "", `http://127.0.0.1:${freePort}`);
+                const url = new URL(req.url || "", `http://localhost:${option.port}`);
                 const error = url.searchParams.get("error");
                 if (error) {
                     const description = url.searchParams.get("error_description")!;
@@ -196,7 +184,7 @@ export class AuthClient {
                 return end(SuccessHTML, code);
             });
 
-            server.listen(freePort);
+            server.listen(option.port);
         });
 
         if (!msAuthToken)
@@ -207,7 +195,7 @@ export class AuthClient {
         msTokenBody.append("client_id", this.option.client_id);
         msTokenBody.append("code", msAuthToken);
         msTokenBody.append("scope", "XboxLive.signin offline_access");
-        msTokenBody.append("redirect_uri", `http://127.0.0.1:${freePort}`);
+        msTokenBody.append("redirect_uri", `http://localhost:${option.port}`);
         msTokenBody.append("grant_type", "authorization_code");
         msTokenBody.append("code_verifier", this.codeVerifier);
         const msTokenRequest = await fetch(msTokenUrl, {
