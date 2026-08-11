@@ -86,6 +86,17 @@ export class Dispatcher {
         this.state.cipher = createCipheriv("aes-128-cfb8", sharedSecret, sharedSecret);
         this.state.decipher = createDecipheriv("aes-128-cfb8", sharedSecret, sharedSecret);
         this.state.useEncryption = true;
+
+        const publicKey = Buffer.from(public_key),
+            verifyToken = Buffer.from(verify_token);
+        if (should_authenticate)
+            if (!this.state.authClient)
+                throw new AuthRelatedNotFound("auth client");
+            else
+                this.state.authClient.sendAuth(server_id, sharedSecret, publicKey)
+                    .then(() => this.sendEncryptionResponse(publicKey, verifyToken));
+        else
+            this.sendEncryptionResponse(publicKey, verifyToken);
     }
 
     private handleSetCompression(data: object) {
