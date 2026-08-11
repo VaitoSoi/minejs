@@ -1,18 +1,19 @@
-import { EventEmitter } from "node:stream";
+import { EventEmitter } from "node:events";
 import { BlockManager, BlockState } from "../world/block";
 import { EntitiesManager } from "../world/entity";
-import { MoveDirection, Player } from "../physics/player";
+import { Input, Player } from "../physics/player";
 import { TickLoop } from "../world/tick";
 import { Message, TCPClient, TCPClientOption } from "./tcp";
 import { TypedEmmiter as TypedEmitter } from "../base/event";
 import { BlockRegistry, EntityRegistry, PacketRegistry, ProtocolVersionMapping } from "../version/registry";
 import { BaseVec3, Vec3 } from "../physics/direction";
 import { TextComponent } from "../base/typing";
-import { EmittedEvent as EmittedEvent, Entity, SharedState } from "../world/state";
+import { ClientStatus, ConnectionState, EmittedEvent as EmittedEvent, Entity, SharedState } from "../world/state";
 import { Dispatcher } from "../packet/dispatcher";
 import { VersionCodec } from "../version/codec";
 import { AuthClient } from "./auth";
 import { computeUUID } from "../base/math";
+import { HaveSignatureButNotIndex } from "../base/error";
 
 export type ClientOption = Omit<TCPClientOption, "protocolVersion"> & {
     version: string,
