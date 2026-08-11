@@ -141,9 +141,7 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
     */
 
     private handlePacket() {
-        while (true) {
-            if (this.bufferPool.length === 0) break;
-
+        while (this.bufferPool.length > 0) {
             let decoder = new BinaryDecoder(this.bufferPool);
             let packetLength: number;
             try {
