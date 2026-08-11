@@ -116,9 +116,8 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
         });
         connection.on("data", (data) => {
             let buf = Buffer.from(data);
-            if (this.state.decipher) {
+            if (this.state.decipher)
                 buf = this.state.decipher.update(buf);
-            }
             this.emit("raw", Buffer.from(buf));
             this.bufferPool = Buffer.concat([this.bufferPool, buf]);
             this.handlePacket();
