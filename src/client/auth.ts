@@ -178,18 +178,18 @@ export class AuthClient {
                 const error = url.searchParams.get("error");
                 if (error) {
                     const description = url.searchParams.get("error_description")!;
-                    end(ErrorHTML.replace("{error}", error).replace("{error_description}", description));
+                    return end(ErrorHTML.replace("{error}", error).replace("{error_description}", description));
                 }
 
                 const code = url.searchParams.get("code");
                 if (!code)
-                    end(InvalidHTML.replace("{reason}", "Missing <code>code</code> parameter"));
+                    return end(InvalidHTML.replace("{reason}", "Missing <code>code</code> parameter"));
 
                 const state = url.searchParams.get("state");
                 if (!state)
-                    end(InvalidHTML.replace("{reason}", "Missing <code>state</code> parameter"));
+                    return end(InvalidHTML.replace("{reason}", "Missing <code>state</code> parameter"));
                 if (state !== expectState)
-                    end(InvalidHTML.replace("{reason}", "Mismatch state"));
+                    return end(InvalidHTML.replace("{reason}", "Mismatch state"));
 
                 return end(SuccessHTML, code);
             });
