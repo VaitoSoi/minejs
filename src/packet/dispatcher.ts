@@ -793,7 +793,7 @@ export class Dispatcher {
         this.state.status = ClientStatus.Logining;
         this.sendPacket("hello", {
             name: this.state.clientOptions.playerName,
-            player_uuid: this.state.getUuid()
+            player_uuid: Buffer.from(this.state.playerUUID!, "hex")
         });
     }
 
