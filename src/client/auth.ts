@@ -253,7 +253,7 @@ export class AuthClient {
             await sleep(interval * 1000);
             const msTokenRequest = await fetch(msTokenUrl, {
                 headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
+                    "Content-Type": "application/x-www-form-urlencoded",
                 },
                 method: "POST",
                 body: msTokenBody.toString()
@@ -307,7 +307,7 @@ export class AuthClient {
         const xboxSecurityRequest = await fetch("https://xsts.auth.xboxlive.com/xsts/authorize", {
             headers: {
                 "Content-Type": "application/json",
-                Accept: "application/json"
+                "Accept": "application/json",
             },
             body: JSON.stringify({
                 "Properties": {
@@ -327,7 +327,7 @@ export class AuthClient {
         const minecraftRequest = await fetch("https://api.minecraftservices.com/authentication/login_with_xbox", {
             headers: {
                 "Content-Type": "application/json",
-                Accept: "application/json"
+                "Accept": "application/json",
             },
             body: JSON.stringify({
                 "identityToken": `XBL3.0 x=${userHash};${xboxSecurityToken}"`
