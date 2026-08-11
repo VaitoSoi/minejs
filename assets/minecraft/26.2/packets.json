@@ -400,8 +400,18 @@
                 "tags": {
                   "type": "prefixed_array",
                   "subType": {
-                    "type": "not_implemented",
-                    "comment": "Tag"
+                    "type": "object",
+                    "fields": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "entries": {
+                        "type": "prefixed_array",
+                        "subType": {
+                          "type": "var_int"
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -1159,8 +1169,11 @@
           "signature": {
             "type": "prefixed_optional",
             "subType": {
-              "type": "not_implemented",
-              "length": 256
+              "type": "array",
+              "length": 256,
+              "subType": {
+                "type": "byte"
+              }
             }
           }
         }
@@ -2276,7 +2289,6 @@
       "0x4A": {
         "name": "recipe_book_add",
         "id": 74,
-        "skipForNow": true,
         "structure": {
           "recipes": {
             "type": "prefixed_array",
@@ -3261,7 +3273,6 @@
       "0x82": {
         "name": "update_advancements",
         "id": 130,
-        "skipForNow": true,
         "structure": {
           "reset_clear": {
             "type": "boolean"
@@ -3651,8 +3662,11 @@
                   "length": 16
                 },
                 "signature": {
-                  "type": "not_implemented",
-                  "length": 256
+                  "type": "array",
+                  "length": 256,
+                  "subType": {
+                    "type": "byte"
+                  }
                 }
               }
             }
@@ -3686,8 +3700,11 @@
           "signature": {
             "type": "prefixed_optional",
             "subType": {
-              "type": "not_implemented",
-              "length": 256
+              "type": "array",
+              "length": 256,
+              "subType": {
+                "type": "byte"
+              }
             }
           },
           "message_count": {
