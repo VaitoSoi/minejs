@@ -31,27 +31,58 @@ export type ClientOption = Omit<TCPClientOption, "protocolVersion"> & {
 }
 
 export interface ClientEvents {
+    // TCP Events
+    /** When the TCP socket connect is initted sucessfully */
     connect: [],
+    /** When the TCP socket connection is destroyed */
     destroy: [],
 
+    /**
+     * When the client is ready.
+     * 
+     * Specifically, when the packet `Login (play)` is received
+     */
     ready: [],
+    /**
+     * When the client got disconnected from sevrer
+     */
     disconnect: [reason: string],
+    /**
+     * When the disconection come with the raw Text Component
+     */
     disconnectRaw: [textComponent: TextComponent],
 
+    /**
+     * When server send `Player Position Synchronization` packet
+     * 
+     * Note: this event is not fired when the client is moved by holding the input
+     */
     playerPosition: [position: BaseVec3],
 
+    /** When the chunk is loaded */
     loadChunk: [chunkX: number, sectionY: number, chunkZ: number],
+    /** When the chunk got deleted by the server */
     unloadChunk: [chunkX: number, chunkZ: number],
 
+    /** When an entity is spawned or appeared in the client view distance */
     spawnEntity: [entity: Entity],
+    /** When an entity is updated, including position, rotation, etc... */
     updateEntity: [entityId: number],
+    /** When an entity go out of client view distance or despawned */
     removeEntity: [entityId: number],
 
     // Chat
+    /** When a chat message got broadcasted */
     message: [message: Message],
+    /** When a message is failed to be verified against the signature sent with it */
+    failedMessage: [message: Message],
+    /** The system message */
     systemMessage: [message: string],
+    /** The raw system message */
     systemMessageRaw: [textComponent: TextComponent],
+    /** The action bar */
     actionBar: [message: string],
+    /** The raw action bar */
     actionBarRaw: [textComponent: TextComponent],
 }
 
