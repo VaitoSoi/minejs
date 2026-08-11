@@ -97,7 +97,6 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
     private blocks: BlockManager;
     private entities: EntitiesManager;
     private player: Player;
-    private uuid: Buffer = Buffer.alloc(0);
 
     private tcp: TCPClient;
     private state: SharedState<IsReady>;
@@ -109,7 +108,7 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
         super();
 
         // For managing shared data
-        this.state = new SharedState(options, () => this.uuid);
+        this.state = new SharedState(options);
         // For handling packet
         const dispatcher = new Dispatcher(this.state, this.emit.bind(this));
         // For reading packet
