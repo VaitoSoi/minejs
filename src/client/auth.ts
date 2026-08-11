@@ -124,6 +124,8 @@ export class AuthClient {
     private readonly codeVerifier: string;
     private readonly codeChallenge: string;
     // private refreshToken?: string;
+    private accessToken: string = "";
+    private uuid: string = "";
 
     constructor(private option: AuthOption) {
         const codeVerifier = cryto.randomBytes(32).toString("hex");
@@ -269,7 +271,6 @@ export class AuthClient {
     } 
 
     private async getMcToken(msToken: string): Promise<{
-        token: string,
         uuid: string,
         name: string
     }> {
@@ -340,8 +341,9 @@ export class AuthClient {
             else throw new ProfileError(mcProfileResponse["error"], mcProfileResponse["errorMessage"]);
         }
 
+        this.accessToken = minecraftToken;
+        this.uuid = mcProfileResponse["id"];
         return {
-            token: minecraftToken,
             uuid: mcProfileResponse["id"],
             name: mcProfileResponse["name"]
         };
