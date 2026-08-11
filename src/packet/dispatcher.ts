@@ -211,6 +211,9 @@ export class Dispatcher {
         this.state.player!.gameMode = game_mode;
         this.state.status = ClientStatus.Ready;
 
+        if (this.state.useEncryption)
+            this.sendPlayerSession();
+
         this.emit("ready");
     }
 
@@ -756,6 +759,20 @@ export class Dispatcher {
     }
 
     // Play
+
+    private sendPlayerSession() {
+        const sessionUUID = randomUUIDBytes();
+        const expireTime = 15 * 60 * 1000; // 15min in ms
+        const expiredAt = Date.now() + expireTime;
+        const { publicKey, signature } = this.state.getSignature();
+        this.state.sessionID = sessionUUID;
+        this.sendPacket("chat_session_update", {
+            session_id: sessionUUID,
+            expire_at: expiredAt,
+            public_key: publicKey,
+            signature
+        });
+    }
 
     private sendConfirmTeleportation(teleportId: number) {
         this.sendPacket("accept_teleportation", {
