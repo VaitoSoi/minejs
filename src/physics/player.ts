@@ -3,7 +3,7 @@ import { Angle, Axis, BaseAxis, BaseVec3, Vec3 } from "./direction";
 import { AABB, Shapes, VoxelShape } from "./aabb";
 import { BlockGetter, BlockManager, BlockState } from "../world/block";
 import { clamp, Epsilon, equal, lerp } from "../base/math";
-import { ClientNotReady } from "../base/error";
+import { ClientNotReady, NotImplemented } from "../base/error";
 import { LevelHeightLimit } from "../client/static";
 import { SharedState } from "../world/state";
 import { TypedEmmiter } from "../base/event";
