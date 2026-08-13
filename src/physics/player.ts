@@ -306,6 +306,15 @@ export class Player {
             if (jumpPower > 1e-5) {
                 const { x: dx, y: dy, z: dz } = this.deltaMovement;
                 this.setDeltaMovement(dx, Math.max(dy, jumpPower), dz);
+                if (this.isSprinting) {
+                    const yawInRad = this.getAngle().yaw * (Math.PI / 180.0);
+                    this.setDeltaMovement(
+                        this.deltaMovement.add(
+                            new Vec3(-Math.sin(yawInRad) * 0.2, 0.0, Math.cos(yawInRad) * 0.2)
+                        )
+                    );
+                }
+            }
 
             this.noJumpDelay = 15; // Original value to 10
         }
@@ -406,7 +415,7 @@ export class Player {
     private getSpeed() {
         // return the base for now
         // TODO: Handle other cases: sprinting, speed-enchanted gear and potion
-        return 0.1;
+        return this.isSprinting ? 0.13 : 0.1;
     }
 
     private moveRelative(input: Vec3, speed: number) {
