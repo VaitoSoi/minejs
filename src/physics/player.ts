@@ -346,7 +346,7 @@ export class Player {
      * Invoking flow
      * 
      *         |-> travelInAir ---|
-     * travel -|-> travelInFluid -|--> move -> colision
+     * travel -|-> travelInFluid -+--> move -> colision
      *         |-> flying? -------|
      */
 
@@ -361,8 +361,8 @@ export class Player {
     private travelInAir(input: Vec3) {
         const posBelow = this.getOnPos(0.50001);
         if (!this.blocks.hasChunkAt(posBelow))
-            return; // // console.log(`no chunk at ${Math.floor(posBelow.x / 16)} ${Math.floor(posBelow.y / 16)} ${Math.floor(posBelow.z / 16)}`);
-        // // console.log('posBelow', posBelow, 'block', this.blocks.at(posBelow)?.owner.getType());
+            return; // console.log(`no chunk at ${Math.floor(posBelow.x / 16)} ${Math.floor(posBelow.y / 16)} ${Math.floor(posBelow.z / 16)}`);
+        // console.log('posBelow', posBelow, 'block', this.blocks.at(posBelow)?.owner.getType());
         const blockFriction = this.onGround ? this.blocks.at(posBelow)!.owner.getFriction() : 1;
         const movement = this.handleFrictionAndCalculateMovement(input, blockFriction);
         let movementY = movement.y;
@@ -460,14 +460,12 @@ export class Player {
                     to: checkTo,
                     getBlockState: (position) => this.blocks.at(position)!.shape
                 });
-                if (hitResult?.miss !== false) {
+                if (hitResult?.miss !== false)
                     this.fallDistance = 0;
-                }
             }
 
             const pos = this.getPos();
             const newPosition = pos.add(movement);
-            // addMovementThisTick(new Movement(pos, newPosition, delta2));
             this.setPos(newPosition);
         }
 
@@ -627,8 +625,8 @@ export class Player {
             }
         }
 
-        // // console.log('expandedBB', expandedBB, 'colliderCount', colliders.length);
-        // // console.log('movement.y', movement.y, 'movementStep.y', movementStep.y);
+        // console.log('expandedBB', expandedBB, 'colliderCount', colliders.length);
+        // console.log('movement.y', movement.y, 'movementStep.y', movementStep.y);
 
         return movementStep;
     }
