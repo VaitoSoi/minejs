@@ -1,9 +1,8 @@
-import z, { file } from "zod";
-import { MissingField, MissingPacketField, UnexpectedValue } from "../base/error";
+import z from "zod";
+import { MissingField, MissingPacketField, NotImplemented, UnexpectedValue } from "../base/error";
 import { BinaryDecoder } from "../packet/decoder";
 import { ConnectionState, SharedState } from "../world/state";
 import { FieldNode, PacketObject, PacketRegistry, VersionDefinitions } from "./registry";
-import { Dispatcher } from "../packet/dispatcher";
 import { BinaryEncoder } from "../packet/encoder";
 
 const TCPStateMapping: Record<ConnectionState, keyof z.infer<typeof VersionDefinitions> | null> = {
