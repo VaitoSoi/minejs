@@ -164,6 +164,7 @@ export class VersionCodec {
             case "bitset": return decoder.readPrefixedArray((decoder) => decoder.readLong());
             case "teleport_flags": return decoder.readTeleportFlag();
             case "null": return null;
+            case "not_implemented": throw new NotImplemented();
             case "switch": {
                 if (!(field.dependsOn in readObject)) throw new MissingPacketField(packetId, fieldName, field.dependsOn);
                 const dependencyValue = readObject[field.dependsOn];
