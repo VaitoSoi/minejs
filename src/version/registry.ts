@@ -127,7 +127,6 @@ export const SupportTypes = z.enum([
     "id_or_x",
     "chat_type_decoration",
     "chat_type",
-    "chunk_data",
     "enum",
     "json_text",
     "not_implemented",
