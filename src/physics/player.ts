@@ -75,6 +75,31 @@ export class Player {
         });
     }
 
+
+    public sendPlayerPos: (
+        position: BaseVec3,
+        onGround: boolean,
+        horizontalCollision: boolean
+    ) => void = () => { throw new NotImplemented(); };
+
+    public sendPlayerPosRot: (
+        position: BaseVec3,
+        angle: Angle,
+        onGround: boolean,
+        horizontalCollision: boolean
+    ) => void = () => { throw new NotImplemented(); };
+
+    public sendPlayerRot: (
+        angle: Angle,
+        onGround: boolean,
+        horizontalCollision: boolean
+    ) => void = () => { throw new NotImplemented(); };
+
+    public sendPlayerStatus: (
+        onGround: boolean,
+        horizontalCollision: boolean
+    ) => void = () => { throw new NotImplemented(); };
+
     /**
      * Set initial value
      */
@@ -232,28 +257,16 @@ export class Player {
         const move = new Vec3(deltaX, deltaY, deltaZ).lengthSqr() > (2e-4 * 2e-4) || this.positionReminder > 20,
             rot = deltaXRot !== 0 || deltaYRot !== 0;
         if (move && rot)
-            this.state.enqueuePacket("move_player_pos_rot", {
-                x, feet_y: y, z,
-                yaw, pitch,
-                flags: makeMovementFlag(this.onGround, this.horizontalCollision)
-            });
+            this.sendPlayerPosRot(this.getPos(), this.getAngle(), this.onGround, this.horizontalCollision);
         else if (move)
-            this.state.enqueuePacket("move_player_pos", {
-                x, feet_y: y, z,
-                flags: makeMovementFlag(this.onGround, this.horizontalCollision)
-            });
+            this.sendPlayerPos(this.getPos(), this.onGround, this.horizontalCollision);
         else if (rot)
-            this.state.enqueuePacket("move_player_rot", {
-                yaw, pitch,
-                flags: makeMovementFlag(this.onGround, this.horizontalCollision)
-            });
+            this.sendPlayerRot(this.getAngle(), this.onGround, this.horizontalCollision);
         else if (
             this.onGround !== this.lastOnGround ||
             this.horizontalCollision !== this.lastHorizontalCollision
         )
-            this.state.enqueuePacket("move_player_status_only", {
-                flags: makeMovementFlag(this.onGround, this.horizontalCollision)
-            });
+            this.sendPlayerStatus(this.onGround, this.horizontalCollision);
 
         if (move) {
             this.lastPos = this.getPos();
