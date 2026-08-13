@@ -158,7 +158,7 @@ export class Player {
     }
     private setPos(pos: Vec3) {
         this.state.checkReady();
-        this.state.player!.position = pos.copyBase();
+        this.state.enqueueMutation((state) => state.player!.position = pos.copyBase());
     }
     private getAngle() {
         this.state.checkReady();
