@@ -191,6 +191,7 @@ export class SharedState<IsReady extends boolean = boolean> {
         this.mutationQueue = [];
         this.eventQueue = [];
         this.sendQueue = [];
+
         this.state = ConnectionState.Disconnected;
         this.status = ClientStatus.Disconnected;
         this.compressionThreshold = 0;
