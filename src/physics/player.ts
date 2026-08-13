@@ -16,7 +16,7 @@ export enum Input {
     Left = "A",
     Right = "D",
     Crouching = "shift",
-    Jump = " ",
+    Jump = "space",
     Sprint = "cttl"
 }
 
