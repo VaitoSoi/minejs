@@ -10,18 +10,24 @@ import { TypedEmmiter } from "../base/event";
 import { ClientEvents } from "../client/client";
 import { makeMovementFlag } from "../packet/encoder";
 
-export enum MoveDirection {
+export enum Input {
     Forward = "W",
     Backward = "S",
     Left = "A",
     Right = "D",
+    Crouching = "shift",
+    Jump = " ",
+    Sprint = "cttl"
 }
 
-const VectorMovement: Record<MoveDirection, Vec3> = {
-    [MoveDirection.Forward]: new Vec3(0, 0, 1),
-    [MoveDirection.Backward]: new Vec3(0, 0, -1),
-    [MoveDirection.Left]: new Vec3(1, 0, 0),
-    [MoveDirection.Right]: new Vec3(-1, 0, 0),
+const VectorMovement: Record<Input, Vec3> = {
+    [Input.Forward]: new Vec3(0, 0, 1),
+    [Input.Backward]: new Vec3(0, 0, -1),
+    [Input.Left]: new Vec3(1, 0, 0),
+    [Input.Right]: new Vec3(-1, 0, 0),
+    [Input.Crouching]: Vec3.Zero,
+    [Input.Jump]: Vec3.Zero,
+    [Input.Sprint]: Vec3.Zero,
 };
 
 /**
@@ -42,9 +48,7 @@ export class Player {
 
     // Moving state
     // TODO: need is sprinting
-    private heldInputs: Set<MoveDirection> = new Set();
-    private isCrouncing: boolean = false;
-    private isJumping: boolean = false;
+    private heldInputs: Set<Input> = new Set();
     private lastPos: BaseVec3 | null = null;
     private lastAngle: Angle | null = null;
     private positionReminder: number = 0;
@@ -85,8 +89,6 @@ export class Player {
         this.deltaMovement = Vec3.Zero;
         this.supportBlockPos = null;
         this.heldInputs = new Set();
-        this.isCrouncing = false;
-        this.isJumping = false;
         this.lastPos = null;
         this.lastAngle = null;
         this.positionReminder = 0;
@@ -101,31 +103,19 @@ export class Player {
     /**
      * Press and hold a key
      */
-    public input(input: MoveDirection) { this.heldInputs.add(input); }
+    public input(input: Input) { this.heldInputs.add(input); }
     /**
      * Release a key
      */
-    public releaseInput(input: MoveDirection) { this.heldInputs.delete(input); }
+    public releaseInput(input: Input) { this.heldInputs.delete(input); }
     /**
      * Release all key
      */
     public releaseAllInputs() { this.heldInputs.clear(); }
-    /**
-     * Press and hold shift. Do nothing for now
-     */
-    public pressShift() { this.isCrouncing = true; }
-    /**
-     * Release shift
-     */
-    public releaseShift() { this.isCrouncing = false; }
-    /**
-     * Press and hold space. Do nothing for now
-     */
-    public pressSpace() { this.isJumping = true; }
-    /**
-     * Release shift
-     */
-    public releaseSpace() { this.isJumping = false; }
+
+    private get isCrouncing() { return this.heldInputs.has(Input.Crouching); };
+    private get isJumping() { return this.heldInputs.has(Input.Jump); };
+    private get isSprinting() { return this.heldInputs.has(Input.Sprint); }
 
     private getInputVector(): Vec3 {
         let vec = Vec3.Zero;
