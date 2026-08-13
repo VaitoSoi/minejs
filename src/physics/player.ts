@@ -52,6 +52,7 @@ export class Player {
     private lastPos: BaseVec3 | null = null;
     private lastAngle: Angle | null = null;
     private positionReminder: number = 0;
+    private noJumpDelay: number = 0;
 
     // Collision
     private horizontalCollision: boolean = false;
@@ -266,6 +267,10 @@ export class Player {
     }
 
     private aiStep() {
+        if (this.noJumpDelay > 0) {
+            this.noJumpDelay--;
+        }
+
         // eslint-disable-next-line prefer-const
         let { x, y, z } = this.deltaMovement;
         if (this.deltaMovement.horizontalDistanceSqr() < 9e-6) {
@@ -274,13 +279,14 @@ export class Player {
         }
         this.setDeltaMovement(x, y, z);
 
-        if (this.isJumping) {
+        if (this.isJumping && this.noJumpDelay === 0) {
             const jumpPower = this.getJumpFactor();
 
             if (jumpPower > 1e-5) {
                 const { x: dx, y: dy, z: dz } = this.deltaMovement;
                 this.setDeltaMovement(dx, Math.max(dy, jumpPower), dz);
-            }
+
+            this.noJumpDelay = 15; // Original value to 10
         }
         // TODO: Handle in fluid
 
