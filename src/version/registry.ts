@@ -323,6 +323,6 @@ export class PacketRegistry {
         if (isNaN(numbericId))
             throw new UnexpectedValue("valid packet id", id.toString(), "name or number or hex");
         else
-            return this.definition[state][type][numbericId.toString()];
+            return this.definition[state][type]["0x" + numbericId.toString(16).toUpperCase()];
     }
 }
