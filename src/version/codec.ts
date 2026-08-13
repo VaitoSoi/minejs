@@ -22,7 +22,7 @@ export interface EncodeResult {
 export class VersionCodec {
     constructor(private readonly state: SharedState) { }
 
-    public consumePacket: (packetId: string, data: object) => void = (...args) => { throw new Error("method not implemented"); };
+    public consumePacket: (packetId: string, data: object) => void = () => { throw new NotImplemented(); };
 
     public handlePacket(packetId: number, decoder: BinaryDecoder) {
         const mappedState = TCPStateMapping[this.state.state];
@@ -31,8 +31,9 @@ export class VersionCodec {
         if (!packet) return; // console.log("no packet");
 
         const { name, structure, skipForNow } = packet;
+
         if (skipForNow) return;
-        // console.log(`> packet ${name}`);
+
         const resolvedObject: Record<string, any> = {};
         if (Object.keys(structure).length > 0)
             for (const [name, field] of Object.entries(structure))
@@ -117,7 +118,7 @@ export class VersionCodec {
                 let length;
                 if (!isNaN(Number(field.length)))
                     length = Number(field.length);
-                else 
+                else
                     length = readObject[field.length];
                 if (length === undefined) throw new MissingPacketField(packetId, fieldName, field.length.toString());
                 return decoder.readArray(length, (decoder) => this.readField(packetId, readObject, fieldName, field.subType, decoder));
