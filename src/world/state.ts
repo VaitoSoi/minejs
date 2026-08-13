@@ -176,7 +176,6 @@ export class SharedState<IsReady extends boolean = boolean> {
 
     constructor(
         public clientOptions: ClientOption,
-        public getUuid: () => Buffer,
     ) { }
 
     public isReady(): this is SharedState<true> {
