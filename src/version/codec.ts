@@ -34,10 +34,14 @@ export class VersionCodec {
         if (skipForNow) return;
         // console.log(`> packet ${name}`);
         const resolvedObject: Record<string, any> = {};
-        for (const [name, field] of Object.entries(structure)) {
-            // console.log({ name, resolvedObject });
-            resolvedObject[name] = this.readField(packetId, resolvedObject, name, field, decoder);
-        }
+        if (Object.keys(structure).length > 0)
+            for (const [name, field] of Object.entries(structure))
+                try {
+                    resolvedObject[name] = this.readField(packetId, resolvedObject, name, field, decoder);
+                } catch (err) {
+                    if (err instanceof NotImplemented) return;
+                    throw err;
+                }
 
         this.consumePacket(`${TCPStateMapping[this.state.state]}:${name}`, resolvedObject);
     }
