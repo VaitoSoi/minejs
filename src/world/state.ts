@@ -166,6 +166,14 @@ export class SharedState<IsReady extends boolean = boolean> {
     public world: If<IsReady, ServerWorld> = null as any;
     public player: If<IsReady, ClientPlayer> = null as any;
 
+    /**
+     * For maintaining message order.
+     * 
+     * A UUID map to a MessageLink.
+     */
+    public messageLinks: Record<string, MessageLink> | undefined = undefined;
+    public messageSignatureCache: SignatureCache | undefined = undefined;
+
     constructor(
         public clientOptions: ClientOption,
         public getUuid: () => Buffer,
@@ -203,6 +211,17 @@ export class SharedState<IsReady extends boolean = boolean> {
         this.registry = undefined;
         this.world = undefined as any;
         this.player = undefined as any;
+
+        if (this.clientOptions.shouldVerifyMessageSignature)
+            this.messageSignatureCache = SignatureCache.default();
+        else
+            this.messageSignatureCache = undefined;
+        if (this.clientOptions.shouldVerifyMessageOrder)
+            this.messageLinks = {};
+        else
+            this.messageLinks = undefined;
+    }
+
     public getSignature() {
         if (this.publicKey && this.signature)
             return {
