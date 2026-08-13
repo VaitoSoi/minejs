@@ -301,11 +301,6 @@ export class PacketRegistry {
                 this.nameToId[stateKey]![typeKey] = {};
                 // eslint-disable-next-line prefer-const
                 for (let [key, value] of Object.entries(type) as [string | number, any]) {
-                    if (typeof key === "string" && !isNaN(parseInt(key))) {
-                        type[parseInt(key)] = value;
-                        delete type[key];
-                        key = parseInt(key);
-                    } // transform all string key into numberic key
                     this.nameToId[stateKey]![typeKey]![value.name] = key;
                 }
             }
