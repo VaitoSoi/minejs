@@ -146,9 +146,20 @@ export class SharedState<IsReady extends boolean = boolean> {
     public status: ClientStatus = ClientStatus.Disconnected;
     public compressionThreshold: number = 0;
 
+    // Auth stuffs
+    public authClient: AuthClient | undefined = undefined;
+    public playerUUID: string | undefined = undefined;
+    public publicKey: Buffer | undefined = undefined;
+    public signature: Buffer | undefined = undefined;
+    public signatureExpireTime: number | undefined = undefined;
+    // eslint-disable-next-line no-undef
+    private signatureTimeoutInstance: NodeJS.Timeout | undefined = undefined;
+
     public sharedSecret: Buffer | undefined = undefined;
     public cipher: Cipheriv | undefined = undefined;
     public decipher: Decipheriv | undefined = undefined;
+    public useEncryption: boolean = false;
+    public sessionID: Buffer | undefined = undefined;
 
     public server: Server | undefined = undefined;
     public registry: Record<string, ServerRegistryEntry[]> | undefined = undefined;
@@ -175,13 +186,49 @@ export class SharedState<IsReady extends boolean = boolean> {
         this.sendQueue = [];
         this.state = ConnectionState.Disconnected;
         this.compressionThreshold = 0;
+
+        this.authClient = undefined;
+        this.playerUUID = undefined;
+        this.publicKey = undefined;
+        this.signature = undefined;
+
         this.sharedSecret = undefined;
         this.cipher = undefined;
         this.decipher = undefined;
+        this.useEncryption = false;
+        this.sessionID = undefined;
+        this.signatureTimeoutInstance = undefined;
+
         this.server = undefined;
         this.registry = undefined;
         this.world = undefined as any;
         this.player = undefined as any;
+    public getSignature() {
+        if (this.publicKey && this.signature)
+            return {
+                publicKey: this.publicKey,
+                signature: this.signature
+            };
+        throw new AuthRelatedNotFound("public key and signature");
+    }
+
+    private async fetchSignature() {
+        if (!this.authClient)
+            throw new AuthRelatedNotFound("instance of class AuthClient");
+        const { publicKey, signature, expiresAt } = await this.authClient.getKeyPair();
+        this.publicKey = Buffer.from(publicKey);
+        this.signature = Buffer.from(signature);
+        return expiresAt;
+    }
+    public async startSignatureLoop() {
+        const expiresAt = await this.fetchSignature();
+        this.signatureTimeoutInstance = setTimeout(
+            async () => await this.startSignatureLoop(), 
+            expiresAt - Date.now() - 10_000
+        );
+    }
+    public stopSignatureLoop() {
+        clearTimeout(this.signatureTimeoutInstance);
     }
 
     public enqueueMutation(mutation: MutateState) { this.mutationQueue.push(mutation); }
