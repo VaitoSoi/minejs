@@ -164,6 +164,13 @@ export class Player {
         this.state.checkReady();
         return this.state.player!.angle;
     }
+    public setAngle(yaw: number, pitch: number) {
+        this.state.checkReady();
+        this.state.enqueueMutation((state) => state.player!.angle = {
+            yaw: yaw % 360,
+            pitch: pitch % 360
+        });
+    }
     private getDimension() {
         this.state.checkReady();
         return this.state.player!.dimension;
