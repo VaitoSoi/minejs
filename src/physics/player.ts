@@ -72,6 +72,7 @@ export class Player {
             this.horizontalCollision = false;
             this.fallDistance = 0;
             this.deltaMovement = new Vec3(this.state.player!.velocity);
+            this.setInitialVal();
         });
     }
 
