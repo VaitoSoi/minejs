@@ -1,10 +1,11 @@
 import { Cipheriv, Decipheriv } from "node:crypto";
 import { If } from "../base/typing";
 import { Angle, BaseVec3 } from "../physics/direction";
-import { ClientNotReady } from "../base/error";
+import { AuthRelatedNotFound, ClientNotReady } from "../base/error";
 import { ClientEvents, ClientOption } from "../client/client";
-import { TypedEmmiter } from "../base/event";
-import { TCPClient } from "../client/tcp";
+import { AuthClient } from "../client/auth";
+import { MessageLink } from "../message/link";
+import { SignatureCache } from "../message/sigCache";
 
 export interface Server {
     knownPacks?: ServerKnownPack
