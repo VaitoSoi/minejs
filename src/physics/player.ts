@@ -338,7 +338,8 @@ export class Player {
         const { x, y, z } = this.getPos();
         const inBlock = this.blocks.at(x, y, z)!;
         const belowBlock = this.blocks.at(x, y - 0.5, z)!;
-        return inBlock.owner.getJumpFactor() === 1 ? belowBlock.owner.getJumpFactor() : inBlock.owner.getJumpFactor();
+        // 0.42F is the default jump strength, which will apply for player here
+        return (inBlock.owner.getJumpFactor() === 1 ? belowBlock.owner.getJumpFactor() : inBlock.owner.getJumpFactor()) * 0.42;
     }
 
     /*
