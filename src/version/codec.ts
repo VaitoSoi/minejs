@@ -42,6 +42,13 @@ export class VersionCodec {
                     if (err instanceof NotImplemented) return;
                     throw err;
                 }
+        if (this.state.clientOptions.debug?.packetLogger)
+            console.dir({
+                dir: "to client",
+                state: mappedState,
+                name,
+                data: resolvedObject,
+            });
 
         this.consumePacket(`${TCPStateMapping[this.state.state]}:${name}`, resolvedObject);
     }
@@ -51,6 +58,14 @@ export class VersionCodec {
         if (!mappedState) throw new UnexpectedValue("map-able state", this.state.state.toString());
         const packet = PacketRegistry.getPacket(mappedState, "serverbound", packetId);
         if (!packet) throw new UnexpectedValue("valid serverbound packet id", packetId.toString());
+
+        if (this.state.clientOptions.debug?.packetLogger)
+            console.dir({
+                dir: "to server",
+                state: mappedState,
+                id: packetId,
+                data,
+            });
 
         const { name: packetName, structure } = packet;
         let encoder = new BinaryEncoder();
@@ -190,7 +205,7 @@ export class VersionCodec {
             //     return encoder.writeArray(length, (decoder) => this.readField(packetId, readObject, fieldName, field.subType, decoder));
             // }
             case "prefixed_array": {
-                const length = metadata["length"];
+                const length = metadata["length"] || field.length;
                 if (!length) throw new MissingField("length", "prefixed array metadata object");
                 if (!Array.isArray(value))
                     throw new UnexpectedValue("an array for prefixed array", typeof value);
