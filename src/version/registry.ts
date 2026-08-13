@@ -125,6 +125,7 @@ export const SupportTypes = z.enum([
     "fixed_point",
     "angle",
     "id_or_x",
+    "id_set",
     "chat_type_decoration",
     "chat_type",
     "enum",
