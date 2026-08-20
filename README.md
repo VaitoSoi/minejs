@@ -10,6 +10,8 @@ This is a Minecraft client package, written entirely in Typescript, using NodeJS
 
 This package is highly unstable for now, please report if there is any bug, glitch.
 
+Also, since there is some problem with authenticating and appId approval, you can not let the bot join "online server yet". [See more here](#iv-about-joining-online-server)
+
 ## II. Usage
 
 Install MineJS using your favorite package manager:
@@ -34,11 +36,6 @@ const client = new Client({
     // },
     isOffline: true,
     loadRegistry: false,
-    // auth: {
-    //     client_id: "d86254d8-edf7-4640-90eb-643c99af188e",
-    //     method: "loopback",
-    //     openBrowser: true
-    // }
 });
 client.connect();
 client.on("disconnect", (...args) => console.dir({ name: "disconnect", args }, { depth: null }));
@@ -97,6 +94,6 @@ npm tsx index.ts
 
 See [documentation](https://minejs.vaito.dev)
 
-## IV. Note:
+## IV. About joining online server:
 
-If you are Vaito: Stop being a lazy a$$ and implement new update, here is the link: https://minecraft.wiki/?title=Java_Edition_protocol%2FPackets&diff=3675033&oldid=3445844
+In order to join "online server" (the server require an account that have purchased Minecraft, to distinguish with the "offiline server", where you don't have to purchase Minecraft), you have to send some request to Minecraft server, which require an approved Azure App (more info in [here](https://minecraft.wiki/w/Microsoft_authentication#Microsoft_OAuth2_flow) and [here](https://help.minecraft.net/hc/en-us/articles/16254801392141p)), which I don't have at the moment. So I can not fully test the "join online server" feature right now. But still, if you somehow got an approved app and found some bug, please [create a issue](https://github.com/VaitoSoi/minejs/issues/new)
