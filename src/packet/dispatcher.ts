@@ -645,7 +645,7 @@ export class Dispatcher {
         const emitObject = {
             sender: senderNameText,
             target: targetNameText,
-            content: getTextFromTextComponent(unsigned_content),
+            content: message,
             raw: {
                 sender: sender_name,
                 target: target_name || undefined,
