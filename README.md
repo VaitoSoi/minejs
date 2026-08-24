@@ -108,7 +108,7 @@ See [documentation](https://minejs.vaito.dev)
 
 + `Offline server` is a server you can join with a cracked account, meaning that you don't have to own Minecraft to join.
 
-+ `Online server`, on the other hand, require a account that owns Minecraft.
++ `Online server`, on the other hand, require an account that owns Minecraft.
 
 ### 2. Why I can't join online server yet:
 
