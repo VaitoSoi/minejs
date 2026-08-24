@@ -8,7 +8,6 @@ import { LevelHeightLimit } from "../client/static";
 import { SharedState } from "../world/state";
 import { TypedEmmiter } from "../base/event";
 import { ClientEvents } from "../client/client";
-import { makeMovementFlag } from "../packet/encoder";
 
 export enum Input {
     Forward = "W",
