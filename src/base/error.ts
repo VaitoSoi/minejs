@@ -190,6 +190,10 @@ export class NotImplemented extends Error {
     }
 }
 
+
+/** @hidden */
+export class SkippableNotImplemented extends Error {}
+
 /*
  * Messages
  */

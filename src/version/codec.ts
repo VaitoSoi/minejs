@@ -1,5 +1,5 @@
 import z from "zod";
-import { MissingField, MissingPacketField, NotImplemented, UnexpectedValue } from "../base/error";
+import { MissingField, MissingPacketField, NotImplemented, SkippableNotImplemented, UnexpectedValue } from "../base/error";
 import { BinaryDecoder } from "../packet/decoder";
 import { ConnectionState, SharedState } from "../world/state";
 import { FieldNode, PacketObject, PacketRegistry, VersionDefinitions } from "./registry";
@@ -39,6 +39,7 @@ export class VersionCodec {
                 try {
                     resolvedObject[name] = this.readField(packetId, resolvedObject, name, field, decoder);
                 } catch (err) {
+                    if (err instanceof SkippableNotImplemented) break;
                     if (err instanceof NotImplemented) return;
                     throw err;
                 }
@@ -164,7 +165,11 @@ export class VersionCodec {
             case "bitset": return decoder.readPrefixedArray((decoder) => decoder.readLong());
             case "teleport_flags": return decoder.readTeleportFlag();
             case "null": return null;
-            case "not_implemented": throw new NotImplemented();
+            case "not_implemented": {
+                if (field.skip_able === true)
+                    throw new SkippableNotImplemented();
+                throw new NotImplemented();
+            }
             case "switch": {
                 if (!(field.dependsOn in readObject)) throw new MissingPacketField(packetId, fieldName, field.dependsOn);
                 const dependencyValue = readObject[field.dependsOn];
