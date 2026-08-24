@@ -144,7 +144,7 @@ export const SupportTypes = z.enum([
      */
     "switch"
 ]);
-export type FieldNode = {
+export type FieldNode = ({
     type: Exclude<z.infer<typeof SupportTypes>, "prefixed_array" | "prefixed_optional" | "string" | "id_or_x" | "array" | "switch" | "fixed_point" | "enum" | "object" | "not_implemented">,
 } | {
     type: "not_implemented",
@@ -175,6 +175,8 @@ export type FieldNode = {
     type: "fixed_point",
     subType: FieldNode,
     fractionBits: number
+}) & {
+    skip_able?: boolean | undefined
 }
 export const Field: z.ZodType<FieldNode> = z.union([
     z.object({
@@ -248,8 +250,12 @@ export const Field: z.ZodType<FieldNode> = z.union([
         subType: z.lazy(() => Field),
         fractionBits: z.number()
     }),
-
-]);
+])
+    .and(
+        z.object({
+            skip_able: z.boolean().optional()
+        })
+    );
 export const PacketObject = z.object({
     name: z.string(),
     id: z.number(),
