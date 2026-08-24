@@ -178,7 +178,7 @@ export class Player {
     private setDeltaMovement(x: number, y: number, z: number): void;
     private setDeltaMovement(vec: BaseVec3): void;
     private setDeltaMovement(a: BaseVec3 | number, b?: number, c?: number): void {
-        const vec3 = a instanceof Vec3 ? a : new Vec3(Vec3.loadArgs(a, b, c));
+        const vec3 = new Vec3(Vec3.loadArgs(a, b, c));
         if (vec3.isFinite())
             this.deltaMovement = vec3;
     }
