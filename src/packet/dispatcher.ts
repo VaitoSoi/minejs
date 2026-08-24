@@ -337,7 +337,7 @@ export class Dispatcher {
                     type: zod.int(),
                     data: zod.record(zod.string(), zod.any())
                 })),
-                light: zod.any(),
+                light: zod.any().optional(),
             })
         );
 
