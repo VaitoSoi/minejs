@@ -131,6 +131,7 @@ export class MissingAuthOption extends Error {
     }
 }
 
+/** @hidden */
 export class AuthRelatedNotFound extends Error {
     constructor(public component: string) {
         super(`auth option is enabled, but the auth related component (${component}) is not found`);
@@ -198,12 +199,14 @@ export class SkippableNotImplemented extends Error {}
  * Messages
  */
 
+/** @hidden */
 export class MessageLinkNotFound extends Error {
     constructor(public senderUUID: string) {
         super(`message link of sender ${senderUUID} not found, maybe because server has sent out of order packet`);
     }
 }
 
+/** @hidden */
 export class HaveSignatureButNotIndex extends Error {
     constructor() {
         super (`expecting both shouldVerifyMessageOrder set to true when shouldVerifyMessageSignature set to true`);
