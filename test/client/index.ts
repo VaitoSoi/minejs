@@ -5,18 +5,18 @@ const client = new Client({
     host: "localhost",
     port: 25565,
     version: "26.2",
-    debug: {
-        packetLogger: true
-    },
+    // debug: {
+    //     packetLogger: true
+    // },
     loadRegistry: false,
-    auth: {
-        client_id: "d86254d8-edf7-4640-90eb-643c99af188e",
-        method: "loopback",
-        openBrowser: true,
-        port: 12345
-    },
-    shouldVerifyMessageOrder: true,
-    shouldVerifyMessageSignature: true
+    // auth: {
+    //     client_id: "d86254d8-edf7-4640-90eb-643c99af188e",
+    //     method: "loopback",
+    //     openBrowser: true,
+    //     port: 12345
+    // },
+    // shouldVerifyMessageOrder: true,
+    // shouldVerifyMessageSignature: true
 });
 client.connect();
 client.hold(Input.Jump);
