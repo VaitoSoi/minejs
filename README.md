@@ -10,7 +10,7 @@ This is a Minecraft client package, written entirely in Typescript, using NodeJS
 
 This package is highly unstable for now, please report if there is any bug, glitch.
 
-Also, since there is some problem with authenticating and appId approval, you can not let the bot join "online server yet". [See more here](#iv-about-joining-online-server)
+Also, since there is some problem with authenticating and appId approval, I haven't completed the join "online server" part yet. [See more here](#iv-about-joining-online-server)
 
 ## II. Usage
 
@@ -104,4 +104,44 @@ See [documentation](https://minejs.vaito.dev)
 
 ## IV. About joining online server:
 
-In order to join "online server" (the server require an account that have purchased Minecraft, to distinguish with the "offiline server", where you don't have to purchase Minecraft), you have to send some request to Minecraft server, which require an approved Azure App (more info in [here](https://minecraft.wiki/w/Microsoft_authentication#Microsoft_OAuth2_flow) and [here](https://help.minecraft.net/hc/en-us/articles/16254801392141p)), which I don't have at the moment. So I can not fully test the "join online server" feature right now. But still, if you somehow got an approved app and found some bug, please [create a issue](https://github.com/VaitoSoi/minejs/issues/new)
+### 1. What is `online server` and `offline server`:
+
++ `Offline server` is a server you can join with a cracked account, meaning that you don't have to own Minecraft to join.
+
++ `Online server`, on the other hand, require a account that owns Minecraft.
+
+### 2. Why I can't join online server yet:
+
+In order to join "online server", the client has to send some request to Minecraft server, which require an approved Azure App (more info in [here](https://minecraft.wiki/w/Microsoft_authentication#Microsoft_OAuth2_flow) and [here](https://help.minecraft.net/hc/en-us/articles/16254801392141p)), which I don't have at the moment. So I can not fully test the "join online server" feature right now. 
+
+### 3. So how do you know if the server is offline or online:
+
+#### a. If you are the server owner:
+
+Check your `server.properties` file:
+
+```
+...
+motd=A Minecraft Server
+network-compression-threshold=256
+online-mode=false # <- false is offline, true is onlune
+op-permission-level=4
+pause-when-empty-seconds=60
+...
+```
+
+#### b. If you are not the server owner:
+
+1. Ask the server owner
+
+or
+
+2. Try some crack launcher to join that sevrer
+
+### 4. Note:
+
+But still, if you somehow got an approved app and found some bug, please [create a issue](https://github.com/VaitoSoi/minejs/issues/new)
+
+**P/s:** They rejected me 😭
+
+![The rejected mail](./assets/doc/rejected.png)
