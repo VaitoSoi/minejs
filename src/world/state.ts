@@ -141,7 +141,7 @@ export type SendingPacket = {
 export class SharedState<IsReady extends boolean = boolean> {
     private mutationQueue: MutateState[] = [];
     private eventQueue: EmittedEvent[] = [];
-    private sendQueue: SendingPacket[] = [];
+    private packetQueue: SendingPacket[] = [];
 
     public state: ConnectionState = ConnectionState.Disconnected;
     public status: ClientStatus = ClientStatus.Disconnected;
@@ -191,7 +191,7 @@ export class SharedState<IsReady extends boolean = boolean> {
     public pruneStates() {
         this.mutationQueue = [];
         this.eventQueue = [];
-        this.sendQueue = [];
+        this.packetQueue = [];
 
         this.state = ConnectionState.Disconnected;
         this.status = ClientStatus.Disconnected;
@@ -258,12 +258,12 @@ export class SharedState<IsReady extends boolean = boolean> {
     public enqueuePacket(packet: SendingPacket): void
     public enqueuePacket(packet: SendingPacket | string, data?: object) {
         if (typeof packet === "string")
-            this.sendQueue.push({
+            this.packetQueue.push({
                 id: packet,
                 data: data!
             });
         else
-            this.sendQueue.push(packet);
+            this.packetQueue.push(packet);
     }
 
     public enqueueEvent<K extends keyof ClientEvents>(event: K, ...args: ClientEvents[K]): void
@@ -287,14 +287,22 @@ export class SharedState<IsReady extends boolean = boolean> {
                 break;
         }
     }
-    public drainEvent() {
-        const events = structuredClone(this.eventQueue);
-        this.eventQueue = [];
-        return events;
+    public drainEvent(consumer: (event: EmittedEvent) => void) {
+        while (true) {
+            const event = this.eventQueue.shift();
+            if (event)
+                consumer(event);
+            else
+                break;
+        }
     }
-    public drainPacket() {
-        const packets = structuredClone(this.sendQueue);
-        this.sendQueue = [];
-        return packets;
+    public drainPacket(consumer: (packet: SendingPacket) => void) {
+        while (true) {
+            const packet = this.packetQueue.shift();
+            if (packet)
+                consumer(packet);
+            else
+                break;
+        }
     }
 }

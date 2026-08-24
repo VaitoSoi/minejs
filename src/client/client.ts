@@ -151,10 +151,8 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
         // For tick-tock tick-tock
         this.tickLoop = new TickLoop(() => {
             this.state.drainMutation();
-            this.state.drainEvent()
-                .forEach(event => this.emitEvent(event));
-            this.state.drainPacket()
-                .forEach((packet) => this.tcp.sendPacket(packet.id, packet.data));
+            this.state.drainEvent(event => this.emitEvent(event));
+            this.state.drainPacket((packet) => this.tcp.sendPacket(packet.id, packet.data));
             this.player.tick();
         });
 
