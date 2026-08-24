@@ -171,6 +171,8 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
                     packetID = decoder.readVarInt();
                 }
             }
+            if (this.state.clientOptions.debug?.packetLogger == true)
+                console.log("packet", packetID, "length", decoder.buffer.length);
             this.forwardPacket(packetID, decoder);
 
             this.bufferPool = this.bufferPool.subarray(expectedPacketEnd);
