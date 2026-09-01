@@ -74,7 +74,7 @@ export class VersionCodec {
         for (const [name, field] of Object.entries(structure)) {
             if (!(name in data))
                 throw new MissingField(name, `packet ${packetName}`);
-            if (typeof data[name] === "object")
+            if (data[name] !== null && data[name] !== undefined && typeof data[name] === "object")
                 if ("value" in data[name])
                     if ("metadata" in data[name])
                         encoder = this.writeField(field, encoder, data[name]["value"], data[name]["metadata"]);
@@ -219,7 +219,13 @@ export class VersionCodec {
                 return encoder.writePrefixedArray(length, (encoder, index) => this.writeField(field.subType, encoder, value[index], metadata));
             }
             // case "teleport_flag": return encoder.writeTeleportFlag();
-            // case "prefixed_optional": return encoder.writePrefixedOptional((decoder) => this.readField(packetId, readObject, fieldName, field.subType, decoder));
+            case "prefixed_optional":
+                if (value === null || value === undefined)
+                    return encoder.writeBoolean(false);
+                else {
+                    encoder.writeBoolean(true);
+                    return this.writeField(field.subType, encoder, field, metadata);
+                }
             // case "nbt": return encoder.writeNBT(value);
             case "lpvec3": return encoder.writeLpVec3(value);
             // case "fixed_point": {
