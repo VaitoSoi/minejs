@@ -166,6 +166,7 @@ export class SharedState<IsReady extends boolean = boolean> {
     public registry: Record<string, ServerRegistryEntry[]> | undefined = undefined;
     public world: If<IsReady, ServerWorld> = null as any;
     public player: If<IsReady, ClientPlayer> = null as any;
+    public messageCount: number = 0;
 
     /**
      * For maintaining message order.
@@ -213,6 +214,7 @@ export class SharedState<IsReady extends boolean = boolean> {
         this.registry = undefined;
         this.world = undefined as any;
         this.player = undefined as any;
+        this.messageCount = 0;
 
         if (this.clientOptions.shouldVerifyMessageSignature)
             this.messageSignatureCache = SignatureCache.default();

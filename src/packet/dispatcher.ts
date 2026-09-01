@@ -639,6 +639,8 @@ export class Dispatcher {
             target_name: zod.record(zod.string(), zod.any()).nullable()
         }));
 
+        this.state.messageCount += 1;
+
         const senderNameText = getTextFromTextComponent(sender_name).toString(),
             targetNameText = target_name ? getTextFromTextComponent(target_name).toString() : undefined;
 
