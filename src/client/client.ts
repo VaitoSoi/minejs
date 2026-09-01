@@ -3,17 +3,18 @@ import { BlockManager, BlockState } from "../world/block";
 import { EntitiesManager } from "../world/entity";
 import { Input, Player } from "../physics/player";
 import { TickLoop } from "../world/tick";
-import { Message, TCPClient, TCPClientOption } from "./tcp";
+import { Message, TCPClient, TCPClientOption } from "../net/tcp";
 import { TypedEmmiter as TypedEmitter } from "../base/event";
 import { BlockRegistry, EntityRegistry, PacketRegistry, ProtocolVersionMapping } from "../version/registry";
 import { BaseVec3, Vec3 } from "../physics/direction";
 import { TextComponent } from "../base/typing";
 import { ClientStatus, ConnectionState, EmittedEvent as EmittedEvent, Entity, SharedState } from "../world/state";
-import { Dispatcher } from "../packet/dispatcher";
+import { Listener } from "../packet/listener";
 import { VersionCodec } from "../version/codec";
 import { AuthClient } from "./auth";
 import { computeUUID } from "../base/math";
 import { HaveSignatureButNotIndex } from "../base/error";
+import { Sender } from "../packet/sender";
 
 export type ClientOption = Omit<TCPClientOption, "protocolVersion"> & {
     version: string,
@@ -101,7 +102,8 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
 
     private tcp: TCPClient;
     private state: SharedState<IsReady>;
-    private dispatcher: Dispatcher;
+    private packetListener: Listener;
+    private packetSender: Sender;
 
     constructor(private options: ClientOption) {
         if (options.shouldVerifyMessageSignature === true && options.shouldVerifyMessageOrder !== true)
@@ -112,7 +114,8 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
         // For managing shared data
         this.state = new SharedState(options);
         // For handling packet
-        this.dispatcher = new Dispatcher(this.state, this.emit.bind(this));
+        this.packetSender = new Sender(this.state, this.emit.bind(this));
+        this.packetListener = new Listener(this.state, this.emit.bind(this), this.packetSender);
         // For reading packet
         const versionCodec = new VersionCodec(this.state);
         // For throwing packet through internet
@@ -127,12 +130,12 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
         this.tcp.forwardPacket = versionCodec.handlePacket.bind(versionCodec);
         this.tcp.parsePacket = versionCodec.encodePacket.bind(versionCodec);
         this.tcp.sendInitPacket = () => {
-            this.dispatcher.sendHandshake();
-            this.dispatcher.sendLoginStart();
+            this.packetSender.sendHandshake();
+            this.packetSender.sendLoginStart();
         };
-        this.dispatcher.sendPacket = this.tcp.sendPacket.bind(this.tcp);
-        this.dispatcher.disconnect = this.disconnect.bind(this);
-        versionCodec.consumePacket = this.dispatcher.handlePacket.bind(this.dispatcher);
+        this.packetSender.sendPacket = this.tcp.sendPacket.bind(this.tcp);
+        this.packetListener.disconnect = this.disconnect.bind(this);
+        versionCodec.consumePacket = this.packetListener.handlePacket.bind(this.packetListener);
 
         // For querying data
         this.blocks = new BlockManager(this.state);
@@ -144,10 +147,10 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
             this.entities,
             this.blocks,
         );
-        this.player.sendPlayerPos = this.dispatcher.sendPlayerPos;
-        this.player.sendPlayerPosRot = this.dispatcher.sendPlayerPosRot;
-        this.player.sendPlayerRot = this.dispatcher.sendPlayerRot;
-        this.player.sendPlayerStatus = this.dispatcher.sendPlayerStatus;
+        this.player.sendPlayerPos = this.packetSender.sendPlayerPos;
+        this.player.sendPlayerPosRot = this.packetSender.sendPlayerPosRot;
+        this.player.sendPlayerRot = this.packetSender.sendPlayerRot;
+        this.player.sendPlayerStatus = this.packetSender.sendPlayerStatus;
 
         // For tick-tock tick-tock
         this.tickLoop = new TickLoop(() => {
@@ -244,7 +247,7 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
      * Send a message
      */
     public chat(message: string) {
-        this.dispatcher.sendMessage(message);
+        this.packetSender.sendMessage(message);
     }
 
     // World

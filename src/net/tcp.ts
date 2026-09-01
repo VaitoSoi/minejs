@@ -3,9 +3,9 @@ import { EventEmitter } from "node:events";
 import { deflateSync, inflateSync } from "node:zlib";
 
 import { TypedEmmiter } from "../base/event";
-import { BinaryDecoder } from "../packet/decoder";
-import { BinaryEncoder } from "../packet/encoder";
-import { AuthOption } from "./auth";
+import { BinaryDecoder } from "../binary/decoder";
+import { BinaryEncoder } from "../binary/encoder";
+import { AuthOption } from "../client/auth";
 import { ClientStatus, SharedState } from "../world/state";
 import { EncodeResult } from "../version/codec";
 import { TextComponent } from "../base/typing";
