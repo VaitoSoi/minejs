@@ -4,6 +4,7 @@ import { BinaryDecoder } from "../packet/decoder";
 import { ConnectionState, SharedState } from "../world/state";
 import { FieldNode, PacketObject, PacketRegistry, VersionDefinitions } from "./registry";
 import { BinaryEncoder } from "../packet/encoder";
+import { BitSet } from "../base/bitset";
 
 const TCPStateMapping: Record<ConnectionState, keyof z.infer<typeof VersionDefinitions> | null> = {
     [ConnectionState.Disconnected]: null,
@@ -235,6 +236,12 @@ export class VersionCodec {
                 for (const [name, subField] of Object.entries(field.fields))
                     encoder = this.writeField(subField, encoder, value[name], metadata);
                 return encoder;
+            }
+            case "fixed_bitset": {
+                if (!(value instanceof BitSet))
+                    throw new UnexpectedValue("bitset instance", typeof value);
+                const arr = value.toByteArray();
+                return encoder.writeRaw(Buffer.from(arr));
             }
             // case "switch": {
             //     const dependencyValue = readObject[field.dependsOn];

@@ -3712,7 +3712,7 @@
             "type": "var_int"
           },
           "acknowledged": {
-            "type": "not_implemented",
+            "type": "fixed_bitset",
             "length": 20
           },
           "checksum": {

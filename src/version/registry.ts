@@ -137,6 +137,8 @@ export const SupportTypes = z.enum([
     "heightmap",
     "teleport_flags",
     "bitset",
+    "fixed_bitset",
+    "byte_array",
     "null", // a constant
 
     /**
@@ -145,7 +147,20 @@ export const SupportTypes = z.enum([
     "switch"
 ]);
 export type FieldNode = ({
-    type: Exclude<z.infer<typeof SupportTypes>, "prefixed_array" | "prefixed_optional" | "string" | "id_or_x" | "array" | "switch" | "fixed_point" | "enum" | "object" | "not_implemented">,
+    type: Exclude<z.infer<typeof SupportTypes>,
+        | "prefixed_array"
+        | "prefixed_optional"
+        | "string"
+        | "id_or_x"
+        | "array"
+        | "switch"
+        | "fixed_point"
+        | "enum"
+        | "object"
+        | "not_implemented"
+        | "fixed_bitset"
+        | "byte_array"
+    >,
 } | {
     type: "not_implemented",
     comment?: string | undefined
@@ -175,12 +190,15 @@ export type FieldNode = ({
     type: "fixed_point",
     subType: FieldNode,
     fractionBits: number
+} | {
+    type: "fixed_bitset" | "byte_array",
+    length: number,
 }) & {
     skip_able?: boolean | undefined
 }
 export const Field: z.ZodType<FieldNode> = z.union([
     z.object({
-        type: SupportTypes.exclude(["prefixed_array", "prefixed_optional", "string", "id_or_x", "array", "switch", "fixed_point", "enum", "not_implemented", "object"]),
+        type: SupportTypes.exclude(["prefixed_array", "prefixed_optional", "string", "id_or_x", "array", "switch", "fixed_point", "enum", "not_implemented", "object", "fixed_bitset", "byte_array"]),
     }),
     z.object({
         type: z.literal(["not_implemented"]),
@@ -250,6 +268,11 @@ export const Field: z.ZodType<FieldNode> = z.union([
         subType: z.lazy(() => Field),
         fractionBits: z.number()
     }),
+    z.object({
+        // These type require predefined-length
+        type: z.union([z.literal("fixed_bitset"), z.literal("byte_array")]),
+        length: z.int()
+    })
 ])
     .and(
         z.object({
