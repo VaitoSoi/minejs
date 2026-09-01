@@ -9,10 +9,11 @@ import { TypedEmmiter } from "../base/event";
 import { ClientEvents } from "../client/client";
 import { makeMovementFlag } from "./encoder";
 import { TextComponent } from "../base/typing";
-import { AuthRelatedNotFound, HaveSignatureButNotIndex, MessageLinkNotFound, MissingAuthOption, NotImplemented, UnexpectedValue } from "../base/error";
+import { AuthRelatedNotFound, HaveSignatureButNotIndex, MessageLinkNotFound, MessageTooLong, MissingAuthOption, NotImplemented, UnexpectedValue } from "../base/error";
 import { randomUUIDBytes, uuidToBuffer } from "../base/math";
 import { MessageLink } from "../message/link";
 import { sliceBuffer } from "../base/buffer";
+import BitSet from "../base/bitset";
 
 function zodParse<Type extends zod.ZodType>(data: object, zod: Type): zod.infer<Type> {
     return zod.parse(data);
@@ -639,8 +640,6 @@ export class Dispatcher {
             target_name: zod.record(zod.string(), zod.any()).nullable()
         }));
 
-        this.state.messageCount += 1;
-
         const senderNameText = getTextFromTextComponent(sender_name).toString(),
             targetNameText = target_name ? getTextFromTextComponent(target_name).toString() : undefined;
 
@@ -679,6 +678,8 @@ export class Dispatcher {
             }
         }
 
+        if (message_signature_bytes !== null)
+            this.state.messageCount += 1;
         if (this.state.clientOptions.shouldVerifyMessageSignature === true && message_signature_bytes) {
             if (!this.state.sessionID)
                 throw new AuthRelatedNotFound("session uuid");
@@ -718,7 +719,7 @@ export class Dispatcher {
             const signature = Buffer.from(message_signature_bytes);
 
             if (!verify.verify(publicKey!, signature))
-                this.emit("failedMessage", emitObject);
+                return this.emit("failedMessage", emitObject);
         }
 
         this.emit("message", emitObject);
@@ -917,5 +918,25 @@ export class Dispatcher {
         this.state.enqueuePacket("move_player_status_only", {
             flags: makeMovementFlag(onGround, horizontalCollision)
         });
+    }
+
+    public sendMessage(
+        content: string
+    ) {
+        if (content.length > 256)
+            throw new MessageTooLong(content);
+        const bitset = new BitSet(20);
+        const timestamp = Date.now();
+        const salt = randomBytes(8).readBigInt64BE();
+        this.sendPacket("chat", {
+            message: content,
+            timestamp,
+            salt,
+            signature: null, // skip for now
+            message_count: this.state.messageCount,
+            acknowledged: bitset,
+            checksum: 0
+        });
+        this.state.messageCount = 0;
     }
 }

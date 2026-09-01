@@ -212,3 +212,12 @@ export class HaveSignatureButNotIndex extends Error {
         super (`expecting both shouldVerifyMessageOrder set to true when shouldVerifyMessageSignature set to true`);
     }
 }
+
+/**
+ * @hidden
+ */
+export class MessageTooLong extends Error {
+    constructor(public message: string) {
+        super(`your message is exceeding the 256 characters long limit, got ${message.length} characters`);
+    }
+}

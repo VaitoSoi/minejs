@@ -19,7 +19,6 @@ const client = new Client({
     // shouldVerifyMessageSignature: true
 });
 client.connect();
-client.hold(Input.Jump);
 client.on("disconnect", (...args) => console.dir({ name: "disconnect", args }, { depth: null }));
 client.on("disconnectRaw", (...args) => console.dir({ name: "disconnectRaw", args }, { depth: null }));
 // client.on("loadChunk", (...args) => console.dir({ name: "loadChunk", args }, { depth: null }));
@@ -58,7 +57,15 @@ client.on("message", (message) => {
         case "at": {
             const [, x, y, z] = args.map(val => parseInt(val)) as [any, number, number, number];
             const state = client.at(x, y, z);
-            // console.log(state);
+            console.log(state);
+            break;
+        }
+
+        case "e":
+        case "echo":
+        case "say": {
+            const message = args.slice(1).join(" ");
+            client.chat(message);
             break;
         }
 
