@@ -1,4 +1,3 @@
-import { TCPClient } from "../client/tcp";
 import { AABB, BaseAABB, VoxelShape } from "../physics/aabb";
 import { Epsilon, getFrac, getSign, lerp } from "../base/math";
 import { BlockRegistry } from "../version/registry";
