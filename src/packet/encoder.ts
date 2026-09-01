@@ -64,7 +64,11 @@ export class BinaryEncoder {
     /**
      * Write 8 bytes singed integer
      */
-    public writeLong(val: bigint) { return this.write(8, val, (buf) => buf.writeBigInt64BE); }
+    public writeLong(val: bigint | number) {
+        // Cast to BigInt 
+        const v = typeof val === "bigint" ? val : BigInt(val);
+        return this.write(8, v, (buf) => buf.writeBigInt64BE); 
+    }
     /**
      * Write 4 bytes float
      */
