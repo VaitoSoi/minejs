@@ -680,10 +680,10 @@ class NoneOverlappingMerger extends IndexMerger {
     }
 
     private forMergedIndexNotSwapped(consumer: IndexMergerConsumer) {
-        for (const i of this.lower)
+        for (let i = 0; i < this.lower.length; i++)
             consumer(i, -1, i);
 
-        for (const i of this.upper)
+        for (let i = 0; i < this.upper.length; i++)
             consumer(this.lower.length - 1, i, this.lower.length + i);
     }
 
@@ -703,7 +703,7 @@ class IdenticalMerger extends IndexMerger {
     }
 
     public forMergedIndex(consumer: IndexMergerConsumer): void {
-        for (const i of this.coords)
+        for (let i = 0; i < this.coords.length; i++)
             consumer(i, i, i);
     }
 
