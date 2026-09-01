@@ -247,6 +247,9 @@ export class VersionCodec {
                 if (!(value instanceof BitSet))
                     throw new UnexpectedValue("bitset instance", typeof value);
                 const arr = value.toByteArray();
+                if ("length" in field)
+                    while (Math.ceil(field.length / 8) > arr.length)
+                        arr.push(0);
                 return encoder.writeRaw(Buffer.from(arr));
             }
             // case "switch": {
