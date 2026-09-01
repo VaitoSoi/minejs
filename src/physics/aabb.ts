@@ -348,7 +348,7 @@ export class VoxelShape {
             mergeY.forMergedIndex((y1, y2, yr) => {
                 mergeZ.forMergedIndex((z1, z2, zr) => {
                     if (a.isFullWide(x1, y1, z1) || b.isFullWide(x2, y2, z2))
-                        storage.set(getCoords(xr, yr, zr), 1);
+                        storage.set(getCoords(xr, yr, zr));
                 });
             });
         });
@@ -377,12 +377,13 @@ export class VoxelShape {
             this.storage = cells;
         else {
             this.storage = new BitSet();
-            this.storage.setRange(0, (((xs.length - 1) * ys.length) + (ys.length - 1)) * zs.length + (zs.length - 1), 0);
+            if ((((xs.length - 1) * ys.length) + (ys.length - 1)) * zs.length + (zs.length - 1) > 0)
+                this.storage.clearRange(0, (((xs.length - 1) * ys.length) + (ys.length - 1)) * zs.length + (zs.length - 1));
             for (let x = 0; x < cells.length; x++)
                 for (let y = 0; y < cells[x]!.length; y++)
                     for (let z = 0; z < cells[x]![y]!.length; z++)
                         if (cells[x]![y]![z] === true)
-                            this.storage.set(this.getIndex(x, y, z), 1);
+                            this.storage.set(this.getIndex(x, y, z));
         }
     }
 
@@ -432,7 +433,7 @@ export class VoxelShape {
         if (x < 0 || x >= this.xs.length - 1) return false;
         if (y < 0 || y >= this.ys.length - 1) return false;
         if (z < 0 || z >= this.zs.length - 1) return false;
-        return this.storage.get(this.getIndex(x, y, z)) === 1;
+        return this.storage.get(this.getIndex(x, y, z));
     }
 
     /**
@@ -637,7 +638,7 @@ export class VoxelShape {
         return true;
     }
     private clearZStrip(startZ: number, endZ: number, x: number, y: number) {
-        this.storage.clear(this.getIndex(x, y, startZ), this.getIndex(x, y, endZ));
+        this.storage.clearRange(this.getIndex(x, y, startZ), this.getIndex(x, y, endZ));
     }
 }
 

@@ -113,3 +113,45 @@ function mcHexDigest(digest: Buffer | Uint8Array): string {
     const bigint = BigInt(`0x${digest.toString('hex')}`);
     return BigInt.asIntN(digest.length * 8, bigint).toString(16);
 }
+
+/**
+ * Simplified implementation of Java's Long.numberOfTrailingZeros
+ * @param n 
+ * @returns 
+ */
+export function numberOfTrailingZeros(n: bigint): number {
+    if (n === 0n) {
+        return 64;
+    }
+
+    let count = 0;
+    while ((n & 1n) === 0n) {
+        count++;
+        n >>= 1n;
+    }
+
+    return count;
+}
+
+/**
+ * Simplified implementation of Java's Long.numberOfLeadingZeros
+ * @param n 
+ * @returns 
+ */
+export function numberOfLeadingZeros(n: bigint): number {
+    if (n === 0n) {
+        return 64;
+    }
+
+    let count = 0;
+    // Start checking from bit 63 (the most significant bit)
+    for (let i = 63; i >= 0; i--) {
+        if ((n & (1n << BigInt(i))) === 0n) {
+            count++;
+        } else {
+            break; // Stop at the first 1 bit
+        }
+    }
+
+    return count;
+}
