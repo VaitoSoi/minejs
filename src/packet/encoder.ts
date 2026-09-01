@@ -62,7 +62,7 @@ export class BinaryEncoder {
      */
     public writeInt(val: number) { return this.write(4, val, (buf) => buf.writeInt32BE); }
     /**
-     * Write 6 bytes singed integer
+     * Write 8 bytes singed integer
      */
     public writeLong(val: bigint) { return this.write(8, val, (buf) => buf.writeBigInt64BE); }
     /**
