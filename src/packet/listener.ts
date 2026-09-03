@@ -33,28 +33,35 @@ export class Listener {
             "login:hello": this.handleEncryption,
             "login:login_finished": this.handleLoginSucess,
             "login:login_compression": this.handleSetCompression,
+
             "configuration:disconnect": this.handleConfiguarionPlayDisconnect,
             "configuration:keep_alive": this.handleKeepAlive,
             "configuration:registry_data": this.handleRegistryData,
             "configuration:select_known_packs": this.handleKnownPack,
             "configuration:finish_configuration": this.handleFinishConfiguration,
-            "play:add_entity": this.handleSpawnEntity,
-            "play:disconnect": this.handleConfiguarionPlayDisconnect,
-            "play:disguised_chat": this.handleDisguisedChatMessage,
-            "play:entity_position_sync": this.handleTeleportEntity,
-            "play:forget_level_chunk": this.handleUnloadChunk,
-            "play:keep_alive": this.handleKeepAlive,
-            "play:level_chunk_with_light": this.handleChunkData,
+
             "play:login": this.handlePlayLogin,
+            "play:disconnect": this.handleConfiguarionPlayDisconnect,
+            "play:keep_alive": this.handleKeepAlive,
+
+            "play:player_chat": this.handlePlayerChat,
+            "play:disguised_chat": this.handleDisguisedChatMessage,
+            "play:system_chat": this.handleSystemMessage,
+            "play:set_action_bar_text": this.handleSetActionBar,
+
+            "play:level_chunk_with_light": this.handleChunkData,
+            "play:forget_level_chunk": this.handleUnloadChunk,
+
+            "play:add_entity": this.handleSpawnEntity,
             "play:move_entity_pos": this.handleUpdateEntityPosition,
             "play:move_entity_pos_rot": this.handleUpdateEntityPositionRotation,
-            "play:player_chat": this.handlePlayerChat,
+            "play:entity_position_sync": this.handleTeleportEntity,
             "play:player_position": this.handleSynchronizePlayerPosition,
+            "play:update_mob_effect": this.handleUpdateMobEffect,
             "play:remove_entities": this.handleRemoveEntity,
-            // "play:rotate_head": 
-            "play:set_action_bar_text": this.handleSetActionBar,
+            "play:remove_mob_effect": this.handleRemoveMobEffect,
+            // "play:rotate_head": ,
             "play:set_entity_motion": this.handleSetEntityVelocity,
-            "play:system_chat": this.handleSystemMessage,
         };
     }
 
