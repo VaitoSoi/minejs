@@ -138,7 +138,8 @@ export class Listener {
             angle: {
                 yaw: 0,
                 pitch: 0,
-            }
+            },
+            effects: {}
         } satisfies ClientPlayer as any;
         this.sender.sendLoginAck();
     }
