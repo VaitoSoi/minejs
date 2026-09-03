@@ -17,6 +17,7 @@ const client = new Client({
     // },
     // shouldVerifyMessageOrder: true,
     // shouldVerifyMessageSignature: true
+    loadAndCacheChunk: true
 });
 client.connect();
 client.on("disconnect", (...args) => console.dir({ name: "disconnect", args }, { depth: null }));
@@ -56,7 +57,9 @@ client.on("message", (message) => {
 
         case "at": {
             const [, x, y, z] = args.map(val => parseInt(val)) as [any, number, number, number];
+            console.time("get_block");
             const state = client.at(x, y, z);
+            console.timeEnd("get_block");
             console.log(state);
             break;
         }

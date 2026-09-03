@@ -3,6 +3,7 @@ import { Epsilon, getFrac, getSign, lerp } from "../base/math";
 import { BlockRegistry } from "../version/registry";
 import { BaseVec3, Direction, Vec3 } from "../physics/direction";
 import { SharedState } from "./state";
+import { NotImplemented } from "../base/error";
 
 /**
  * Represent a state of a block
@@ -107,9 +108,74 @@ export class BlockManager {
         x = Math.floor(x); y = Math.floor(y); z = Math.floor(z);
         const sx = Math.floor(x / 16), sy = Math.floor((y + 64) / 16), sz = Math.floor(z / 16);
         const px = ((x % 16) + 16) % 16, py = ((y % 16) + 16) % 16, pz = ((z % 16) + 16) % 16;
+
+        if (this.state.cache)
+            return this.getWithCache(sx, sy, sz, px, py, pz);
+        else
+            return this.getWithoutCache(sx, sy, sz, px, py, pz);
+    }
+
+    private getBlock(stateId: number | string) {
+        return BlockRegistry.getState(String(stateId));
+    }
+    private getWithCache(
+        sx: number, sy: number, sz: number,
+        px: number, py: number, pz: number,
+    ) {
+        if (!this.state.cache)
+            throw new NotImplemented();
+        const localPos = { x: px, y: py, z: pz };
+        const sectionKey = `${this.state.player!.dimension}:${sx}:${sy}:${sz}`;
+        const sectionCache = this.state.cache.get(sectionKey);
+        if (sectionCache) {
+            const cachedState = sectionCache.at(this.getLocalPosKey(localPos));
+            if (cachedState) {
+                console.log("cache hit", sectionKey, localPos);
+                return this.getBlock(cachedState);
+            }
+        }
+
+        console.log("cache miss", sectionKey, localPos);
         const section = this.state.world!.chunks[`${this.state.player!.dimension}:${sx}:${sz}`]?.sections[sy]?.block;
         if (!section) return null;
         if (section.data === null) return BlockRegistry.getState(section.palette[0]!.toString())!;
+
+        const arr = new Uint16Array(16 * 16 * 16);
+        const dataArray = section.data!;
+        const bitsPerEntry = section.bpe;
+        const entriesPerLong = Math.floor(64 / bitsPerEntry);
+        const entryMask = (1 << bitsPerEntry) - 1;
+        for (let localX = 0; localX < 16; localX++)
+            for (let localY = 0; localY < 16; localY++)
+                for (let localZ = 0; localZ < 16; localZ++) {
+                    const entryIndex = this.getLocalPosKey({ x: localX, y: localY, z: localZ });
+                    const longIndex = Math.floor(entryIndex / entriesPerLong);
+                    const bit_index = entryIndex % entriesPerLong * bitsPerEntry;
+                    const localId = Number((dataArray[longIndex]! >> BigInt(bit_index)) & BigInt(entryMask));
+                    const stateId = bitsPerEntry <= 8 ? section.palette[localId]! : localId;
+                    arr[entryIndex]! = stateId;
+                }
+
+        this.state.cache.put(sectionKey, arr);
+        const state = arr.at(this.getLocalPosKey(localPos))!;
+        return this.getBlock(state);
+    }
+    public deleteChunkCache(
+        sx: number, sy: number, sz: number,
+    ) {
+        const sectionKey = `${this.state.player!.dimension}:${sx}:${sy}:${sz}`;
+        if (this.state.cache)
+            this.state.cache.del(sectionKey);
+    }
+
+    private getWithoutCache(
+        sx: number, sy: number, sz: number,
+        px: number, py: number, pz: number,
+    ) {
+        const section = this.state.world!.chunks[`${this.state.player!.dimension}:${sx}:${sz}`]?.sections[sy]?.block;
+        if (!section) return null;
+        if (section.data === null) return BlockRegistry.getState(section.palette[0]!.toString())!;
+
         const dataArray = section.data!;
         const bitsPerEntry = section.bpe;
         const entryIndex = px + (pz * 16) + (py * 16 * 16);
@@ -119,7 +185,12 @@ export class BlockManager {
         const bit_index = entryIndex % entriesPerLong * bitsPerEntry;
         const localId = Number((dataArray[longIndex]! >> BigInt(bit_index)) & BigInt(entryMask));
         const stateId = bitsPerEntry <= 8 ? section.palette[localId]! : localId;
-        return BlockRegistry.getState(String(stateId))!;
+
+        return BlockRegistry.getState(String(stateId));
+
+    }
+    private getLocalPosKey(pos: BaseVec3) {
+        return pos.x + 16 * (pos.y + 16 * pos.z);
     }
 
     /**

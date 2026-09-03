@@ -5,7 +5,7 @@ import { Input, Player } from "../physics/player";
 import { TickLoop } from "../world/tick";
 import { Message, TCPClient, TCPClientOption } from "../net/tcp";
 import { TypedEmmiter as TypedEmitter } from "../base/event";
-import { BlockRegistry, EntityRegistry, PacketRegistry, ProtocolVersionMapping } from "../version/registry";
+import { BlockRegistry, EffectRegistry, EntityRegistry, PacketRegistry, ProtocolVersionMapping } from "../version/registry";
 import { BaseVec3, Vec3 } from "../physics/direction";
 import { TextComponent } from "../base/typing";
 import { ClientStatus, ConnectionState, EmittedEvent as EmittedEvent, Entity, SharedState } from "../world/state";
@@ -15,6 +15,7 @@ import { AuthClient } from "./auth";
 import { computeUUID } from "../base/math";
 import { HaveSignatureButNotIndex } from "../base/error";
 import { Sender } from "../packet/sender";
+import { CacheImplementation } from "../base/cache";
 
 export type ClientOption = Omit<TCPClientOption, "protocolVersion"> & {
     version: string,
@@ -24,12 +25,26 @@ export type ClientOption = Omit<TCPClientOption, "protocolVersion"> & {
      * 
      * When set this option to true, you HAVE TO set `shouldVerifyMessageOrder` to true
      */
-    shouldVerifyMessageSignature?: boolean
+    shouldVerifyMessageSignature?: boolean,
 
     /**
      * Should verify the message orders to keep the sync with server.
      */
-    shouldVerifyMessageOrder?: boolean
+    shouldVerifyMessageOrder?: boolean,
+
+    /**
+     * Whether to load the whole chunk section (16x16x16) and keep them in the cache or just load the needed block.
+     * 
+     * Please consider this carefully since this can consume a lot of resource to calculate the whole chunk section and store it while you may not need that much.
+     * 
+     * This option is useful when you have to constantly access to the world chunk, e.g pathfinding.
+     */
+    loadAndCacheChunk?: boolean,
+
+    /**
+     * Custom cache class. Default to `LRUCache`
+     */
+    cacheImplementation?: new () => CacheImplementation<Uint16Array>,
 }
 
 export interface ClientEvents {
@@ -163,6 +178,11 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
         // Forward TCP events
         this.tcp.on("connect", () => this.emit("connect"));
         this.tcp.on("destroy", () => this.emit("destroy"));
+        this.on("loadChunk", (sx, sy, sz) => this.blocks.deleteChunkCache(sx, sy, sz));
+        this.on("unloadChunk", (sx, sz) => {
+            for (let sy = 0; sy < 16; sy++) 
+                this.blocks.deleteChunkCache(sx, sy, sz);
+        });
     }
 
     private emitEvent(event: EmittedEvent) {

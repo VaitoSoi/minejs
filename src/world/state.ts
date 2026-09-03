@@ -6,6 +6,7 @@ import { ClientEvents, ClientOption } from "../client/client";
 import { AuthClient } from "../client/auth";
 import { MessageLink } from "../message/link";
 import { SignatureCache } from "../message/sigCache";
+import { CacheImplementation, LRUCache } from "../base/cache";
 
 export interface Server {
     knownPacks?: ServerKnownPack
@@ -185,6 +186,8 @@ export class SharedState<IsReady extends boolean = boolean> {
     public world: If<IsReady, ServerWorld> = null as any;
     public player: If<IsReady, ClientPlayer> = null as any;
     public messageCount: number = 0;
+    
+    public cache: CacheImplementation<Uint16Array> | undefined = undefined;
 
     /**
      * For maintaining message order.
@@ -196,7 +199,14 @@ export class SharedState<IsReady extends boolean = boolean> {
 
     constructor(
         public clientOptions: ClientOption,
-    ) { }
+    ) {
+        if (this.clientOptions.loadAndCacheChunk) {
+            if (this.clientOptions.cacheImplementation)
+                this.cache = new this.clientOptions.cacheImplementation();
+            else
+                this.cache = new LRUCache(32);
+        }
+    }
 
     public isReady(): this is SharedState<true> {
         return this.status === ClientStatus.Ready;
@@ -242,6 +252,13 @@ export class SharedState<IsReady extends boolean = boolean> {
             this.messageLinks = {};
         else
             this.messageLinks = undefined;
+
+        if (this.clientOptions.loadAndCacheChunk) {
+            if (this.clientOptions.cacheImplementation)
+                this.cache = new this.clientOptions.cacheImplementation();
+            else
+                this.cache = new LRUCache(32);
+        }
     }
 
     public getSignature() {
