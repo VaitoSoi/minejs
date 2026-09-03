@@ -1,9 +1,17 @@
+/**
+ * The base implementation for the Cache class
+ */
 export abstract class CacheImplementation<T = any> {
     public abstract put(key: string, item: T): void;
     public abstract get(key: string): T | undefined;
     public abstract del(key: string): void;
 }
 
+/**
+ * The LRU cache implementation.
+ * 
+ * @see https://en.wikipedia.org/wiki/Cache_replacement_policies#Time-Aware,_Least_Recently_Used_(TLRU)
+ */
 export class LRUCache<T> extends CacheImplementation<T> {
     private hash: Map<string, T> = new Map();
     private list: string[] = [];
