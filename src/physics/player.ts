@@ -8,6 +8,7 @@ import { LevelHeightLimit } from "../client/static";
 import { SharedState } from "../world/state";
 import { TypedEmmiter } from "../base/event";
 import { ClientEvents } from "../client/client";
+import { EffectRegistry } from "../version/registry";
 
 export enum Input {
     Forward = "W",
@@ -174,6 +175,16 @@ export class Player {
         this.state.checkReady();
         return this.state.player!.dimension;
     }
+    private hasEffect(effectName: string) {
+        this.state.checkReady();
+        const id = EffectRegistry.effects[effectName];
+        if (!id) return false;
+        if (!(id in this.state.player!.effects)) return false;
+        const effect = this.state.player!.effects[id]!;
+        if (effect.duration < 0) return true;
+        if (effect.date + (effect.duration / 20) * 1000 < Date.now()) return true;
+        return false;
+    }
 
     private setDeltaMovement(x: number, y: number, z: number): void;
     private setDeltaMovement(vec: BaseVec3): void;
@@ -319,9 +330,14 @@ export class Player {
         }
         // TODO: Handle in fluid
 
-        // TODO: Handle potion effect: Slow falling and Levitation
+        // Handle potion effect: Slow falling and Levitation
+        if (
+            this.hasEffect("minecraft:levitation") ||
+            this.hasEffect("minecraft:slow_falling")
+        )
+            this.fallDistance = 0;
 
-        // TODO: Push entities
+        // // TODO: Push entities
         // console.log({
         //     type: "BEFORE-TRAVEL",
         //     pos: this.getPos(),
@@ -414,7 +430,7 @@ export class Player {
 
     private getSpeed() {
         // return the base for now
-        // TODO: Handle other cases: sprinting, speed-enchanted gear and potion
+        // TODO: Handle other cases: speed-enchanted gear and potion
         return this.isSprinting ? 0.13 : 0.1;
     }
 

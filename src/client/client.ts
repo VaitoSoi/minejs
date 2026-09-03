@@ -172,9 +172,11 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
     private async loadRegistries() {
         if (Client.loadRegistry) return;
         Client.loadRegistry = true;
-        await BlockRegistry.load(this.options.version);
-        await EntityRegistry.load(this.options.version);
-        await PacketRegistry.load(this.options.version);
+        const { version } = this.options;
+        await BlockRegistry.load(version);
+        await EntityRegistry.load(version);
+        await PacketRegistry.load(version);
+        await EffectRegistry.load(version);
     }
 
     // Start / stop

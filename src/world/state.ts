@@ -74,6 +74,22 @@ export interface BlockEntity {
     data: Record<string, any>
 }
 
+export interface Effect {
+    id: number,
+    amplifier: number,
+    duration: number,
+    flag: {
+        isAmbient: boolean,
+        showParticles: boolean,
+        showIcon: boolean,
+        blend: boolean
+    },
+    /**
+     * The epoch ms when the effect update packet is recieved, for validating duration
+     */
+    date: number
+}
+
 /** Represent an entity */
 export interface Entity {
     id: number,
@@ -106,7 +122,9 @@ export interface ClientPlayer {
     angle: Angle,
 
     /** Current dimension */
-    dimension: string
+    dimension: string,
+
+    effects: Record<number, Effect>
 }
 
 export enum ClientStatus {

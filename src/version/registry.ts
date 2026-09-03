@@ -101,6 +101,30 @@ export class BlockRegistry {
     }
 };
 
+export class EffectRegistry {
+    private static loaded: boolean = false;
+
+    public static readonly effects: Record<string, number> = {};
+
+    /**
+     * Load effects registry from JSON file.
+     * 
+     * Should be called once time
+     */
+    public static async load(version: string) {
+        if (!SupportVersions.includes(version))
+            throw new VersionNotSupport(version);
+        if (this.loaded) return;
+        this.loaded = true;
+
+        const file = await readFile(join(BASE_REGISTRY_PATH, version, "effects.json"), { encoding: "utf8" });
+        const json = JSON.parse(file) as Record<string, any>;
+        for (const [name, id] of Object.entries(json)) {
+            this.effects[name] = id;
+        }
+    }
+}
+
 export const SupportTypes = z.enum([
     "byte",
     "unsigned_byte",

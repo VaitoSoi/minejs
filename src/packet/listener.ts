@@ -604,6 +604,53 @@ export class Listener {
         });
     }
 
+    private handleUpdateMobEffect(data: object) {
+        const {
+            entity_id,
+            effect_id,
+            amplifier,
+            duration,
+            flags
+        } = zodParse(data, zod.object({
+            entity_id: zod.number(),
+            effect_id: zod.number(),
+            amplifier: zod.number(),
+            duration: zod.number(),
+            flags: zod.number(),
+        }));
+        const isAmbient = (flags & 0x01) == 1,
+            showParticles = (flags & 0x02) == 1,
+            showIcon = (flags & 0x04) == 1,
+            blend = (flags & 0x08) == 1;
+        this.state.enqueueMutation((state) => {
+            if (state.player!.entityId === entity_id)
+                state.player!.effects[effect_id] = {
+                    amplifier,
+                    duration,
+                    id: effect_id,
+                    flag: {
+                        blend,
+                        isAmbient,
+                        showIcon,
+                        showParticles
+                    },
+                    date: Date.now()
+                };
+        });
+    }
+
+    private handleRemoveMobEffect(data: object) {
+        const { entity_id, effect_id } = zodParse(data, zod.object({
+            entity_id: zod.number(),
+            effect_id: zod.number(),
+        }));
+
+        this.state.enqueueMutation((state) => {
+            if (state.player!.entityId === entity_id)
+                delete state.player!.effects[effect_id];
+        });
+    }
+
     // Chat
     private handlePlayerChat(data: object) {
         const {
