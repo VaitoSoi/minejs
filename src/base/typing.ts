@@ -8,3 +8,8 @@ export type If<Condition extends boolean, True, False = null> = Condition extend
  * @see https://minecraft.wiki/w/Text_component_format
  */
 export type TextComponent = Record<string, any>;
+
+export interface RegistryData {
+    registry_id: string,
+    entries: { entry_id: string, data: Record<string, any> | null }[]
+}

@@ -173,6 +173,7 @@ export class Listener {
         const registry = this.state.registry as Record<string, any[]>;
         if (!(registry_id in registry)) registry[registry_id] = [];
         registry[registry_id]!.push(...entries);
+        this.emit("registryData", { registry_id, entries });
     }
 
     private handleFinishConfiguration(data: object) {

@@ -7,7 +7,7 @@ import { Message, TCPClient, TCPClientOption } from "../net/tcp";
 import { TypedEmmiter as TypedEmitter } from "../base/event";
 import { BlockRegistry, EffectRegistry, EntityRegistry, PacketRegistry, ProtocolVersionMapping } from "../version/registry";
 import { BaseVec3, Vec3 } from "../physics/direction";
-import { TextComponent } from "../base/typing";
+import { RegistryData, TextComponent } from "../base/typing";
 import { ClientStatus, ConnectionState, EmittedEvent as EmittedEvent, Entity, SharedState } from "../world/state";
 import { Listener } from "../packet/listener";
 import { VersionCodec } from "../version/codec";
@@ -87,6 +87,8 @@ export interface ClientEvents {
     updateEntity: [entityId: number],
     /** When an entity go out of client view distance or despawned */
     removeEntity: [entityId: number],
+    /** The registry_data packet */
+    registryData: [data: RegistryData],
 
     // Chat
     /** When a chat message got broadcasted */
