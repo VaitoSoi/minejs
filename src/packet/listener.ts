@@ -1,19 +1,16 @@
 import zod from "zod";
-import { createCipheriv, createDecipheriv, createPublicKey, publicEncrypt, randomBytes, constants as crypto_constants, createVerify } from "node:crypto";
-import { BlockEntity, ChunkSection, ClientPlayer, ClientStatus, ConnectionState, Entity, GameMode, PaletteContainer, ServerKnownPack, ServerWorld, SharedState } from "../world/state";
+import { createCipheriv, createDecipheriv, randomBytes, createVerify } from "node:crypto";
+import { BlockEntity, ChunkSection, ClientPlayer, ClientStatus, Entity, GameMode, ServerKnownPack, ServerWorld, SharedState } from "../world/state";
 import { BinaryDecoder, getTextFromTextComponent } from "../binary/decoder";
 import { packBlockPos, SectionsPerChunk } from "../client/static";
-import { Angle, BaseVec3, Vec3 } from "../physics/direction";
-import { ProtocolVersionMapping } from "../version/registry";
+import { Vec3 } from "../physics/direction";
 import { TypedEmmiter } from "../base/event";
 import { ClientEvents } from "../client/client";
 import { makeMovementFlag } from "../binary/encoder";
 import { TextComponent } from "../base/typing";
-import { AuthRelatedNotFound, HaveSignatureButNotIndex, MessageLinkNotFound, MessageTooLong, MissingAuthOption, NotImplemented, UnexpectedValue } from "../base/error";
-import { randomUUIDBytes, uuidToBuffer } from "../base/math";
+import { AuthRelatedNotFound, HaveSignatureButNotIndex, MessageLinkNotFound, NotImplemented, UnexpectedValue } from "../base/error";
+import { uuidToBuffer } from "../base/math";
 import { MessageLink } from "../message/link";
-import { sliceBuffer } from "../base/buffer";
-import BitSet from "../base/bitset";
 import { Sender } from "./sender";
 
 function zodParse<Type extends zod.ZodType>(data: object, zod: Type): zod.infer<Type> {
@@ -834,11 +831,4 @@ export class Listener {
             }
         });
     }
-
-    /*
-    * Send packet 
-    */
-
-    // Login
-
 }
