@@ -1,5 +1,6 @@
 export * from "./base/bitset";
 export * from "./base/buffer";
+export * from "./base/cache";
 export * from "./base/error";
 export * from "./base/event";
 export * from "./base/http";
