@@ -319,7 +319,7 @@ export class BlockHitResult {
     ) { }
 
     public static hit(location: Vec3, direction: Direction, pos: BaseVec3) {
-        return new BlockHitResult(true, location, direction, pos);
+        return new BlockHitResult(false, location, direction, pos);
     }
 
     public static miss(location: Vec3, direction: Direction, pos: BaseVec3) {
