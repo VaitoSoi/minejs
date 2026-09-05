@@ -157,6 +157,9 @@ export type SendingPacket = {
     data: Record<string, any>
 }
 
+/**
+ * For managing shared data between classes
+ */
 export class SharedState<IsReady extends boolean = boolean> {
     private mutationQueue: MutateState[] = [];
     private eventQueue: EmittedEvent[] = [];

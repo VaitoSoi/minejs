@@ -6,6 +6,7 @@ import { FieldNode, PacketObject, PacketRegistry, VersionDefinitions } from "./r
 import { BinaryEncoder } from "../binary/encoder";
 import { BitSet } from "../base/bitset";
 
+/** @hidden */
 const TCPStateMapping: Record<ConnectionState, keyof z.infer<typeof VersionDefinitions> | null> = {
     [ConnectionState.Disconnected]: null,
     [ConnectionState.Handshake]: "handshaking",
@@ -14,11 +15,15 @@ const TCPStateMapping: Record<ConnectionState, keyof z.infer<typeof VersionDefin
     [ConnectionState.Play]: "play",
 };
 
+/** @hidden */
 export interface EncodeResult {
     buffer: Buffer,
     packet: z.infer<typeof PacketObject>,
 }
 
+/**
+ * A codec that help encode or decode packets
+ */
 export class VersionCodec {
     constructor(private readonly state: SharedState) { }
 

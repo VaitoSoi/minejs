@@ -1,3 +1,4 @@
+/** @hidden */
 export function sliceBuffer<T = Buffer>(
     buf: Buffer, 
     byteLength: number, 

@@ -6,6 +6,7 @@ import { unzipSync } from "zlib";
 import { minBigInt } from "../base/math";
 import { inspect } from "util";
 
+/** @hidden */
 export function getTextFromTextComponent(component: any): string {
     if (component === null || component === undefined) return "null";
     switch (typeof component) {
@@ -31,6 +32,9 @@ export function getTextFromTextComponent(component: any): string {
     }
 }
 
+/**
+ * Binary decoding helper class
+ */
 export class BinaryDecoder {
     public buffer: Buffer = Buffer.alloc(0);
     public offset: number = 0;

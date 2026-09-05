@@ -11,10 +11,6 @@ import { EncodeResult } from "../version/codec";
 import { TextComponent } from "../base/typing";
 import { NotImplemented, SockerIsNotWritable, UnexpectedValue } from "../base/error";
 
-// Minecraft related typing
-
-
-
 // TCP related typing
 export interface TCPClientOption {
     /** Server host */
@@ -72,7 +68,7 @@ export interface Message {
 /**
  * Low-level client. You SHOULD NOT use this client unless you know what are you doing
  * 
- * @see https://minecraft.wiki/w/Java_Edition_protocol/Packets?oldid=3445844
+ * @see https://minecraft.wiki/w/Java_Edition_protocol/Packets
  */
 export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClientEvents>) {
     public readonly socket: Socket;

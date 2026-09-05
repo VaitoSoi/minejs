@@ -41,6 +41,9 @@ export enum MoverType {
     SHULKER
 }
 
+/**
+ * Represent a player for calculating physics
+ */
 export class Player {
     private fallDistance: number = 0;
     private deltaMovement: Vec3 = Vec3.Zero;

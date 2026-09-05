@@ -4,6 +4,9 @@ export interface BaseVec3 {
     z: number
 }
 
+/**
+ * Represent a vector which has 3 coords
+ */
 export class Vec3 implements BaseVec3 {
     public static readonly Zero = new Vec3(0, 0, 0);
     public static readonly XAxis = new Vec3(1, 0, 0);

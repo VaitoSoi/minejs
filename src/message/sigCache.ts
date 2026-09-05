@@ -1,3 +1,8 @@
+/**
+ * Used for caching the message signature
+ * 
+ * Not used for now
+ */
 export class SignatureCache {
     private entries: Buffer[];
 

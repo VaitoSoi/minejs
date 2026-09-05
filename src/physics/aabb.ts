@@ -14,6 +14,9 @@ export interface BaseAABB {
     maxZ: number;
 }
 
+/**
+ * Represent an axis-aligned bounding box
+ */
 export class AABB implements BaseAABB {
     public minX: number;
     public minY: number;

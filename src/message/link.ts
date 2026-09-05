@@ -1,3 +1,6 @@
+/**
+ * Represent a node in the linked-list of messages
+ */
 export class MessageLink {
     constructor (
         public index: number,

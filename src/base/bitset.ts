@@ -2,7 +2,6 @@ import assert from "node:assert";
 import { UnexpectedValue } from "./error";
 import { numberOfLeadingZeros, numberOfTrailingZeros } from "./math";
 
-
 /**
  * Simplified implementation of the Java's BitSet class
  * 

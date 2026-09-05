@@ -10,6 +10,9 @@ import { MessageTooLong, NotImplemented } from "../base/error";
 import BitSet from "../base/bitset";
 import { makeMovementFlag } from "../binary/encoder";
 
+/**
+ * Packet sender
+ */
 export class Sender {
     constructor(
         private state: SharedState,

@@ -17,6 +17,9 @@ function zodParse<Type extends zod.ZodType>(data: object, zod: Type): zod.infer<
     return zod.parse(data);
 }
 
+/**
+ * Packet listener
+ */
 export class Listener {
     private readonly mapping: Record<string, (data: object) => void>;
 

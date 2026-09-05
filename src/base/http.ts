@@ -1,5 +1,6 @@
 import { AuthClientError } from "./error";
 
+/** @hidden */
 export async function getJson(res: Response, source: string) {
     const data = await res.text();
     try {

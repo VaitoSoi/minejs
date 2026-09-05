@@ -4,11 +4,13 @@ import { RegistryItemNotFound, UnexpectedValue, VersionNotSupport } from "../bas
 import { Block, BlockState } from "../world/block";
 import z from "zod";
 
-export const BASE_REGISTRY_PATH = join(__dirname, "..", "..", "assets", "minecraft");
+const BASE_REGISTRY_PATH = join(__dirname, "..", "..", "assets", "minecraft");
+/** @hidden */
 export const SupportVersions = [
     "26.2"
 ];
 
+/** @hidden */
 export const ProtocolVersionMapping: Record<string, number> = {
     "26.2": 776
 };
@@ -125,6 +127,7 @@ export class EffectRegistry {
     }
 }
 
+/** @hidden */
 export const SupportTypes = z.enum([
     "byte",
     "unsigned_byte",
@@ -170,6 +173,7 @@ export const SupportTypes = z.enum([
      */
     "switch"
 ]);
+/** @hidden */
 export type FieldNode = ({
     type: Exclude<z.infer<typeof SupportTypes>,
         | "prefixed_array"
@@ -220,6 +224,7 @@ export type FieldNode = ({
 }) & {
     skip_able?: boolean | undefined
 }
+/** @hidden */
 export const Field: z.ZodType<FieldNode> = z.union([
     z.object({
         type: SupportTypes.exclude(["prefixed_array", "prefixed_optional", "string", "id_or_x", "array", "switch", "fixed_point", "enum", "not_implemented", "object", "fixed_bitset", "byte_array"]),
@@ -303,17 +308,21 @@ export const Field: z.ZodType<FieldNode> = z.union([
             skip_able: z.boolean().optional()
         })
     );
+/** @hidden */
 export const PacketObject = z.object({
     name: z.string(),
     id: z.number(),
     structure: z.record(z.string(), Field),
     skipForNow: z.boolean().default(false)
 });
+/** @hidden */
 export const PacketsDefinition = z.record(z.string().or(z.number()), PacketObject);
+/** @hidden */
 export const StatesDefinition = z.object({
     clientbound: PacketsDefinition,
     serverbound: PacketsDefinition,
 });
+/** @hidden */
 export const VersionDefinitions = z.object({
     handshaking: StatesDefinition,
     status: StatesDefinition,

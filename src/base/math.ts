@@ -118,6 +118,7 @@ function mcHexDigest(digest: Buffer | Uint8Array): string {
  * Simplified implementation of Java's Long.numberOfTrailingZeros
  * @param n 
  * @returns 
+ * @hidden
  */
 export function numberOfTrailingZeros(n: bigint): number {
     if (n === 0n) {
@@ -137,6 +138,7 @@ export function numberOfTrailingZeros(n: bigint): number {
  * Simplified implementation of Java's Long.numberOfLeadingZeros
  * @param n 
  * @returns 
+ * @hidden
  */
 export function numberOfLeadingZeros(n: bigint): number {
     if (n === 0n) {
