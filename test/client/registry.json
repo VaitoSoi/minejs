@@ -1,0 +1,1735 @@
+[
+  {
+    "registry_id": "minecraft:worldgen/biome",
+    "entries": [
+      {
+        "entry_id": "minecraft:badlands",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:bamboo_jungle",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:basalt_deltas",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:beach",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:birch_forest",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:cherry_grove",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:cold_ocean",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:crimson_forest",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:dark_forest",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:deep_cold_ocean",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:deep_dark",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:deep_frozen_ocean",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:deep_lukewarm_ocean",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:deep_ocean",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:desert",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:dripstone_caves",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:end_barrens",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:end_highlands",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:end_midlands",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:eroded_badlands",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:flower_forest",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:forest",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:frozen_ocean",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:frozen_peaks",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:frozen_river",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:grove",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:ice_spikes",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:jagged_peaks",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:jungle",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:lukewarm_ocean",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:lush_caves",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:mangrove_swamp",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:meadow",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:mushroom_fields",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:nether_wastes",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:ocean",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:old_growth_birch_forest",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:old_growth_pine_taiga",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:old_growth_spruce_taiga",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:pale_garden",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:plains",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:river",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:savanna",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:savanna_plateau",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:small_end_islands",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:snowy_beach",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:snowy_plains",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:snowy_slopes",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:snowy_taiga",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:soul_sand_valley",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:sparse_jungle",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:stony_peaks",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:stony_shore",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:sulfur_caves",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:sunflower_plains",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:swamp",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:taiga",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:the_end",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:the_void",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:warm_ocean",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:warped_forest",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:windswept_forest",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:windswept_gravelly_hills",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:windswept_hills",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:windswept_savanna",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:wooded_badlands",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:chat_type",
+    "entries": [
+      {
+        "entry_id": "minecraft:chat",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:emote_command",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:msg_command_incoming",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:msg_command_outgoing",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:say_command",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:team_msg_command_incoming",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:team_msg_command_outgoing",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:trim_pattern",
+    "entries": [
+      {
+        "entry_id": "minecraft:bolt",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:coast",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:dune",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:eye",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:flow",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:host",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:raiser",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:rib",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:sentry",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:shaper",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:silence",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:snout",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:spire",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:tide",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:vex",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:ward",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:wayfinder",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:wild",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:trim_material",
+    "entries": [
+      {
+        "entry_id": "minecraft:amethyst",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:copper",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:diamond",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:emerald",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:gold",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:iron",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:lapis",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:netherite",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:quartz",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:redstone",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:resin",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:wolf_variant",
+    "entries": [
+      {
+        "entry_id": "minecraft:ashen",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:black",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:chestnut",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:pale",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:rusty",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:snowy",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:spotted",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:striped",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:woods",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:wolf_sound_variant",
+    "entries": [
+      {
+        "entry_id": "minecraft:angry",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:big",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:classic",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:cute",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:grumpy",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:puglin",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:sad",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:pig_variant",
+    "entries": [
+      {
+        "entry_id": "minecraft:cold",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:temperate",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:warm",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:pig_sound_variant",
+    "entries": [
+      {
+        "entry_id": "minecraft:big",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:classic",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:mini",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:frog_variant",
+    "entries": [
+      {
+        "entry_id": "minecraft:cold",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:temperate",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:warm",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:cat_variant",
+    "entries": [
+      {
+        "entry_id": "minecraft:all_black",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:black",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:british_shorthair",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:calico",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:jellie",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:persian",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:ragdoll",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:red",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:siamese",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:tabby",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:white",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:cat_sound_variant",
+    "entries": [
+      {
+        "entry_id": "minecraft:classic",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:royal",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:cow_sound_variant",
+    "entries": [
+      {
+        "entry_id": "minecraft:classic",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:moody",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:cow_variant",
+    "entries": [
+      {
+        "entry_id": "minecraft:cold",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:temperate",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:warm",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:chicken_sound_variant",
+    "entries": [
+      {
+        "entry_id": "minecraft:classic",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:picky",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:chicken_variant",
+    "entries": [
+      {
+        "entry_id": "minecraft:cold",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:temperate",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:warm",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:zombie_nautilus_variant",
+    "entries": [
+      {
+        "entry_id": "minecraft:temperate",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:warm",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:painting_variant",
+    "entries": [
+      {
+        "entry_id": "minecraft:alban",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:aztec",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:aztec2",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:backyard",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:baroque",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:bomb",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:bouquet",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:burning_skull",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:bust",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:cavebird",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:changing",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:cotan",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:courbet",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:creebet",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:dennis",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:donkey_kong",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:earth",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:endboss",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:fern",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:fighters",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:finding",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:fire",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:graham",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:humble",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:kebab",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:lowmist",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:match",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:meditative",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:orb",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:owlemons",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:passage",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:pigscene",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:plant",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:pointer",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:pond",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:pool",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:prairie_ride",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:sea",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:skeleton",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:skull_and_roses",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:stage",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:sunflowers",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:sunset",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:tides",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:unpacked",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:void",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:wanderer",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:wasteland",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:water",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:wind",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:wither",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:sulfur_cube_archetype",
+    "entries": [
+      {
+        "entry_id": "minecraft:bouncy",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:explosive",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:fast_flat",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:fast_sliding",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:high_resistance",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:hot",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:light",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:regular",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:slow_bouncy",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:slow_flat",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:slow_sliding",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:sticky",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:dimension_type",
+    "entries": [
+      {
+        "entry_id": "minecraft:overworld",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:overworld_caves",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:the_end",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:the_nether",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:damage_type",
+    "entries": [
+      {
+        "entry_id": "minecraft:arrow",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:bad_respawn_point",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:cactus",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:campfire",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:cramming",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:dragon_breath",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:drown",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:dry_out",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:ender_pearl",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:explosion",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:fall",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:falling_anvil",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:falling_block",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:falling_stalactite",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:fireball",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:fireworks",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:fly_into_wall",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:freeze",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:generic",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:generic_kill",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:hot_floor",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:in_fire",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:in_wall",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:indirect_magic",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:lava",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:lightning_bolt",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:mace_smash",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:magic",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:mob_attack",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:mob_attack_no_aggro",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:mob_projectile",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:on_fire",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:out_of_world",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:outside_border",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:player_attack",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:player_explosion",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:sonic_boom",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:spear",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:spit",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:stalagmite",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:starve",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:sting",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:sulfur_cube_hot",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:sweet_berry_bush",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:thorns",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:thrown",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:trident",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:unattributed_fireball",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:wind_charge",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:wither",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:wither_skull",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:banner_pattern",
+    "entries": [
+      {
+        "entry_id": "minecraft:base",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:border",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:bricks",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:circle",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:creeper",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:cross",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:curly_border",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:diagonal_left",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:diagonal_right",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:diagonal_up_left",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:diagonal_up_right",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:flow",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:flower",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:globe",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:gradient",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:gradient_up",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:guster",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:half_horizontal",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:half_horizontal_bottom",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:half_vertical",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:half_vertical_right",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:mojang",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:piglin",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:rhombus",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:skull",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:small_stripes",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:square_bottom_left",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:square_bottom_right",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:square_top_left",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:square_top_right",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:straight_cross",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:stripe_bottom",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:stripe_center",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:stripe_downleft",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:stripe_downright",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:stripe_left",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:stripe_middle",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:stripe_right",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:stripe_top",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:triangle_bottom",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:triangle_top",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:triangles_bottom",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:triangles_top",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:enchantment",
+    "entries": [
+      {
+        "entry_id": "minecraft:aqua_affinity",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:bane_of_arthropods",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:binding_curse",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:blast_protection",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:breach",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:channeling",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:density",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:depth_strider",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:efficiency",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:feather_falling",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:fire_aspect",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:fire_protection",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:flame",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:fortune",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:frost_walker",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:impaling",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:infinity",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:knockback",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:looting",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:loyalty",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:luck_of_the_sea",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:lunge",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:lure",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:mending",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:multishot",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:piercing",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:power",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:projectile_protection",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:protection",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:punch",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:quick_charge",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:respiration",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:riptide",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:sharpness",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:silk_touch",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:smite",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:soul_speed",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:sweeping_edge",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:swift_sneak",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:thorns",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:unbreaking",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:vanishing_curse",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:wind_burst",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:jukebox_song",
+    "entries": [
+      {
+        "entry_id": "minecraft:11",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:13",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:5",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:blocks",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:bounce",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:cat",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:chirp",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:creator",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:creator_music_box",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:far",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:lava_chicken",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:mall",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:mellohi",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:otherside",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:pigstep",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:precipice",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:relic",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:stal",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:strad",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:tears",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:wait",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:ward",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:instrument",
+    "entries": [
+      {
+        "entry_id": "minecraft:admire_goat_horn",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:call_goat_horn",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:dream_goat_horn",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:feel_goat_horn",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:ponder_goat_horn",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:seek_goat_horn",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:sing_goat_horn",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:yearn_goat_horn",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:test_environment",
+    "entries": [
+      {
+        "entry_id": "minecraft:default",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:test_instance",
+    "entries": [
+      {
+        "entry_id": "minecraft:always_pass",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:dialog",
+    "entries": [
+      {
+        "entry_id": "minecraft:custom_options",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:quick_actions",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:server_links",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:world_clock",
+    "entries": [
+      {
+        "entry_id": "minecraft:overworld",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:the_end",
+        "data": null
+      }
+    ]
+  },
+  {
+    "registry_id": "minecraft:timeline",
+    "entries": [
+      {
+        "entry_id": "minecraft:day",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:early_game",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:moon",
+        "data": null
+      },
+      {
+        "entry_id": "minecraft:villager_schedule",
+        "data": null
+      }
+    ]
+  }
+]
