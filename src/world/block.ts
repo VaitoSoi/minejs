@@ -129,13 +129,10 @@ export class BlockManager {
         const sectionCache = this.state.cache.get(sectionKey);
         if (sectionCache) {
             const cachedState = sectionCache.at(this.getLocalPosKey(localPos));
-            if (cachedState) {
-                console.log("cache hit", sectionKey, localPos);
+            if (cachedState)
                 return this.getBlock(cachedState);
-            }
         }
 
-        console.log("cache miss", sectionKey, localPos);
         const section = this.state.world!.chunks[`${this.state.player!.dimension}:${sx}:${sz}`]?.sections[sy]?.block;
         if (!section) return null;
         if (section.data === null) return BlockRegistry.getState(section.palette[0]!.toString())!;
