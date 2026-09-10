@@ -191,7 +191,7 @@ export class SharedState {
     public registry: Record<string, ServerRegistryEntry[]> | undefined = undefined;
     public world: ServerWorld | null = null;
     public player: ClientPlayer | null = null;
-    public messageCount: number | 0 = 0;
+    public messageCount: number = 0;
     public openingContainer: Container | undefined = undefined;
     
     public cache: CacheImplementation<Uint16Array> | undefined = undefined;
