@@ -119,7 +119,7 @@ export interface ClientEvents {
 /**
  * High-level client.
  */
-export class Client<IsReady extends boolean = boolean> extends (EventEmitter as new () => TypedEmitter<ClientEvents>) {
+export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents>) {
     private static loadRegistry: boolean = false;
 
     private tickLoop: TickLoop;
@@ -129,7 +129,7 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
     private player: Player;
 
     private tcp: TCPClient;
-    private state: SharedState<IsReady>;
+    private state: SharedState;
     private packetListener: Listener;
     private packetSender: Sender;
 

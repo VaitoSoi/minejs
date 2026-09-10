@@ -1,5 +1,4 @@
 import { Cipheriv, Decipheriv } from "node:crypto";
-import { If } from "../base/typing";
 import { Angle, BaseVec3 } from "../physics/direction";
 import { AuthRelatedNotFound, ClientNotReady } from "../base/error";
 import { ClientEvents, ClientOption } from "../client/client";
@@ -164,7 +163,7 @@ export type SendingPacket = {
 /**
  * For managing shared data between classes
  */
-export class SharedState<IsReady extends boolean = boolean> {
+export class SharedState {
     private mutationQueue: MutateState[] = [];
     private eventQueue: EmittedEvent[] = [];
     private packetQueue: SendingPacket[] = [];
@@ -190,9 +189,10 @@ export class SharedState<IsReady extends boolean = boolean> {
 
     public server: Server | undefined = undefined;
     public registry: Record<string, ServerRegistryEntry[]> | undefined = undefined;
-    public world: If<IsReady, ServerWorld> = null as any;
-    public player: If<IsReady, ClientPlayer> = null as any;
-    public messageCount: number = 0;
+    public world: ServerWorld | null = null;
+    public player: ClientPlayer | null = null;
+    public messageCount: number | 0 = 0;
+    public openingContainer: Container | undefined = undefined;
     
     public cache: CacheImplementation<Uint16Array> | undefined = undefined;
 
@@ -215,7 +215,7 @@ export class SharedState<IsReady extends boolean = boolean> {
         }
     }
 
-    public isReady(): this is SharedState<true> {
+    public isReady() {
         return this.status === ClientStatus.Ready;
     }
 
