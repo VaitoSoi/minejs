@@ -152,15 +152,7 @@ export class VersionCodec {
                 return obj;
             }
             case "game_profile": {
-                return {
-                    uuid: decoder.readUUID(),
-                    username: decoder.readString(),
-                    pproperties: decoder.readPrefixedArray((decoder) => ({
-                        name: decoder.readString(),
-                        value: decoder.readString(),
-                        signature: decoder.readPrefixedOptional((decoder) => decoder.readString())
-                    }))
-                };
+                return decoder.readProfile();
             }
             case "heightmap": {
                 return {
