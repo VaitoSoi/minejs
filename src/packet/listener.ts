@@ -12,6 +12,7 @@ import { AuthRelatedNotFound, HaveSignatureButNotIndex, MessageLinkNotFound, Not
 import { uuidToBuffer } from "../base/math";
 import { MessageLink } from "../message/link";
 import { Sender } from "./sender";
+import { Container, Slot } from "../world/container";
 
 function zodParse<Type extends zod.ZodType>(data: object, zod: Type): zod.infer<Type> {
     return zod.parse(data);
@@ -62,6 +63,11 @@ export class Listener {
             "play:remove_mob_effect": this.handleRemoveMobEffect,
             // "play:rotate_head": ,
             "play:set_entity_motion": this.handleSetEntityVelocity,
+
+            "play:open_screen": this.handleOpenScreen,
+            "play:container_close": this.handleCloseContainer,
+            "play:container_set_content": this.handleContainerContent,
+            "play:container_set_data": this.handleContainerProperty
         };
     }
 
@@ -146,7 +152,9 @@ export class Listener {
                 yaw: 0,
                 pitch: 0,
             },
-            effects: {}
+            effects: {},
+            inventory: new Container(0, -1, {}),
+            carryingItem: undefined
         } satisfies ClientPlayer as any;
         this.sender.sendLoginAck();
     }
@@ -832,6 +840,71 @@ export class Listener {
                 target: targetName || undefined,
                 content: message,
             }
+        });
+    }
+
+    // Container
+    private handleOpenScreen(data: object) {
+        const {
+            window_id,
+            window_type,
+            window_title
+        } = zodParse(data, zod.object({
+            window_id: zod.int(),
+            window_type: zod.int(),
+            window_title: zod.record(zod.string(), zod.any())
+        }));
+        this.state.enqueueMutation(state => {
+            state.openingContainer = new Container(window_id, window_type, window_title);
+            this.emit("openContainer", this.state.openingContainer!);
+        });
+    }
+
+    private handleCloseContainer(data: object) {
+        // Not used by vanilla client
+        const { window_id } = zodParse(data, zod.object({ window_id: zod.int() }));
+
+        this.state.enqueueMutation(state => {
+            state.openingContainer = undefined;
+            this.emit("closeContainer");
+        });
+    }
+
+    private handleContainerContent(data: object) {
+        const {
+            window_id,
+            state_id,
+            slot_data,
+            carried_item
+        } = zodParse(data, zod.object({
+            window_id: zod.int(),
+            state_id: zod.int(),
+            slot_data: zod.array(zod.any() as zod.ZodType<Slot>),
+            carried_item: zod.any() as zod.ZodType<Slot>,
+        }));
+        this.state.enqueueMutation(state => {
+            if (!state.openingContainer) return;
+            state.openingContainer.stateId = state_id;
+            state.openingContainer.slots = slot_data;
+            state.player!.carryingItem = carried_item;
+            this.emit("containerContent", state.openingContainer, state.player!.carryingItem);
+        });
+    }
+
+    private handleContainerProperty(data: object) {
+        const {
+            window_id,
+            property,
+            value
+        } = zodParse(data, zod.object({
+            window_id: zod.number(),
+            property: zod.number(),
+            value: zod.number(),
+        }));
+        this.state.enqueueMutation(state => {
+            if (!state.openingContainer) return;
+            state.openingContainer.setProperty(property, value);
+            this.emit("containerProperty", state.openingContainer);
         });
     }
 }

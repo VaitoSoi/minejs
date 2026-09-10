@@ -7,6 +7,7 @@ import { AuthClient } from "../client/auth";
 import { MessageLink } from "../message/link";
 import { SignatureCache } from "../message/sigCache";
 import { CacheImplementation, LRUCache } from "../base/cache";
+import { Container, Slot } from "./container";
 
 export interface Server {
     knownPacks?: ServerKnownPack
@@ -125,7 +126,10 @@ export interface ClientPlayer {
     /** Current dimension */
     dimension: string,
 
-    effects: Record<number, Effect>
+    effects: Record<number, Effect>,
+
+    inventory: Container,
+    carryingItem: Slot | undefined,
 }
 
 export enum ClientStatus {
@@ -246,6 +250,7 @@ export class SharedState<IsReady extends boolean = boolean> {
         this.world = undefined as any;
         this.player = undefined as any;
         this.messageCount = 0;
+        this.openingContainer = undefined as any;
 
         if (this.clientOptions.shouldVerifyMessageSignature)
             this.messageSignatureCache = SignatureCache.default();

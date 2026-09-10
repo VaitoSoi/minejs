@@ -127,6 +127,32 @@ export class EffectRegistry {
     }
 }
 
+export class ComponentTypeRegistry {
+    private static loaded: boolean = false;
+
+    public static readonly components: Record<string, number> = {};
+    public static readonly idToName: Record<number, string> = {};
+
+    /**
+     * Load effects registry from JSON file.
+     * 
+     * Should be called once time
+     */
+    public static async load(version: string) {
+        if (!SupportVersions.includes(version))
+            throw new VersionNotSupport(version);
+        if (this.loaded) return;
+        this.loaded = true;
+
+        const file = await readFile(join(BASE_REGISTRY_PATH, version, "components.json"), { encoding: "utf8" });
+        const json = JSON.parse(file) as Record<string, number>;
+        for (const [name, id] of Object.entries(json)) {
+            this.components[name] = id;
+            this.idToName[id] = name;
+        }
+    }
+}
+
 /** @hidden */
 export const SupportTypes = z.enum([
     "byte",
@@ -166,6 +192,7 @@ export const SupportTypes = z.enum([
     "bitset",
     "fixed_bitset",
     "byte_array",
+    "slot",
     "null", // a constant
 
     /**

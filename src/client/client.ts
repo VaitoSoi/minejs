@@ -16,6 +16,7 @@ import { computeUUID } from "../base/math";
 import { HaveSignatureButNotIndex } from "../base/error";
 import { Sender } from "../packet/sender";
 import { CacheImplementation } from "../base/cache";
+import { Container, Slot } from "../world/container";
 
 export type ClientOption = Omit<TCPClientOption, "protocolVersion"> & {
     version: string,
@@ -103,6 +104,16 @@ export interface ClientEvents {
     actionBar: [message: string],
     /** The raw action bar */
     actionBarRaw: [textComponent: TextComponent],
+
+    // Container
+    /** When a container is opened */
+    openContainer: [container: Container],
+    /** When the opening container is closed */
+    closeContainer: [],
+    /** When the packet contain the content of the container is received */
+    containerContent: [container: Container, carryingItem: Slot],
+    /** When the packet contain the property of the container is received */
+    containerProperty: [container: Container],
 }
 
 /**
@@ -293,4 +304,21 @@ export class Client<IsReady extends boolean = boolean> extends (EventEmitter as 
     public lookAt(yaw: number, pitch: number) {
         this.player.setAngle(yaw, pitch);
     }
+
+    /**
+     * Get opening container.
+     * 
+     * Return `undefined` if not any is opening
+     */
+    public getOpeningContainer() { return this.state.openingContainer; }
+    /**
+     * Get carrying item.
+     * 
+     * Return `undefined` if not any is carried
+     */
+    public getCarryingItem() { return this.state.player?.carryingItem; }
+    /**
+     * Get player's inventory
+     */
+    public getInventory() { return this.state.player?.inventory; }
 }

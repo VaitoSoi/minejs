@@ -170,6 +170,7 @@ export class VersionCodec {
             }
             case "bitset": return decoder.readPrefixedArray((decoder) => decoder.readLong());
             case "teleport_flags": return decoder.readTeleportFlag();
+            case "slot": return decoder.readSlot();
             case "null": return null;
             case "not_implemented": {
                 if (field.skip_able === true)

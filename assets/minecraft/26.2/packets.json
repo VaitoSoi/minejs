@@ -958,13 +958,11 @@
           "slot_data": {
             "type": "prefixed_array",
             "subType": {
-              "type": "not_implemented",
-              "comment": "Slot"
+              "type": "slot"
             }
           },
           "carried_item": {
-            "type": "not_implemented",
-            "comment": "Slot"
+            "type": "slot"
           }
         }
       },
@@ -997,8 +995,7 @@
             "type": "short"
           },
           "slot_data": {
-            "type": "not_implemented",
-            "comment": "Slot"
+            "type": "slot"
           }
         }
       },
@@ -1774,8 +1771,7 @@
                   "comment": "Trade Item"
                 },
                 "output_item": {
-                  "type": "not_implemented",
-                  "comment": "Slot"
+                  "type": "slot"
                 },
                 "input_item_2": {
                   "type": "prefixed_optional",
@@ -2657,8 +2653,7 @@
         "id": 96,
         "structure": {
           "carried_item": {
-            "type": "not_implemented",
-            "comment": "Slot"
+            "type": "slot"
           }
         }
       },
@@ -2749,8 +2744,7 @@
                   }
                 },
                 "item": {
-                  "type": "not_implemented",
-                  "comment": "Slot"
+                  "type": "slot"
                 }
               }
             }
@@ -2819,8 +2813,7 @@
             "type": "var_int"
           },
           "slot_data": {
-            "type": "not_implemented",
-            "comment": "Slot"
+            "type": "slot"
           }
         }
       },
@@ -4426,8 +4419,7 @@
             "type": "short"
           },
           "clicked_item": {
-            "type": "not_implemented",
-            "comment": "Slot"
+            "type": "slot"
           }
         }
       },
