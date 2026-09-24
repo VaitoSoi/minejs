@@ -209,7 +209,7 @@ export class AABB implements BaseAABB {
      * Cliping math. Find smallest distance to reach a face of this AABB.
      */
     public static getDirection(aabb: BaseAABB, from: BaseVec3, delta: BaseVec3, direction_: Direction | null, scaleRef: [number]) {
-        let direction = structuredClone(direction_);
+        let direction = direction_;
         const { minX, maxX, minY, maxY, minZ, maxZ } = aabb;
         if (delta.x > Epsilon)
             direction = this.clipPoint(
@@ -217,7 +217,7 @@ export class AABB implements BaseAABB {
                 scaleRef,
                 { a: delta.x, b: delta.y, c: delta.z },
                 minX,
-                minY, maxX,
+                minY, maxY,
                 minZ, maxZ,
                 from.x, from.y, from.z
             );
@@ -227,7 +227,7 @@ export class AABB implements BaseAABB {
                 scaleRef,
                 { a: delta.x, b: delta.y, c: delta.z },
                 maxX,
-                minY, maxX,
+                minY, maxY,
                 minZ, maxZ,
                 from.x, from.y, from.z
             );
@@ -292,7 +292,7 @@ export class AABB implements BaseAABB {
         /**
          * `s` come from this equation:
          * ```
-         * fromA + s * deltaA = minA (or point here)
+         * fromA + s * deltaA = minA (or `point` here)
          * ```
          * Which find "how far the ray travels to reach a face of this bounding box".
          * 
@@ -305,7 +305,7 @@ export class AABB implements BaseAABB {
             pb = fromB + s * delta.b,
             pc = fromC + s * delta.c;
         if (
-            0 < s && s < scaleRef[0] &&
+            0 < s && s < scaleRef[0] + Epsilon &&
             minB - Epsilon < pb && pb < maxB + Epsilon &&
             minC - Epsilon < pc && pc < maxC + Epsilon
         ) {
@@ -599,9 +599,9 @@ export class VoxelShape {
                                 minZ: z,
                                 maxZ: z + 1
                             });
-                        else if (lastStartZ !== -1)
+                        else if (lastStartZ === -1)
                             lastStartZ = z;
-                    } else if (lastStartZ === -1) {
+                    } else if (lastStartZ !== -1) {
                         let endX = x,
                             endY = y;
                         shape.clearZStrip(lastStartZ, z, endX, endY);
