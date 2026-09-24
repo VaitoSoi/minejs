@@ -305,6 +305,14 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
 
     /**
      * Rotate your face
+     * 
+     * @see https://minecraft.wiki/w/Java_Edition_protocol/Packets#Synchronize_Player_Position For Yaw and Pitch definition:
+     * 
+     * "Yaw is measured in degrees and does not follow classical trigonometry rules. 
+     * The unit circle of yaw on the XZ-plane starts at (0, 1) and turns counterclockwise, with 90 at (-1, 0), 180 at (0, -1) and 270 at (1, 0).
+     * 
+     * Pitch is measured in degrees, where 0 is looking straight ahead, -90 is looking straight up, and 90 is looking straight down."
+     * 
      * @param yaw In degree
      * @param pitch In degree
      */
