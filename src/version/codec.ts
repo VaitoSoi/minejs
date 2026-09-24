@@ -49,7 +49,10 @@ export class VersionCodec {
                     if (err instanceof NotImplemented) return;
                     throw err;
                 }
-        if (this.state.clientOptions.debug?.packetLogger)
+        if (this.state.clientOptions.debug &&
+            this.state.clientOptions.debug.packetLogger &&
+            (this.state.clientOptions.debug.ignorePackets &&
+                !this.state.clientOptions.debug.ignorePackets.includes(packet.name)))
             console.dir({
                 dir: "to client",
                 state: mappedState,
@@ -66,7 +69,10 @@ export class VersionCodec {
         const packet = PacketRegistry.getPacket(mappedState, "serverbound", packetId);
         if (!packet) throw new UnexpectedValue("valid serverbound packet id", packetId.toString());
 
-        if (this.state.clientOptions.debug?.packetLogger)
+        if (this.state.clientOptions.debug &&
+            this.state.clientOptions.debug.packetLogger &&
+            (this.state.clientOptions.debug.ignorePackets &&
+                !this.state.clientOptions.debug.ignorePackets.includes(packet.name)))
             console.dir({
                 dir: "to server",
                 state: mappedState,

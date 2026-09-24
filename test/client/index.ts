@@ -5,9 +5,18 @@ const client = new Client({
     host: "localhost",
     port: 25565,
     version: "26.2",
-    // debug: {
-    //     packetLogger: true
-    // },
+    debug: {
+        packetLogger: true,
+        ignorePackets: [
+            "move_entity_pos", "move_entity_pos_rot", "move_entity_rot",
+            "set_entity_motion", "rotate_head", "set_time",
+            "add_entity", "remove_entities", "bundle_delimiter",
+            "entity_position_sync", "update_attributes",
+            "move_player_pos", "move_player_pos_rot", "move_player_rot",
+            "player_chat", "keep_alive", "entity_event", "tab_list"
+        ],
+        ignoreTCPPacketLogs: [0, 83, 54, 101, 1, 99, 53, 35, 131, 113, 102, 44, 56, 65, 34, 77, 122]
+    },
     loadRegistry: false,
     // auth: {
     //     client_id: "d86254d8-edf7-4640-90eb-643c99af188e",

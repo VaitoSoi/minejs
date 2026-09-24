@@ -34,7 +34,11 @@ export interface TCPClientOption {
 
     debug?: {
         /** Log the incoming packet */
-        packetLogger: boolean
+        packetLogger: boolean,
+        /** Packet to ignore */
+        ignorePackets?: string[],
+        /** Ignore logs from TCP client (`packet X length Y`) */
+        ignoreTCPPacketLogs?: number[] | true
     },
 
     // For premium account
@@ -167,7 +171,14 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
                     packetID = decoder.readVarInt();
                 }
             }
-            if (this.state.clientOptions.debug?.packetLogger == true)
+            if (
+                this.state.clientOptions.debug &&
+                this.state.clientOptions.debug.packetLogger &&
+                (
+                    (Array.isArray(this.state.clientOptions.debug.ignoreTCPPacketLogs) && !this.state.clientOptions.debug.ignoreTCPPacketLogs.includes(packetID)) ||
+                    (!this.state.clientOptions.debug.ignoreTCPPacketLogs)
+                )
+            )
                 console.log("packet", packetID, "length", decoder.buffer.length);
             this.forwardPacket(packetID, decoder);
 
