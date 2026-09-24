@@ -12,6 +12,10 @@ This package is highly unstable for now, please report if there is any bug, glit
 
 Also, since there is some problem with authenticating and appId approval, I haven't completed the join "online server" part yet. [See more here](#iv-about-joining-online-server)
 
+About support version:
++ `26.2` is supported well since the Wiki page of it is considered as the stable.
++ `26.3` is partially supported since the page for 26.3 is under construction.
+
 ## II. Usage
 
 Install MineJS using your favorite package manager:
