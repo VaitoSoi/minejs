@@ -1,4 +1,4 @@
-import { Input, Client } from "../../src/index";
+import { Input, Client, ClientEvents } from "../../src/index";
 
 const client = new Client({
     playerName: "bot",
@@ -26,23 +26,30 @@ const client = new Client({
     // },
     // shouldVerifyMessageOrder: true,
     // shouldVerifyMessageSignature: true
-    loadAndCacheChunk: true
+    loadAndCacheChunk: false
 });
+const forwardEventToConsole = <K extends keyof ClientEvents>(name: K) => client.on(name, ((...args: any[]) => console.dir({ name, args }, { depth: null })) as any);
 client.connect();
-client.on("disconnect", (...args) => console.dir({ name: "disconnect", args }, { depth: null }));
-client.on("disconnectRaw", (...args) => console.dir({ name: "disconnectRaw", args }, { depth: null }));
-// client.on("loadChunk", (...args) => console.dir({ name: "loadChunk", args }, { depth: null }));
-// client.on("unloadChunk", (...args) => console.dir({ name: "unloadChunk", args }, { depth: null }));
-// client.on("spawnEntity", (...args) => console.dir({ name: "spawnEntity", args }, { depth: null }));
-// client.on("updateEntity", (...args) => console.dir({ name: "updateEntity", args }, { depth: null }));
-// client.on("removeEntity", (...args) => console.dir({ name: "removeEntity", args }, { depth: null }));
-client.on("playerPosition", (...args) => console.dir({ name: "playerPosition", args }, { depth: null }));
-client.on("message", (...args) => console.dir({ name: "message", args }, { depth: null }));
-client.on("systemMessage", (...args) => console.dir({ name: "systemMessage", args }, { depth: null }));
-client.on("systemMessageRaw", (...args) => console.dir({ name: "systemMessageRaw", args }, { depth: null }));
-client.on("actionBar", (...args) => console.dir({ name: "actionBar", args }, { depth: null }));
-client.on("actionBarRaw", (...args) => console.dir({ name: "actionBarRaw", args }, { depth: null }));
-client.on("message", (message) => {
+forwardEventToConsole("disconnect");
+forwardEventToConsole("disconnectRaw");
+// forwardEventToConsole("loadChunk");
+// forwardEventToConsole("unloadChunk");
+// forwardEventToConsole("spawnEntity");
+// forwardEventToConsole("updateEntity");
+// forwardEventToConsole("removeEntity");
+// forwardEventToConsole("playerPosition");
+// forwardEventToConsole("message");
+forwardEventToConsole("systemMessage");
+forwardEventToConsole("systemMessageRaw");
+forwardEventToConsole("actionBar");
+forwardEventToConsole("actionBarRaw");
+forwardEventToConsole("openContainer");
+forwardEventToConsole("closeContainer");
+forwardEventToConsole("containerContent");
+forwardEventToConsole("containerProperty");
+forwardEventToConsole("tablist");
+
+client.on("message", async (message) => {
     if (!message.content.startsWith("_")) return;
     const args = message.content.slice(1).split(" ");
     switch (args[0]) {
@@ -68,6 +75,15 @@ client.on("message", (message) => {
             const [, x, y, z] = args.map(val => parseInt(val)) as [any, number, number, number];
             console.time("get_block");
             const state = client.at(x, y, z);
+            console.timeEnd("get_block"); 
+            if (state) {
+                console.dir(state);
+                client.chat(state!.owner.type);
+            } else 
+                client.chat("no block");
+            break;
+        }
+
         case "open": {
             const [, x, y, z] = args.map(val => parseInt(val)) as [any, number, number, number];
             const success = client.openBlock(x, y, z);
