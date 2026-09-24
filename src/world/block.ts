@@ -5,6 +5,15 @@ import { BaseVec3, Direction, Vec3 } from "../physics/direction";
 import { SharedState } from "./state";
 import { NotImplemented } from "../base/error";
 
+export enum BlockFace {
+    Bottom = 0,
+    Top = 1,
+    North = 2,
+    South = 3,
+    West = 4,
+    East = 5,
+}
+
 /**
  * Represent a state of a block
  */

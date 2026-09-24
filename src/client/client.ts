@@ -1,5 +1,5 @@
 import { EventEmitter } from "node:events";
-import { BlockManager, BlockState } from "../world/block";
+import { BlockGetter, BlockManager, BlockState } from "../world/block";
 import { EntitiesManager } from "../world/entity";
 import { Input, Player } from "../physics/player";
 import { TickLoop } from "../world/tick";
@@ -321,4 +321,38 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
      * Get player's inventory
      */
     public getInventory() { return this.state.player?.inventory; }
+
+    /**
+     * Open a block.
+     * 
+     * **NOTE** Not working for now
+     * 
+     * @returns `true` if the target block is a solid block, or else, return `false`
+     */
+    public openBlock(x: number, y: number, z: number): boolean;
+    public openBlock(position: BaseVec3): boolean;
+    public openBlock(a: BaseVec3 | number, b?: number, c?: number): boolean {
+        this.state.checkReady();
+        const vec3 = Vec3.loadArgs(a, b, c);
+        const clipResult = BlockGetter.clip(
+            new Vec3(this.state.player!.position),
+            new Vec3(vec3),
+            (pos) => this.blocks.at(pos)!.shape
+        )!;
+        console.log(clipResult);
+        if (clipResult.miss) return false;
+        this.packetSender.sendUseItemOn(
+            "main",
+            vec3,
+            clipResult.direction,
+            {
+                x: Math.abs(clipResult.location.x - vec3.x),
+                y: Math.abs(clipResult.location.y - vec3.y),
+                z: Math.abs(clipResult.location.z - vec3.z),
+            },
+            false,
+            false
+        );
+        return true;
+    }
 }

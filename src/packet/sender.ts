@@ -1,14 +1,15 @@
-import { createPublicKey, publicEncrypt, constants as crypto_constants, randomBytes } from "node:crypto";
+import { createPublicKey, publicEncrypt, constants as crypto_constants, randomBytes, randomInt } from "node:crypto";
 import { TypedEmmiter } from "../base/event";
 import { ClientEvents } from "../client/client";
 import { ProtocolVersionMapping } from "../version/registry";
 import { ClientStatus, ConnectionState, ServerKnownPack, SharedState } from "../world/state";
 import { sliceBuffer } from "../base/buffer";
 import { randomUUIDBytes } from "../base/math";
-import { Angle, BaseVec3 } from "../physics/direction";
+import { Angle, BaseVec3, Direction } from "../physics/direction";
 import { MessageTooLong, NotImplemented } from "../base/error";
 import BitSet from "../base/bitset";
 import { makeMovementFlag } from "../binary/encoder";
+import { BlockFace } from "../world/block";
 
 /**
  * Packet sender
@@ -175,5 +176,28 @@ export class Sender {
             checksum: 0
         });
         this.state.messageCount = 0;
+    }
+
+    public sendUseItemOn(
+        hand: "main" | "off",
+        position: BaseVec3,
+        face: BlockFace | Direction,
+        cursorPositionOnBlock: BaseVec3,
+        isInsideBlock: boolean,
+        worldBorderHit: boolean,
+        sequence: number = randomInt(1024),
+    ) {
+        const face_ = (face instanceof Direction ? face.index3D : face) as number;
+        this.sendPacket("use_item_on", {
+            hand: hand === "off" ? 1 : 0,
+            location: position,
+            face: face_,
+            cursor_position_x: cursorPositionOnBlock.x,
+            cursor_position_y: cursorPositionOnBlock.y,
+            cursor_position_z: cursorPositionOnBlock.z,
+            inside_block: isInsideBlock,
+            world_border_hit: worldBorderHit,
+            sequence
+        });
     }
 }

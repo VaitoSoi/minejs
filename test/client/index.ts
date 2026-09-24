@@ -59,8 +59,11 @@ client.on("message", (message) => {
             const [, x, y, z] = args.map(val => parseInt(val)) as [any, number, number, number];
             console.time("get_block");
             const state = client.at(x, y, z);
-            console.timeEnd("get_block");
-            console.log(state);
+        case "open": {
+            const [, x, y, z] = args.map(val => parseInt(val)) as [any, number, number, number];
+            const success = client.openBlock(x, y, z);
+            if (success) client.chat("opening");
+            else client.chat("failed");
             break;
         }
 
