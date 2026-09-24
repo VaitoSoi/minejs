@@ -225,11 +225,6 @@ export class BlockManager {
     }
 }
 
-interface Context {
-    getBlockState: (position: BaseVec3) => VoxelShape,
-    from: Vec3,
-    to: Vec3
-}
 
 /**
  * For clipping math
@@ -237,9 +232,9 @@ interface Context {
  * @hidden
  */
 export class BlockGetter {
-    public static clip(from: Vec3, to: Vec3, context: Context) {
+    public static clip(from: Vec3, to: Vec3, getBlockState: (position: BaseVec3) => VoxelShape) {
         return this.traverseBlocks(
-            from, to, context,
+            from, to, { getBlockState, from, to },
             (context, pos) => {
                 const blockState = context.getBlockState(pos);
                 const { from, to } = context;
@@ -253,12 +248,13 @@ export class BlockGetter {
         );
     }
 
-    public static traverseBlocks<T, C = Context>(
+    public static traverseBlocks<T, C>(
         from: Vec3,
         to: Vec3,
         context: C,
         consumer: (context: C, position: BaseVec3) => T,
-        missFactory: (context: C) => T): T {
+        missFactory: (context: C) => T
+    ): T {
         let result: T;
 
         if (from.equal(to)) return missFactory(context);

@@ -473,11 +473,11 @@ export class Player {
             if (this.fallDistance != 0 && movement.length() >= 1) {
                 const checkDistance = Math.min(movement.length(), 8);
                 const checkTo = this.getPos().add(movement.normalize().scale(checkDistance));
-                const hitResult = BlockGetter.clip(this.getPos(), checkTo, {
-                    from: this.getPos(),
-                    to: checkTo,
-                    getBlockState: (position) => this.blocks.at(position)!.shape
-                });
+                const hitResult = BlockGetter.clip(
+                    this.getPos(), 
+                    checkTo,
+                    (position) => this.blocks.at(position)!.shape
+                );
                 if (hitResult?.miss !== false)
                     this.fallDistance = 0;
             }
