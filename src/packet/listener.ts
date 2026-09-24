@@ -703,12 +703,16 @@ export class Listener {
             filter_type: zod.int(),
             filter_type_bits: zod.array(zod.bigint()).nullable(),
             chat_type: zod.int().or(zod.record(zod.string(), zod.any())),
-            sender_name: zod.record(zod.string(), zod.any()),
-            target_name: zod.record(zod.string(), zod.any()).nullable()
+            sender_name: zod.record(zod.string(), zod.any()).or(zod.string()),
+            target_name: zod.record(zod.string(), zod.any()).or(zod.string()).nullable()
         }));
 
-        const senderNameText = getTextFromTextComponent(sender_name).toString(),
-            targetNameText = target_name ? getTextFromTextComponent(target_name).toString() : undefined;
+        const senderNameText = typeof sender_name === "string" ? sender_name : getTextFromTextComponent(sender_name).toString(),
+            targetNameText = target_name
+                ? typeof target_name === "string"
+                    ? target_name
+                    : getTextFromTextComponent(target_name).toString()
+                : undefined;
 
         const emitObject = {
             sender: senderNameText,

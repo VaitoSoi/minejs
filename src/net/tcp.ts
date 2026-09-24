@@ -56,8 +56,8 @@ export interface Message {
     target: string | undefined,
     content: string,
     raw: {
-        sender: TextComponent,
-        target: TextComponent | undefined,
+        sender: string | TextComponent,
+        target: string | TextComponent | undefined,
         content: TextComponent | undefined
     }
 }
