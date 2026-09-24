@@ -56,7 +56,7 @@ export class VersionCodec {
             console.dir({
                 dir: "to client",
                 state: mappedState,
-                name,
+                name: packet.name,
                 data: resolvedObject,
             });
 
@@ -76,7 +76,8 @@ export class VersionCodec {
             console.dir({
                 dir: "to server",
                 state: mappedState,
-                id: packetId,
+                id: packet.id,
+                name: packet.name,
                 data,
             });
 
