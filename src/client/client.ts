@@ -114,6 +114,13 @@ export interface ClientEvents {
     containerContent: [container: Container, carryingItem: Slot],
     /** When the packet contain the property of the container is received */
     containerProperty: [container: Container],
+
+    /** 
+     * When tab list is updated
+     * 
+     * `{"text":""}` mean remove header or footer.
+     */
+    tablist: [newTablist: { header: { text: string, raw: TextComponent }, footer: { text: string, raw: TextComponent } }]
 }
 
 /**

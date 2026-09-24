@@ -67,7 +67,9 @@ export class Listener {
             "play:open_screen": this.handleOpenScreen,
             "play:container_close": this.handleCloseContainer,
             "play:container_set_content": this.handleContainerContent,
-            "play:container_set_data": this.handleContainerProperty
+            "play:container_set_data": this.handleContainerProperty,
+
+            "play:tab_list": this.handleSetTablist
         };
     }
 
@@ -906,5 +908,19 @@ export class Listener {
             state.openingContainer.setProperty(property, value);
             this.emit("containerProperty", state.openingContainer);
         });
+    }
+
+    private handleSetTablist(data: object) {
+        const { header, footer } = zodParse(data, zod.object({
+            header: zod.record(zod.string(), zod.any()),
+            footer: zod.record(zod.string(), zod.any()),
+        }));
+        this.emit(
+            "tablist",
+            {
+                header: { text: getTextFromTextComponent(header), raw: header },
+                footer: { text: getTextFromTextComponent(footer), raw: footer },
+            }
+        );
     }
 }
