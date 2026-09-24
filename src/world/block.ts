@@ -278,9 +278,9 @@ export class BlockGetter {
         const tDeltaX = signX == 0 ? Infinity : signX / dx;
         const tDeltaY = signY == 0 ? Infinity : signY / dy;
         const tDeltaZ = signZ == 0 ? Infinity : signZ / dz;
-        let tX = tDeltaX * (signX > 0 ? 1 - getFrac(fromX) : getFrac(fromX));
-        let tY = tDeltaY * (signY > 0 ? 1 - getFrac(fromY) : getFrac(fromY));
-        let tZ = tDeltaZ * (signZ > 0 ? 1 - getFrac(fromZ) : getFrac(fromZ));
+        let tX = signX === 0 ? Infinity : tDeltaX * (signX > 0 ? 1 - getFrac(fromX) : getFrac(fromX));
+        let tY = signY === 0 ? Infinity : tDeltaY * (signY > 0 ? 1 - getFrac(fromY) : getFrac(fromY));
+        let tZ = signZ === 0 ? Infinity : tDeltaZ * (signZ > 0 ? 1 - getFrac(fromZ) : getFrac(fromZ));
         do {
             if (tX <= 1.0 || tY <= 1.0 || tZ <= 1.0) {
                 if (tX < tY) {
