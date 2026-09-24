@@ -200,7 +200,7 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
         this.tcp.on("destroy", () => this.emit("destroy"));
         this.on("loadChunk", (sx, sy, sz) => this.blocks.deleteChunkCache(sx, sy, sz));
         this.on("unloadChunk", (sx, sz) => {
-            for (let sy = 0; sy < 16; sy++) 
+            for (let sy = 0; sy < 16; sy++)
                 this.blocks.deleteChunkCache(sx, sy, sz);
         });
     }
