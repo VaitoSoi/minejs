@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { RegistryItemNotFound, UnexpectedValue, VersionNotSupport } from "../base/error";
 import { Block, BlockState } from "../world/block";
@@ -7,13 +7,26 @@ import z from "zod";
 const BASE_REGISTRY_PATH = join(__dirname, "..", "..", "assets", "minecraft");
 /** @hidden */
 export const SupportVersions = [
-    "26.2"
+    "26.2",
+    "26.3"
 ];
 
 /** @hidden */
 export const ProtocolVersionMapping: Record<string, number> = {
-    "26.2": 776
+    "26.2": 776,
+    "26.3": 777
 };
+
+function getFile(version: string, module: string) {
+    const map = JSON.parse(readFileSync(join(BASE_REGISTRY_PATH, "versionMapping.json"), "utf-8"));
+    if (!(version in map))
+        throw new VersionNotSupport(version);
+    const versionMap = map[version];
+    if (!(module in versionMap))
+        throw new VersionNotSupport(version);
+    const fileContent = JSON.parse(readFileSync(join(BASE_REGISTRY_PATH, versionMap[module], `${module}.json`), "utf-8"));
+    return fileContent;
+}
 
 export class EntityRegistry {
     private static loaded: boolean = false;
@@ -25,14 +38,13 @@ export class EntityRegistry {
      * 
      * Should be called once time
      */
-    public static async load(version: string) {
+    public static load(version: string) {
         if (!SupportVersions.includes(version))
             throw new VersionNotSupport(version);
         if (this.loaded) return;
         this.loaded = true;
 
-        const file = await readFile(join(BASE_REGISTRY_PATH, version, "entities.json"), { encoding: "utf8" });
-        const json = JSON.parse(file);
+        const json = getFile(version, "entities");
         for (const entity in json) {
             this.data[entity] = json[entity];
             this.mapTypeToData[json[entity]["id"]] = entity;
@@ -68,14 +80,13 @@ export class BlockRegistry {
      * 
      * Should be called once time
      */
-    public static async load(version: string) {
+    public static load(version: string) {
         if (!SupportVersions.includes(version))
             throw new VersionNotSupport(version);
         if (this.loaded) return;
         this.loaded = true;
 
-        const file = await readFile(join(BASE_REGISTRY_PATH, version, "blocks.json"), { encoding: "utf8" });
-        const json = JSON.parse(file) as Record<string, any>;
+        const json = getFile(version, "blocks") as Record<string, any>;
         for (const [type, blockRaw] of Object.entries(json)) {
             const block = new Block(type, blockRaw['definition'], blockRaw['properties'], blockRaw['states']);
             this.blocks[type] = block;
@@ -113,14 +124,13 @@ export class EffectRegistry {
      * 
      * Should be called once time
      */
-    public static async load(version: string) {
+    public static load(version: string) {
         if (!SupportVersions.includes(version))
             throw new VersionNotSupport(version);
         if (this.loaded) return;
         this.loaded = true;
 
-        const file = await readFile(join(BASE_REGISTRY_PATH, version, "effects.json"), { encoding: "utf8" });
-        const json = JSON.parse(file) as Record<string, any>;
+        const json = getFile(version, "effects") as Record<string, any>;
         for (const [name, id] of Object.entries(json)) {
             this.effects[name] = id;
         }
@@ -138,14 +148,13 @@ export class ComponentTypeRegistry {
      * 
      * Should be called once time
      */
-    public static async load(version: string) {
+    public static load(version: string) {
         if (!SupportVersions.includes(version))
             throw new VersionNotSupport(version);
         if (this.loaded) return;
         this.loaded = true;
 
-        const file = await readFile(join(BASE_REGISTRY_PATH, version, "components.json"), { encoding: "utf8" });
-        const json = JSON.parse(file) as Record<string, number>;
+        const json = getFile(version, "components") as Record<string, number>;
         for (const [name, id] of Object.entries(json)) {
             this.components[name] = id;
             this.idToName[id] = name;
@@ -194,6 +203,7 @@ export const SupportTypes = z.enum([
     "byte_array",
     "slot",
     "null", // a constant
+    "special",
 
     /**
      * This is used for handle field that its type depends on previous field type, or value
@@ -215,6 +225,7 @@ export type FieldNode = ({
         | "not_implemented"
         | "fixed_bitset"
         | "byte_array"
+        | "special"
     >,
 } | {
     type: "not_implemented",
@@ -248,13 +259,16 @@ export type FieldNode = ({
 } | {
     type: "fixed_bitset" | "byte_array",
     length: number,
+} | {
+    type: "special",
+    comment: string,
 }) & {
     skip_able?: boolean | undefined
 }
 /** @hidden */
 export const Field: z.ZodType<FieldNode> = z.union([
     z.object({
-        type: SupportTypes.exclude(["prefixed_array", "prefixed_optional", "string", "id_or_x", "array", "switch", "fixed_point", "enum", "not_implemented", "object", "fixed_bitset", "byte_array"]),
+        type: SupportTypes.exclude(["prefixed_array", "prefixed_optional", "string", "id_or_x", "array", "switch", "fixed_point", "enum", "not_implemented", "object", "fixed_bitset", "byte_array", "special"]),
     }),
     z.object({
         type: z.literal(["not_implemented"]),
@@ -328,7 +342,11 @@ export const Field: z.ZodType<FieldNode> = z.union([
         // These type require predefined-length
         type: z.union([z.literal("fixed_bitset"), z.literal("byte_array")]),
         length: z.int()
-    })
+    }),
+    z.object({
+        type: z.literal(["special"]),
+        comment: z.string()
+    }),
 ])
     .and(
         z.object({
@@ -374,14 +392,13 @@ export class PacketRegistry {
      * 
      * Should be called once time
      */
-    public static async load(version: string) {
+    public static load(version: string) {
         if (!SupportVersions.includes(version))
             throw new VersionNotSupport(version);
         if (this.loaded) return;
         this.loaded = true;
 
-        const file = await readFile(join(BASE_REGISTRY_PATH, version, "packets.json"), { encoding: "utf8" });
-        const json = JSON.parse(file) as Record<string, any>;
+        const json = getFile(version, "packets") as Record<string, any>;
 
         const definition = VersionDefinitions.parse(json);
         for (const [stateKey, state] of Object.entries(definition)) {
