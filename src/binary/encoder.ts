@@ -1,4 +1,4 @@
-import { Vec3 } from "../physics/direction";
+import { BaseVec3 } from "../physics/direction";
 import { CONTINUATION_FLAG, CONTINUE_BIT, isFixedSizeTag, isTag, MAX_QUANTIZED_VALUE, SCALE_BITS, SEGMENT_BITS } from "./static";
 import { InvalidValue, NumberTooBig, UnexpectedValue } from "../base/error";
 import { FixedSizeTag, Tag } from "./static";
@@ -163,7 +163,7 @@ export class BinaryEncoder {
      * 
      * @returns a Position
      */
-    public writePosition(position: Vec3) {
+    public writePosition(position: BaseVec3) {
         const val = BigInt(
             ((position.x & 0x3FFFFFF) << 38) |
             ((position.z & 0x3FFFFFF) << 12) |
@@ -219,7 +219,7 @@ export class BinaryEncoder {
      * 
      * Read this article for more information: https://minecraft.wiki/w/Java_Edition_protocol/Data_types#LpVec3
      */
-    public writeLpVec3(vec3: Vec3) {
+    public writeLpVec3(vec3: BaseVec3) {
         const maxCoordinate = Math.max(Math.abs(vec3.x), Math.max(Math.abs(vec3.y), Math.abs(vec3.z)));
 
         // Checking for NaN values in our maxCoordinate
