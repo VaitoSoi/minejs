@@ -150,7 +150,17 @@ export class VersionCodec {
             case "chat_type_decoration": return decoder.readChatTypeDecoration();
             case "chat_type": return decoder.readChatType();
             case "enum": return this.readField(packetId, readObject, fieldName, field.subType, decoder);
-            case "json_text": return JSON.parse(decoder.readString());
+            case "json_text": {
+                const str = decoder.readString();
+                try {
+                    return JSON.parse(str);
+                } catch (err) {
+                    if (err instanceof SyntaxError)
+                        return str;
+                    else
+                        throw err;
+                }
+            }
             case "object": {
                 const obj: Record<string, any> = {};
                 for (const [key, type] of Object.entries(field.fields))

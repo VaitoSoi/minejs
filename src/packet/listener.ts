@@ -84,7 +84,11 @@ export class Listener {
     // Login
 
     private handleLoginDisconnect(data: object) {
-        const { reason } = zodParse(data, zod.object({ reason: zod.record(zod.string(), zod.any()) }));
+        const { reason } = zodParse(data, zod.object({ reason: zod.record(zod.string(), zod.any()).or(zod.string()) }));
+
+        if (typeof reason === "string")
+            return this.disconnect(reason);
+
         const text = getTextFromTextComponent(reason);
 
         this.disconnect(text, reason);
