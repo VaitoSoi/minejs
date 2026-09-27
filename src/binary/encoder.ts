@@ -71,7 +71,7 @@ export class BinaryEncoder {
     public writeLong(val: bigint | number) {
         // Cast to BigInt 
         const v = typeof val === "bigint" ? val : BigInt(val);
-        return this.write(8, v, (buf) => buf.writeBigInt64BE); 
+        return this.write(8, BigInt.asIntN(64, v), (buf) => buf.writeBigInt64BE);
     }
     /**
      * Write 4 bytes float
@@ -164,11 +164,10 @@ export class BinaryEncoder {
      * @returns a Position
      */
     public writePosition(position: BaseVec3) {
-        const val = BigInt(
-            ((position.x & 0x3FFFFFF) << 38) |
-            ((position.z & 0x3FFFFFF) << 12) |
-            (position.y & 0xFFF)
-        );
+        const val =
+            (BigInt(position.x & 0x3FFFFFF) << 38n) |
+            (BigInt(position.z & 0x3FFFFFF) << 12n) |
+            BigInt(position.y & 0xFFF);
         this.writeLong(val);
         return this;
     }
