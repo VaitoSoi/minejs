@@ -303,6 +303,11 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
         return this.blocks.at(vec3);
     }
 
+    public getPosition() {
+        this.state.checkReady();
+        return structuredClone(this.state.player!.position);
+    }
+
     /**
      * Rotate your face
      * 
