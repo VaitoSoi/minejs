@@ -585,13 +585,22 @@ export class VoxelShape {
     }
     private forAllBoxes(consumer: (bb: BaseAABB) => void, mergeNeighbor: boolean) {
         const shape = this.copy();
+        const consumerWithRawInd = (bb: BaseAABB) =>
+            consumer({
+                minX: shape.xs[bb.minX]!,
+                maxX: shape.xs[bb.maxX]!,
+                minY: shape.ys[bb.minY]!,
+                maxY: shape.ys[bb.maxY]!,
+                minZ: shape.zs[bb.minZ]!,
+                maxZ: shape.zs[bb.maxZ]!
+            });
         for (let y = 0; y < shape.getSize(BaseAxis.Y); y++)
             for (let x = 0; x < shape.getSize(BaseAxis.X); x++) {
                 let lastStartZ = -1;
                 for (let z = 0; z <= shape.getSize(BaseAxis.Z); z++) {
                     if (shape.isFullWide(x, y, z)) {
                         if (!mergeNeighbor)
-                            consumer({
+                            consumerWithRawInd({
                                 minX: x,
                                 maxX: x + 1,
                                 minY: y,
@@ -615,7 +624,7 @@ export class VoxelShape {
                             }
                             endY++;
                         }
-                        consumer({
+                        consumerWithRawInd({
                             minX: x,
                             maxX: endX + 1,
                             minY: y,
