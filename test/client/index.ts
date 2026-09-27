@@ -13,9 +13,10 @@ const client = new Client({
             "add_entity", "remove_entities", "bundle_delimiter",
             "entity_position_sync", "update_attributes",
             "move_player_pos", "move_player_pos_rot", "move_player_rot",
-            "player_chat", "keep_alive", "entity_event", "tab_list"
+            "player_chat", "keep_alive", "entity_event", "tab_list",
+            "block_event"
         ],
-        ignoreTCPPacketLogs: [0, 83, 54, 101, 1, 99, 53, 35, 131, 113, 102, 44, 56, 65, 34, 77, 122]
+        ignoreTCPPacketLogs: [0, 83, 54, 101, 1, 99, 53, 35, 131, 113, 102, 44, 56, 65, 34, 77, 122, 7]
     },
     loadRegistry: false,
     // auth: {
@@ -74,18 +75,18 @@ client.on("message", async (message) => {
         case "at": {
             const [, x, y, z] = args.map(val => parseInt(val)) as [any, number, number, number];
             console.time("get_block");
-            const state = client.at(x, y, z);
-            console.timeEnd("get_block"); 
+            const state = client.getBlock(x, y, z);
+            console.timeEnd("get_block");
             if (state) {
                 console.dir(state);
                 client.chat(state!.owner.type);
-            } else 
+            } else
                 client.chat("no block");
             break;
         }
 
         case "open": {
-            const [, x, y, z] = args.map(val => parseInt(val)) as [any, number, number, number];
+            const [, x, y, z] = args.map(val => Number(val)) as [any, number, number, number];
             const success = client.openBlock(x, y, z);
             if (success) client.chat("opening");
             else client.chat("failed");
@@ -104,5 +105,11 @@ client.on("message", async (message) => {
         case "exit":
             client.disconnect();
             break;
+
+        case "pos": {
+            const { x, y, z } = client.getPosition();
+            client.chat(`XYZ: ${x} ${y} ${z}`);
+            break;
+        }
     }
 });
