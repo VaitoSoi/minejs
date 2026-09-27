@@ -186,6 +186,7 @@ export class SharedState {
     public decipher: Decipheriv | undefined = undefined;
     public useEncryption: boolean = false;
     public sessionID: Buffer | undefined = undefined;
+    public sequence: number = 0;
 
     public server: Server | undefined = undefined;
     public registry: Record<string, ServerRegistryEntry[]> | undefined = undefined;
@@ -251,6 +252,7 @@ export class SharedState {
         this.player = undefined as any;
         this.messageCount = 0;
         this.openingContainer = undefined as any;
+        this.sequence = 0;
 
         if (this.clientOptions.shouldVerifyMessageSignature)
             this.messageSignatureCache = SignatureCache.default();
@@ -276,6 +278,9 @@ export class SharedState {
                 signature: this.signature
             };
         throw new AuthRelatedNotFound("public key and signature");
+    }
+    public nextSequence() {
+        return ++this.sequence;
     }
 
     private async fetchSignature() {
