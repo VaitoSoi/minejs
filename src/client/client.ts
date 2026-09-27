@@ -354,22 +354,28 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
     public openBlock(a: BaseVec3 | number, b?: number, c?: number): boolean {
         this.state.checkReady();
         const vec3 = Vec3.loadArgs(a, b, c);
+        const eyePos = new Vec3(this.state.player!.position).add(0, 1.62, 0);
+        const target = new Vec3(vec3).add(0.5, 0.5, 0.5); // aim at block center, or use look direction
+        const reach = 4.5; // survival reach, adjust as needed
+        const dir = target.subtract(eyePos).normalize();
+        const to = eyePos.add(dir.scale(reach));
         const clipResult = BlockGetter.clip(
-            new Vec3(this.state.player!.position),
-            new Vec3(vec3),
+            eyePos,
+            to,
             (pos) => this.blocks.at(pos)!.shape
         )!;
         console.log(clipResult);
         if (clipResult.miss) return false;
+        const cursorX = Math.abs(clipResult.location.x - clipResult.pos.x),
+            cursorY = Math.abs(clipResult.location.y - clipResult.pos.y),
+            cursorZ = Math.abs(clipResult.location.z - clipResult.pos.z);
+        if (cursorX > 1 || cursorY > 1 || cursorZ > 1)
+            return false;
         this.packetSender.sendUseItemOn(
             "main",
             vec3,
             clipResult.direction,
-            {
-                x: Math.abs(clipResult.location.x - vec3.x),
-                y: Math.abs(clipResult.location.y - vec3.y),
-                z: Math.abs(clipResult.location.z - vec3.z),
-            },
+            { x: cursorX, y: cursorY, z: cursorZ },
             false,
             false
         );
