@@ -114,7 +114,7 @@ export class Vec3 implements BaseVec3 {
     public multiply(x: number, y: number, z: number): Vec3;
     public multiply(a: BaseVec3 | number, b?: number, c?: number) {
         let vec: BaseVec3;
-        if ((a && b && c) || (typeof a === "object" && "x" in a)) vec = Vec3.loadArgs(a, b, c);
+        if ((a !== undefined && b !== undefined && c !== undefined) || (typeof a === "object" && "x" in a)) vec = Vec3.loadArgs(a, b, c);
         else vec = { x: a, y: a, z: a };
         const x = this.x * vec.x;
         const y = this.y * vec.y;
