@@ -255,8 +255,6 @@ export class BlockGetter {
         consumer: (context: C, position: BaseVec3) => T,
         missFactory: (context: C) => T
     ): T {
-        let result: T;
-
         if (from.equal(to)) return missFactory(context);
         const toX = lerp(-Epsilon, to.x, from.x);
         const toY = lerp(-Epsilon, to.y, from.y);
@@ -281,29 +279,28 @@ export class BlockGetter {
         let tX = signX === 0 ? Infinity : tDeltaX * (signX > 0 ? 1 - getFrac(fromX) : getFrac(fromX));
         let tY = signY === 0 ? Infinity : tDeltaY * (signY > 0 ? 1 - getFrac(fromY) : getFrac(fromY));
         let tZ = signZ === 0 ? Infinity : tDeltaZ * (signZ > 0 ? 1 - getFrac(fromZ) : getFrac(fromZ));
-        do {
-            if (tX <= 1.0 || tY <= 1.0 || tZ <= 1.0) {
-                if (tX < tY) {
-                    if (tX < tZ) {
-                        currentBlockX += signX;
-                        tX += tDeltaX;
-                    } else {
-                        currentBlockZ += signZ;
-                        tZ += tDeltaZ;
-                    }
-                } else if (tY < tZ) {
-                    currentBlockY += signY;
-                    tY += tDeltaY;
+        while (tX <= 1.0 || tY <= 1.0 || tZ <= 1.0) {
+            if (tX < tY) {
+                if (tX < tZ) {
+                    currentBlockX += signX;
+                    tX += tDeltaX;
                 } else {
                     currentBlockZ += signZ;
                     tZ += tDeltaZ;
                 }
-                result = consumer(context, { x: currentBlockX, y: currentBlockY, z: currentBlockZ });
+            } else if (tY < tZ) {
+                currentBlockY += signY;
+                tY += tDeltaY;
             } else {
-                return missFactory(context);
+                currentBlockZ += signZ;
+                tZ += tDeltaZ;
             }
-        } while (result == null);
-        return result;
+            const result = consumer(context, { x: currentBlockX, y: currentBlockY, z: currentBlockZ });
+
+            if (result !== null)
+                return result;
+        }
+        return missFactory(context);
     }
 }
 
