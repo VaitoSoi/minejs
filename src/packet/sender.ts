@@ -185,7 +185,6 @@ export class Sender {
         cursorPositionOnBlock: BaseVec3,
         isInsideBlock: boolean,
         worldBorderHit: boolean,
-        sequence: number = randomInt(1024),
     ) {
         const face_ = (face instanceof Direction ? face.index3D : face) as number;
         this.sendPacket("use_item_on", {
@@ -197,7 +196,7 @@ export class Sender {
             cursor_position_z: cursorPositionOnBlock.z,
             inside_block: isInsideBlock,
             world_border_hit: worldBorderHit,
-            sequence
+            sequence: this.state.nextSequence()
         });
     }
 }
