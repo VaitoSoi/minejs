@@ -296,9 +296,9 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
     /**
      * Get the block state at position
      */
-    public at(x: number, y: number, z: number): BlockState | null;
-    public at(position: BaseVec3): BlockState | null;
-    public at(a: BaseVec3 | number, b?: number, c?: number): BlockState | null {
+    public getBlock(x: number, y: number, z: number): BlockState | null;
+    public getBlock(position: BaseVec3): BlockState | null;
+    public getBlock(a: BaseVec3 | number, b?: number, c?: number): BlockState | null {
         const vec3 = Vec3.loadArgs(a, b, c);
         return this.blocks.at(vec3);
     }
