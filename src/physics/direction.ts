@@ -17,7 +17,7 @@ export class Vec3 implements BaseVec3 {
      * Helper function for loading vec3 args
      */
     static loadArgs(a: BaseVec3 | number, b?: number, c?: number): BaseVec3 {
-        let x = 1, y = 1, z = 1;
+        let x = 0, y = 0, z = 0;
         if (typeof a === "object" && "x" in a) {
             x = a.x;
             y = a.y;
