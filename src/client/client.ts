@@ -145,6 +145,7 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
             throw new HaveSignatureButNotIndex();
 
         super();
+        this.loadRegistries();
 
         // For managing shared data
         this.state = new SharedState(options);
@@ -209,14 +210,14 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
         this.emit(event.event, ...event.args);
     }
 
-    private async loadRegistries() {
+    private loadRegistries() {
         if (Client.loadRegistry) return;
         Client.loadRegistry = true;
         const { version } = this.options;
-        await BlockRegistry.load(version);
-        await EntityRegistry.load(version);
-        await PacketRegistry.load(version);
-        await EffectRegistry.load(version);
+        BlockRegistry.load(version);
+        EntityRegistry.load(version);
+        PacketRegistry.load(version);
+        EffectRegistry.load(version);
     }
 
     // Start / stop
@@ -225,7 +226,6 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
      * Create a connection to the server
      */
     public async connect() {
-        await this.loadRegistries();
         if (!this.state.playerUUID) {
             if (this.options.auth) {
                 this.state.authClient = new AuthClient(this.options.auth);
