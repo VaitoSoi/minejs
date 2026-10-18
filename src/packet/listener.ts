@@ -56,7 +56,7 @@ export class Listener {
             "play:add_entity": this.handleSpawnEntity,
             "play:move_entity_pos": this.handleUpdateEntityPosition,
             "play:move_entity_pos_rot": this.handleUpdateEntityPositionRotation,
-            "play:entity_position_sync": this.handleTeleportEntity,
+            "play:entity_position_sync": this.handleEntityPositionSync,
             "play:player_position": this.handleSynchronizePlayerPosition,
             "play:update_mob_effect": this.handleUpdateMobEffect,
             "play:remove_entities": this.handleRemoveEntity,
