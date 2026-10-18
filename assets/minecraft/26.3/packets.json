@@ -452,7 +452,7 @@
         "id": 16,
         "structure": {
           "details": {
-            "type": "array",
+            "type": "prefixed_array",
             "subType": {
               "type": "object",
               "fields": {
@@ -1238,28 +1238,57 @@
               "type": "var_int"
             }
           },
-          "path_type_0_linear": {
-            "type": "double",
-            "subType": {
-              "type": "object",
-              "fields": {
-                "x": {
-                  "type": "not_implemented",
-                  "comment": "Absolute end position."
-                },
-                "path_type_0_linear": {
-                  "type": "not_implemented",
-                  "comment": "Z"
+          "linear": {
+            "type": "switch",
+            "dependsOn": "position_path_type",
+            "cases": [
+              [
+                0,
+                {
+                  "type": "object",
+                  "fields": {
+                    "x": {
+                      "type": "double"
+                    },
+                    "y": {
+                      "type": "double"
+                    },
+                    "z": {
+                      "type": "double"
+                    }
+                  }
                 }
-              }
-            }
+              ]
+            ]
           },
-          "steps": {
-            "type": "prefixed_array",
-            "subType": {
-              "type": "not_implemented",
-              "comment": "Position Step"
-            }
+          "stepped": {
+            "type": "switch",
+            "dependsOn": "position_path_type",
+            "cases": [
+              [
+                1,
+                {
+                  "type": "prefixed_array",
+                  "subType": {
+                    "type": "object",
+                    "fields": {
+                      "x": {
+                        "type": "double"
+                      },
+                      "y": {
+                        "type": "double"
+                      },
+                      "z": {
+                        "type": "double"
+                      },
+                      "tick_offset": {
+                        "type": "var_int"
+                      }
+                    }
+                  }
+                }
+              ]
+            ]
           },
           "yaw": {
             "type": "float"
@@ -1670,9 +1699,12 @@
             }
           },
           "previous_game_mode": {
-            "type": "enum",
+            "type": "prefixed_optional",
             "subType": {
-              "type": "var_int"
+              "type": "enum",
+              "subType": {
+                "type": "var_int"
+              }
             }
           },
           "is_debug": {
@@ -1685,16 +1717,28 @@
             "type": "boolean"
           },
           "death_dimension_name": {
-            "type": "prefixed_optional",
-            "subType": {
-              "type": "string"
-            }
+            "type": "switch",
+            "dependsOn": "has_death_location",
+            "cases": [
+              [
+                true,
+                {
+                  "type": "string"
+                }
+              ]
+            ]
           },
           "death_location": {
-            "type": "prefixed_optional",
-            "subType": {
-              "type": "position"
-            }
+            "type": "switch",
+            "dependsOn": "has_death_location",
+            "cases": [
+              [
+                true,
+                {
+                  "type": "position"
+                }
+              ]
+            ]
           },
           "portal_cooldown": {
             "type": "var_int"
@@ -1836,12 +1880,158 @@
       "0x36": {
         "name": "move_entity_pos",
         "id": 54,
-        "structure": {}
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "properties": {
+            "type": "var_int"
+          },
+          "step_count": {
+            "type": "infer",
+            "function": "shift_right",
+            "args": [
+              "properties",
+              1
+            ]
+          },
+          "step": {
+            "type": "switch",
+            "dependsOn": "step_count",
+            "cases": [
+              [
+                0,
+                {
+                  "type": "object",
+                  "fields": {
+                    "delta_x": {
+                      "type": "short"
+                    },
+                    "delta_y": {
+                      "type": "short"
+                    },
+                    "delta_z": {
+                      "type": "short"
+                    }
+                  }
+                }
+              ]
+            ]
+          },
+          "steps": {
+            "type": "switch",
+            "dependsOn": "step_count",
+            "cases": [
+              [
+                0,
+                {
+                  "type": "null"
+                }
+              ]
+            ],
+            "default": {
+              "type": "prefixed_array",
+              "subType": {
+                "type": "object",
+                "fields": {
+                  "tick_offset": {
+                    "type": "var_int"
+                  },
+                  "delta_x": {
+                    "type": "short"
+                  },
+                  "delta_y": {
+                    "type": "short"
+                  },
+                  "delta_z": {
+                    "type": "short"
+                  }
+                }
+              }
+            }
+          }
+        }
       },
       "0x37": {
         "name": "move_entity_pos_rot",
         "id": 55,
-        "structure": {}
+        "structure": {
+          "entity_id": {
+            "type": "var_int"
+          },
+          "properties": {
+            "type": "var_int"
+          },
+          "step_count": {
+            "type": "infer",
+            "function": "shift_right",
+            "args": [
+              "properties",
+              1
+            ]
+          },
+          "step": {
+            "type": "switch",
+            "dependsOn": "step_count",
+            "cases": [
+              [
+                0,
+                {
+                  "type": "object",
+                  "fields": {
+                    "delta_x": {
+                      "type": "short"
+                    },
+                    "delta_y": {
+                      "type": "short"
+                    },
+                    "delta_z": {
+                      "type": "short"
+                    }
+                  }
+                }
+              ]
+            ]
+          },
+          "steps": {
+            "type": "switch",
+            "dependsOn": "step_count",
+            "cases": [
+              [
+                0,
+                {
+                  "type": "null"
+                }
+              ]
+            ],
+            "default": {
+              "type": "prefixed_array",
+              "subType": {
+                "type": "object",
+                "fields": {
+                  "tick_offset": {
+                    "type": "var_int"
+                  },
+                  "delta_x": {
+                    "type": "short"
+                  },
+                  "delta_y": {
+                    "type": "short"
+                  },
+                  "delta_z": {
+                    "type": "short"
+                  }
+                }
+              }
+            }
+          },
+          "yaw": {
+            "type": "angle"
+          },
+          "pitch": {
+            "type": "angle"
+          }
+        }
       },
       "0x38": {
         "name": "move_minecart_along_track",
@@ -2335,7 +2525,7 @@
         "name": "remove_entities",
         "id": 78,
         "structure": {
-          "entity_i_ds": {
+          "entity_ids": {
             "type": "prefixed_array",
             "subType": {
               "type": "var_int"
@@ -3431,7 +3621,7 @@
         "id": 139,
         "structure": {
           "details": {
-            "type": "array",
+            "type": "prefixed_array",
             "subType": {
               "type": "object",
               "fields": {
@@ -3667,7 +3857,7 @@
             "type": "long"
           },
           "array_of_argument_signatures": {
-            "type": "array",
+            "type": "prefixed_array",
             "subType": {
               "type": "object",
               "fields": {
@@ -3890,7 +4080,7 @@
             }
           },
           "array_of_changed_slots": {
-            "type": "array",
+            "type": "prefixed_array",
             "subType": {
               "type": "object",
               "fields": {
