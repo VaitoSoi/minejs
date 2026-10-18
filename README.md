@@ -31,13 +31,14 @@ Then write a simple code like this:
 // index.ts
 import { Input, Client } from "@vaitosoi/minejs";
 
+// Init a client
 const client = new Client({
-    playerName: "bot",
-    host: "localhost",
-    port: 25565,
-    version: "26.2",
-    loadRegistry: false,
-    // auth: {
+    playerName: "bot", // Put your name here
+    host: "localhost", // Put the server address
+    port: 25565, // 25565 is the default port, change to your server's port if needed
+    version: "26.2", // The client version 
+    loadRegistry: false, // 
+    // auth: { // This things is not working yet
     //     client_id: "d86254d8-edf7-4640-90eb-643c99af188e",
     //     method: "loopback",
     //     openBrowser: true,
@@ -46,7 +47,11 @@ const client = new Client({
     // shouldVerifyMessageOrder: true,
     // shouldVerifyMessageSignature: true
 });
+
+// After initialization, start your client
 client.connect();
+
+// Listen to events
 client.on("disconnect", (...args) => console.dir({ name: "disconnect", args }, { depth: null }));
 client.on("disconnectRaw", (...args) => console.dir({ name: "disconnectRaw", args }, { depth: null }));
 // client.on("loadChunk", (...args) => console.dir({ name: "loadChunk", args }, { depth: null }));
@@ -60,10 +65,13 @@ client.on("systemMessage", (...args) => console.dir({ name: "systemMessage", arg
 client.on("systemMessageRaw", (...args) => console.dir({ name: "systemMessageRaw", args }, { depth: null }));
 client.on("actionBar", (...args) => console.dir({ name: "actionBar", args }, { depth: null }));
 client.on("actionBarRaw", (...args) => console.dir({ name: "actionBarRaw", args }, { depth: null }));
+
+// Interact with the world
 client.on("message", (message) => {
     if (!message.content.startsWith("_")) return;
     const args = message.content.slice(1).split(" ");
     switch (args[0]) {
+        // Moving around
         case "w": client.hold(Input.Forward); break;
         case "sw": client.release(Input.Forward); break;
         case "ws":
@@ -82,6 +90,7 @@ client.on("message", (message) => {
         case "srun": client.release(Input.Sprint); break;
         case "stop": client.stopMoving(); break;
 
+        // Looking around
         case "at": {
             const [, x, y, z] = args.map(val => parseInt(val)) as [any, number, number, number];
             const state = client.at(x, y, z);
@@ -89,6 +98,7 @@ client.on("message", (message) => {
             break;
         }
 
+        // Saying words
         case "e":
         case "echo":
         case "say": {
@@ -97,6 +107,7 @@ client.on("message", (message) => {
             break;
         }
 
+        // And exit
         case "disconnect":
         case "exit":
             client.disconnect();
@@ -107,7 +118,7 @@ client.on("message", (message) => {
 
 And run it:
 
-```
+```bash
 npm tsx index.ts
 ```
 
