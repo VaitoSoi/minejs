@@ -6,7 +6,7 @@ import { ClientStatus, ConnectionState, ServerKnownPack, SharedState } from "../
 import { sliceBuffer } from "../base/buffer";
 import { randomUUIDBytes } from "../base/math";
 import { Angle, BaseVec3, Direction } from "../physics/direction";
-import { MessageTooLong, NotImplemented } from "../base/error";
+import { MessageTooLong, MissingField, NotImplemented } from "../base/error";
 import BitSet from "../base/bitset";
 import { makeMovementFlag } from "../binary/encoder";
 import { BlockFace } from "../world/block";
@@ -98,10 +98,22 @@ export class Sender {
         });
     }
 
-    public sendConfirmTeleportation(teleportId: number) {
-        this.sendPacket("accept_teleportation", {
-            teleport_id: teleportId
-        });
+    public sendConfirmTeleportation(teleportId: number): void;
+    public sendConfirmTeleportation(teleportId: number, newPos: BaseVec3, newAngle: Angle): void;
+    public sendConfirmTeleportation(teleportId: number, newPos?: BaseVec3, newAngle?: Angle) {
+        if (this.state.getProtocolId() > 776) {
+            if (!newPos || !newAngle) throw new MissingField("newPos or newAngle", "confirm_teleportation packet on version 26.3 or over");
+            const { x, y, z } = newPos,
+                { yaw, pitch } = newAngle;
+            this.sendPacket("accept_teleportation", {
+                teleport_id: teleportId,
+                x, y, z,
+                yaw, pitch
+            });
+        } else
+            this.sendPacket("accept_teleportation", {
+                teleport_id: teleportId
+            });
     }
 
     public sendKeepAlive(id: bigint) {

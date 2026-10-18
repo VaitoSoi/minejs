@@ -315,8 +315,8 @@ export class Listener {
                 angle: newAngle,
             } satisfies ClientPlayer as any
         );
-        this.state.enqueueEvent("playerPosition", { x: newPosX, y: newPosY, z: newPosZ });
-        this.sender.sendConfirmTeleportation(teleport_id);
+        this.state.enqueueEvent("playerPosition", newPosition);
+        this.sender.sendConfirmTeleportation(teleport_id, newPosition, newAngle);
         this.sender.sendPacket("move_player_pos_rot", {
             x: newPosition.x,
             feet_y: newPosition.y,
@@ -523,86 +523,188 @@ export class Listener {
         this.state.enqueueEvent("spawnEntity", entity);
     }
 
-    private handleTeleportEntity(data: object) {
-        const {
-            entity_id,
-            x,
-            y,
-            z,
-            velocity_x,
-            velocity_y,
-            velocity_z,
-            pitch,
-            yaw
-        } = zodParse(data, zod.object({
-            entity_id: zod.int(),
-            x: zod.number(),
-            y: zod.number(),
-            z: zod.number(),
-            velocity_x: zod.number(),
-            velocity_y: zod.number(),
-            velocity_z: zod.number(),
-            pitch: zod.number(),
-            yaw: zod.number(),
-        }));
+    private handleEntityPositionSync(data: object) {
+        if (this.state.getProtocolId() > 776) {
 
-        if (entity_id in this.state.world!.entities) this.state.enqueueMutation(state => {
-            state.world!.entities[entity_id]!.position = { x, y, z };
-            state.world!.entities[entity_id]!.velocity = { x: velocity_x, y: velocity_y, z: velocity_z };
-            state.world!.entities[entity_id]!.angle = { pitch, yaw };
-        });
-        this.state.enqueueEvent("updateEntity", entity_id);
+            const {
+                entity_id,
+                linear,
+                stepped,
+                pitch,
+                yaw
+            } = zodParse(data, zod.object({
+                entity_id: zod.int(),
+                linear: zod.object({
+                    x: zod.number(),
+                    y: zod.number(),
+                    z: zod.number(),
+                }).nullable(),
+                stepped: zod.object({
+                    x: zod.number(),
+                    y: zod.number(),
+                    z: zod.number(),
+                    tick_offset: zod.number()
+                }).array().nullable(),
+                pitch: zod.number(),
+                yaw: zod.number(),
+            }));
+            const { x, y, z } = linear ? linear : stepped![stepped!.length - 1]!;
+
+            if (entity_id in this.state.world!.entities) this.state.enqueueMutation(state => {
+                state.world!.entities[entity_id]!.position = { x, y, z };
+                state.world!.entities[entity_id]!.angle = { pitch, yaw };
+            });
+            this.state.enqueueEvent("updateEntity", entity_id);
+        } else {
+            const {
+                entity_id,
+                x,
+                y,
+                z,
+                velocity_x,
+                velocity_y,
+                velocity_z,
+                pitch,
+                yaw
+            } = zodParse(data, zod.object({
+                entity_id: zod.int(),
+                x: zod.number(),
+                y: zod.number(),
+                z: zod.number(),
+                velocity_x: zod.number(),
+                velocity_y: zod.number(),
+                velocity_z: zod.number(),
+                pitch: zod.number(),
+                yaw: zod.number(),
+            }));
+
+            if (entity_id in this.state.world!.entities) this.state.enqueueMutation(state => {
+                state.world!.entities[entity_id]!.position = { x, y, z };
+                state.world!.entities[entity_id]!.velocity = { x: velocity_x, y: velocity_y, z: velocity_z };
+                state.world!.entities[entity_id]!.angle = { pitch, yaw };
+            });
+            this.state.enqueueEvent("updateEntity", entity_id);
+        }
     }
 
     private handleUpdateEntityPosition(data: object) {
-        const {
-            entity_id,
-            delta_x,
-            delta_y,
-            delta_z
-        } = zodParse(data, zod.object({
-            entity_id: zod.number(),
-            delta_x: zod.number(),
-            delta_y: zod.number(),
-            delta_z: zod.number(),
-        }));
+        if (this.state.getProtocolId() <= 776) { // Before 26.3
+            const {
+                entity_id,
+                delta_x,
+                delta_y,
+                delta_z
+            } = zodParse(data, zod.object({
+                entity_id: zod.number(),
+                delta_x: zod.number(),
+                delta_y: zod.number(),
+                delta_z: zod.number(),
+            }));
 
-        if (entity_id in this.state.world!.entities) this.state.enqueueMutation(state => {
-            let { x, y, z } = state.world!.entities[entity_id]!.position;
-            x += delta_x;
-            y += delta_y;
-            z += delta_z;
-            state.world!.entities[entity_id]!.position = { x, y, z };
-        });
-        this.state.enqueueEvent("updateEntity", entity_id);
-    }
-
-    private handleUpdateEntityPositionRotation(data: object) {
-        const {
-            entity_id,
-            delta_x,
-            delta_y,
-            delta_z,
-            pitch,
-            yaw
-        } = zodParse(data, zod.object({
-            entity_id: zod.number(),
-            delta_x: zod.number(),
-            delta_y: zod.number(),
-            delta_z: zod.number(),
-            pitch: zod.number(),
-            yaw: zod.number(),
-        }));
-        if (entity_id in this.state.world!.entities) {
-            this.state.enqueueMutation(state => {
+            if (entity_id in this.state.world!.entities) this.state.enqueueMutation(state => {
                 let { x, y, z } = state.world!.entities[entity_id]!.position;
                 x += delta_x;
                 y += delta_y;
                 z += delta_z;
                 state.world!.entities[entity_id]!.position = { x, y, z };
-                state.world!.entities[entity_id]!.angle = { yaw, pitch };
             });
             this.state.enqueueEvent("updateEntity", entity_id);
+        } else {
+            const {
+                entity_id,
+                step,
+                steps
+            } = zodParse(data, zod.object({
+                entity_id: zod.number(),
+                step: zod.object({
+                    delta_x: zod.number(),
+                    delta_y: zod.number(),
+                    delta_z: zod.number(),
+                }).nullable(),
+                steps: zod.object({
+                    tick_offset: zod.number(),
+                    delta_x: zod.number(),
+                    delta_y: zod.number(),
+                    delta_z: zod.number(),
+                }).array().nullable()
+            }));
+            const { delta_x, delta_y, delta_z } = step ? step : steps![steps!.length - 1]!;
+
+            if (entity_id in this.state.world!.entities) this.state.enqueueMutation(state => {
+                let { x, y, z } = state.world!.entities[entity_id]!.position;
+                x += delta_x;
+                y += delta_y;
+                z += delta_z;
+                state.world!.entities[entity_id]!.position = { x, y, z };
+            });
+            this.state.enqueueEvent("updateEntity", entity_id);
+        }
+    }
+
+    private handleUpdateEntityPositionRotation(data: object) {
+        if (this.state.getProtocolId() <= 776) { // Before 26.3
+            const {
+                entity_id,
+                delta_x,
+                delta_y,
+                delta_z,
+                pitch,
+                yaw
+            } = zodParse(data, zod.object({
+                entity_id: zod.number(),
+                delta_x: zod.number(),
+                delta_y: zod.number(),
+                delta_z: zod.number(),
+                pitch: zod.number(),
+                yaw: zod.number(),
+            }));
+            if (entity_id in this.state.world!.entities) {
+                this.state.enqueueMutation(state => {
+                    let { x, y, z } = state.world!.entities[entity_id]!.position;
+                    x += delta_x;
+                    y += delta_y;
+                    z += delta_z;
+                    state.world!.entities[entity_id]!.position = { x, y, z };
+                    state.world!.entities[entity_id]!.angle = { yaw, pitch };
+                });
+                this.state.enqueueEvent("updateEntity", entity_id);
+            }
+        } else {
+            const {
+                entity_id,
+                step,
+                steps,
+                pitch,
+                yaw
+            } = zodParse(data, zod.object({
+                entity_id: zod.number(),
+                step: zod.object({
+                    delta_x: zod.number(),
+                    delta_y: zod.number(),
+                    delta_z: zod.number(),
+                }).nullable(),
+                steps: zod.object({
+                    tick_offset: zod.number(),
+                    delta_x: zod.number(),
+                    delta_y: zod.number(),
+                    delta_z: zod.number(),
+                }).array().nullable(),
+                pitch: zod.number(),
+                yaw: zod.number(),
+            }));
+            const { delta_x, delta_y, delta_z } = step ? step : steps![steps!.length - 1]!;
+
+            if (entity_id in this.state.world!.entities) {
+                this.state.enqueueMutation(state => {
+                    let { x, y, z } = state.world!.entities[entity_id]!.position;
+                    x += delta_x;
+                    y += delta_y;
+                    z += delta_z;
+                    state.world!.entities[entity_id]!.position = { x, y, z };
+                    state.world!.entities[entity_id]!.angle = { yaw, pitch };
+                });
+                this.state.enqueueEvent("updateEntity", entity_id);
+            }
         }
     }
 
