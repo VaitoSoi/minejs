@@ -186,6 +186,23 @@ export class VersionCodec {
                     throw new SkippableNotImplemented();
                 throw new NotImplemented();
             }
+            case "infer": {
+                const args = field.args?.map(val =>
+                    typeof val === "number"
+                        ? val
+                        : val.startsWith("literal:")
+                            ? val.slice(8)
+                            : readObject[val]
+                ) || [];
+                let func: (...args: any[]) => any = () => undefined;
+                switch (field.function) {
+                    case "bit_and": func = (a: number, b: number) => a & b; break;
+                    case "bit_or": func = (a: number, b: number) => a | b; break;
+                    case "shift_left": func = (val: number, pos: number) => val << pos; break;
+                    case "shift_right": func = (val: number, pos: number) => val >>> pos; break;
+                }
+                return func(...args);
+            }
             case "switch": {
                 if (!(field.dependsOn in readObject)) throw new MissingPacketField(packetId, fieldName, field.dependsOn);
                 const dependencyValue = readObject[field.dependsOn];

@@ -204,6 +204,7 @@ export const SupportTypes = z.enum([
     "slot",
     "null", // a constant
     "special",
+    "infer",
 
     /**
      * This is used for handle field that its type depends on previous field type, or value
@@ -226,6 +227,7 @@ export type FieldNode = ({
         | "fixed_bitset"
         | "byte_array"
         | "special"
+        | "infer"
     >,
 } | {
     type: "not_implemented",
@@ -262,13 +264,32 @@ export type FieldNode = ({
 } | {
     type: "special",
     comment: string,
+} | { // Call a function
+    type: "infer",
+    args?: (string | number)[] | undefined,
+    function: string
 }) & {
     skip_able?: boolean | undefined
 }
 /** @hidden */
 export const Field: z.ZodType<FieldNode> = z.union([
     z.object({
-        type: SupportTypes.exclude(["prefixed_array", "prefixed_optional", "string", "id_or_x", "array", "switch", "fixed_point", "enum", "not_implemented", "object", "fixed_bitset", "byte_array", "special"]),
+        type: SupportTypes.exclude([
+            "prefixed_array",
+            "prefixed_optional",
+            "string",
+            "id_or_x",
+            "array",
+            "switch",
+            "fixed_point",
+            "enum",
+            "not_implemented",
+            "object",
+            "fixed_bitset",
+            "byte_array",
+            "special",
+            "infer"
+        ]),
     }),
     z.object({
         type: z.literal(["not_implemented"]),
@@ -290,7 +311,9 @@ export const Field: z.ZodType<FieldNode> = z.union([
         length: z.number().optional()
     }),
     z.object({
-        type: z.literal(["id_or_x", "enum", "prefixed_optional"]),
+        type: z.literal(["id_or_x",
+            "enum",
+            "prefixed_optional"]),
         /**
          * For case like `Array<subType>` or `PrefixedOptional<subType>`
          */
@@ -344,9 +367,14 @@ export const Field: z.ZodType<FieldNode> = z.union([
         length: z.int()
     }),
     z.object({
-        type: z.literal(["special"]),
+        type: z.literal("special"),
         comment: z.string()
     }),
+    z.object({
+        type: z.literal("infer"),
+        args: z.string().or(z.number()).array().optional(),
+        function: z.string(),
+    })
 ])
     .and(
         z.object({
