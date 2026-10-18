@@ -426,7 +426,8 @@ export class PacketRegistry {
         if (this.loaded) return;
         this.loaded = true;
 
-        const json = getFile(version, "packets") as Record<string, any>;
+        const json = getFile(version,
+            "packets") as Record<string, any>;
 
         const definition = VersionDefinitions.parse(json);
         for (const [stateKey, state] of Object.entries(definition)) {
@@ -455,7 +456,8 @@ export class PacketRegistry {
             numbericId = parseInt(id, 16);
         else numbericId = id;
         if (isNaN(numbericId))
-            throw new UnexpectedValue("valid packet id", id.toString(), "name or number or hex");
+            throw new UnexpectedValue("valid packet id", id.toString(),
+                "name or number or hex");
         else
             return this.definition[state][type]["0x" + numbericId.toString(16).toUpperCase()];
     }
