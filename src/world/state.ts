@@ -7,6 +7,7 @@ import { MessageLink } from "../message/link";
 import { SignatureCache } from "../message/sigCache";
 import { CacheImplementation, LRUCache } from "../base/cache";
 import { Container, Slot } from "./container";
+import { ProtocolVersionMapping } from "../version/registry";
 
 export interface Server {
     knownPacks?: ServerKnownPack
@@ -269,6 +270,10 @@ export class SharedState {
             else
                 this.cache = new LRUCache(32);
         }
+    }
+
+    public getProtocolId() {
+        return ProtocolVersionMapping[this.clientOptions.version]!;
     }
 
     public getSignature() {
