@@ -141,7 +141,7 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
 
     private handlePacket() {
         while (this.bufferPool.length > 0) {
-            let decoder = new BinaryDecoder(this.bufferPool);
+            const decoder = new BinaryDecoder(this.bufferPool);
             let packetLength: number;
             try {
                 packetLength = decoder.readVarInt();
@@ -153,22 +153,23 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
             const expectedPacketEnd = decoder.offset + packetLength;
 
             let packetID: number;
+            let packetDecoder = new BinaryDecoder(decoder.buffer.subarray(decoder.offset, expectedPacketEnd));
             if (this.state.compressionThreshold === 0)
-                packetID = decoder.readVarInt();
+                packetID = packetDecoder.readVarInt();
             else if (this.state.compressionThreshold === -1) {
-                decoder.readVarInt();
-                packetID = decoder.readVarInt();
+                packetDecoder.readVarInt();
+                packetID = packetDecoder.readVarInt();
             } else {
-                const dataLength = decoder.readVarInt();
+                const dataLength = packetDecoder.readVarInt();
                 if (dataLength === 0) {
-                    packetID = decoder.readVarInt();
+                    packetID = packetDecoder.readVarInt();
                 } else {
-                    const dataBuffer = decoder.buffer.subarray(decoder.offset, expectedPacketEnd);
+                    const dataBuffer = packetDecoder.buffer.subarray(packetDecoder.offset);
                     const decompressed = inflateSync(dataBuffer);
                     if (decompressed.length !== dataLength)
                         throw new UnexpectedValue("decompressed packet data", decompressed.length.toString(), dataLength.toString());
-                    decoder = new BinaryDecoder(decompressed);
-                    packetID = decoder.readVarInt();
+                    packetDecoder = new BinaryDecoder(decompressed);
+                    packetID = packetDecoder.readVarInt();
                 }
             }
             if (
@@ -179,8 +180,8 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
                     (!this.state.clientOptions.debug.ignoreTCPPacketLogs)
                 )
             )
-                console.log("packet", packetID, "length", decoder.buffer.length);
-            this.forwardPacket(packetID, decoder);
+                console.log("packet", packetID, "length", packetDecoder.buffer.length);
+            this.forwardPacket(packetID, packetDecoder);
 
             this.bufferPool = this.bufferPool.subarray(expectedPacketEnd);
         }
