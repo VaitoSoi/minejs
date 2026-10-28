@@ -112,6 +112,21 @@ export class VersionCodec {
         field: FieldNode,
         decoder: BinaryDecoder
     ): any {
+        // if (
+        //     this.state.clientOptions.debug &&
+        //     this.state.clientOptions.debug.packetLogger &&
+        //     (
+        //         (Array.isArray(this.state.clientOptions.debug.ignoreTCPPacketLogs) && !this.state.clientOptions.debug.ignoreTCPPacketLogs.includes(packetId)) ||
+        //         (!this.state.clientOptions.debug.ignoreTCPPacketLogs)
+        //     )
+        // )
+        //     console.dir({
+        //         packetId,
+        //         readObject,
+        //         fieldName,
+        //         field,
+        //         decoder
+        //     }, { depth: null });
         switch (field.type) {
             case "string": return decoder.readString();
             case "boolean": return decoder.readBoolean();

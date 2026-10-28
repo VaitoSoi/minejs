@@ -1,6 +1,9 @@
 import { AABB } from "../physics/aabb";
 import { SharedState } from "./state";
 
+/**
+ * This class is for managing entities 
+ */
 export class EntitiesManager {
     /**
      * Split chunks into 16x16x16 sections, so each chunk sections will contain a set of entities

@@ -16,7 +16,7 @@ const client = new Client({
             "player_chat", "keep_alive", "entity_event", "tab_list",
             "block_event"
         ],
-        ignoreTCPPacketLogs: [0, 83, 54, 101, 1, 99, 53, 35, 131, 113, 102, 44, 56, 65, 34, 77, 122, 7]
+        ignoreTCPPacketLogs: [0, 83, 54, 101, 1, 99, 53, 35, 131, 113, 102, 44, 56, 65, 34, 77, 122, 7, 46]
     },
     loadRegistry: false,
     // auth: {

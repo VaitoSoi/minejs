@@ -78,13 +78,6 @@ export class TCPClient extends (EventEmitter as new () => TypedEmmiter<TCPClient
     public readonly socket: Socket;
 
     // Internal var
-    /**
-     * | Value | Meaning |
-     * |-------|---------|
-     * | 0     |  not set yet |
-     * | -1    | dont compress |
-     * | > 0   | compression threshold |
-     */
     private bufferPool: Buffer = Buffer.alloc(0);
 
     constructor(

@@ -44,6 +44,10 @@ export class BlockState {
         if (defaultVal) return defaultVal;
         return null;
     }
+
+    /**
+     * Get the block facing
+     */
     public getFacing(): "north" | "south" | "west" | "east" | null { return this.get("facing"); }
 }
 
@@ -51,6 +55,9 @@ export class BlockState {
  * Represent a block
  */
 export class Block {
+    /**
+     * A block will have multiple states (example: a stair will have difference facing).
+     */
     public states: BlockState[];
 
     constructor(
@@ -74,16 +81,46 @@ export class Block {
         if (defaultVal) return defaultVal;
         return null;
     }
-    public getType() { return this.get("type")!; }
+    
+    /**
+     * Get the block type.
+     * 
+     * A block type will contain multiple blocks, like type `wall_sign` will have 
+     * `oak_wall_sign`, `spruce_wall_sign`, `acacia_wall_sign`, etc...
+     */
+    public getType() { return this.get<string>("type")!; }
+    /**
+     * Get the block friction.
+     * 
+     * By default, block friction is 0.6, except for ice block family.
+     */
     public getFriction() { return this.get("friction", 0.6); }
+    /**
+     * Get the block bounciness.
+     * 
+     * By default, block friction is 0, except for slime block.
+     */
     public getBounciness() { return this.get("bounciness", 0); }
+    /**
+     * Get the block speed factor.
+     * 
+     * By default, block friction is 1, except for soul sand block.
+     */
     public getSpeedFactor() { return this.get("speed_factor", 1); }
+    /**
+     * Check if the block is climable.
+     * 
+     * By default, block friction is false, except for ladder and vine.
+     */
     public getClimbable() { return this.get("climbable", false); }
+    /**
+     * Get the block jump factor.
+     */
     public getJumpFactor() { return this.get("jump_factor", 1); }
 }
 
 /**
- * Somehow, this is an equivalent implementation of Minecraft `Level`
+ * This class is for fetching blocks and chunks data.
  */
 export class BlockManager {
     constructor(private state: SharedState) { }
@@ -115,7 +152,9 @@ export class BlockManager {
         this.state.checkReady();
         let { x, y, z } = Vec3.loadArgs(a, b, c);
         x = Math.floor(x); y = Math.floor(y); z = Math.floor(z);
+        // Chunk position
         const sx = Math.floor(x / 16), sy = Math.floor((y + 64) / 16), sz = Math.floor(z / 16);
+        // Block position within the chunk
         const px = ((x % 16) + 16) % 16, py = ((y % 16) + 16) % 16, pz = ((z % 16) + 16) % 16;
 
         if (this.state.cache)
@@ -166,6 +205,13 @@ export class BlockManager {
         const state = arr.at(this.getLocalPosKey(localPos))!;
         return this.getBlock(state);
     }
+    /**
+     * Delete the chunk cache
+     * 
+     * @param sx chunk x
+     * @param sy section y
+     * @param sz chunk z
+     */
     public deleteChunkCache(
         sx: number, sy: number, sz: number,
     ) {
@@ -193,7 +239,6 @@ export class BlockManager {
         const stateId = bitsPerEntry <= 8 ? section.palette[localId]! : localId;
 
         return BlockRegistry.getState(String(stateId));
-
     }
     private getLocalPosKey(pos: BaseVec3) {
         return pos.x + 16 * (pos.y + 16 * pos.z);

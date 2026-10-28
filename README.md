@@ -93,7 +93,7 @@ client.on("message", (message) => {
         // Looking around
         case "at": {
             const [, x, y, z] = args.map(val => parseInt(val)) as [any, number, number, number];
-            const state = client.at(x, y, z);
+            const state = client.getBlock(x, y, z);
             console.log(state);
             break;
         }
@@ -160,7 +160,7 @@ pause-when-empty-seconds=60
 
 or
 
-2. Try some crack launcher to join that sevrer
+2. Try some crack launcher to join that server
 
 ### 4. Note:
 

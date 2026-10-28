@@ -19,12 +19,15 @@ import { CacheImplementation } from "../base/cache";
 import { Container, Slot } from "../world/container";
 
 export type ClientOption = Omit<TCPClientOption, "protocolVersion"> & {
+    /**
+     * The client version. Supports 26.2 and 26.3
+     */
     version: string,
 
     /**
-     * Whenever should the client verify the message against the signature, if any
+     * Whenever should the client verify the message against the signature, if any.
      * 
-     * When set this option to true, you HAVE TO set `shouldVerifyMessageOrder` to true
+     * In order to set this option to true, you HAVE TO set `shouldVerifyMessageOrder` to true
      */
     shouldVerifyMessageSignature?: boolean,
 
@@ -58,28 +61,50 @@ export interface ClientEvents {
     /**
      * When the client is ready.
      * 
-     * Specifically, when the packet `Login (play)` is received
+     * Specifically, when the packet `Login (play)` is received.
+     * 
+     * Most of the client method require this event to be fired in order to work.
      */
     ready: [],
     /**
-     * When the client got disconnected from sevrer
+     * When the client got disconnected from server.
+     * 
+     * This event only provide the parsed string. To get the unparsed, or the raw one with decoration, use `disconnectRaw`.
+     * But, the `disconnectRaw` is only fired when the disconnection come from the server, or the server disconnect the client.
+     * Sometime, the disconnect will be fired within the client, meaning that there will be no `disconnectRaw` 
      */
     disconnect: [reason: string],
     /**
-     * When the disconection come with the raw Text Component
+     * When the disconnection come with the raw Text Component.
      */
     disconnectRaw: [textComponent: TextComponent],
 
+    /** The registry_data packet */
+    registryData: [data: RegistryData],
+
     /**
-     * When server send `Player Position Synchronization` packet
+     * When server send `Player Position Synchronization` packet.
      * 
-     * Note: this event is not fired when the client is moved by holding the input
+     * **Note:** this event is not fired when the client is moved by holding the input.
+     * 
+     * To get the player current position, use `getPosition` method
      */
     playerPosition: [position: BaseVec3],
 
-    /** When the chunk is loaded */
+    /** 
+     * When the chunk is loaded
+     * 
+     * Explaining the `chunkX`, `sectionY`, `chunkZ`: A chunk in Minecraft is a region which length and width is 16 and the height extends to the limit.
+     * But when sending the packet, the chunk is divided into smaller section which volume is 16x16x16. 
+     * So the `chunkX` and `chunkZ` is the chunk position and `sectionY` is the section within that chunk, 
+     * counting from the bedrock up to the sky
+     */
     loadChunk: [chunkX: number, sectionY: number, chunkZ: number],
-    /** When the chunk got deleted by the server */
+    /** 
+     * When the chunk got deleted by the server
+     * 
+     * See the `chunkX` and `chunkZ` explaination in `loadChunk` events 
+     */
     unloadChunk: [chunkX: number, chunkZ: number],
 
     /** When an entity is spawned or appeared in the client view distance */
@@ -88,25 +113,38 @@ export interface ClientEvents {
     updateEntity: [entityId: number],
     /** When an entity go out of client view distance or despawned */
     removeEntity: [entityId: number],
-    /** The registry_data packet */
-    registryData: [data: RegistryData],
-
+    
     // Chat
     /** When a chat message got broadcasted */
     message: [message: Message],
     /** When a message is failed to be verified against the signature sent with it */
     failedMessage: [message: Message],
-    /** The system message */
+    /** 
+     * The system message 
+     * 
+     * This event only provide the parsed string. To get the unparsed, or the raw one with decoration, use `systemMessageRaw`
+     */
     systemMessage: [message: string],
-    /** The raw system message */
+    /** 
+     * The system message with the Text Component for decorations
+     */
     systemMessageRaw: [textComponent: TextComponent],
-    /** The action bar */
+    /** 
+     * The action bar 
+     * 
+     * This event only provide the parsed string. To get the unparsed, or the raw one with decoration, use `actionBarRaw`
+     */
     actionBar: [message: string],
     /** The raw action bar */
     actionBarRaw: [textComponent: TextComponent],
 
     // Container
-    /** When a container is opened */
+    /** 
+     * When a container is opened
+     * 
+     * This event will be fired when client click on a block (with `openBlock` method) that is a container 
+     * or when server believe that you just open a container (with open_screen packet).
+     */
     openContainer: [container: Container],
     /** When the opening container is closed */
     closeContainer: [],
@@ -125,6 +163,34 @@ export interface ClientEvents {
 
 /**
  * High-level client.
+ * 
+ * @example
+ * ```ts
+ * const client = new Client({
+ *     playerName: "bot", // Put your name here
+ *     host: "localhost", // Put the server address
+ *     port: 25565, // 25565 is the default port, change to your server's port if needed
+ *     version: "26.2", // The client version 
+ *     loadRegistry: false, // 
+ *     // auth: { // This things is not working yet
+ *     //     client_id: "d86254d8-edf7-4640-90eb-643c99af188e",
+ *     //     method: "loopback",
+ *     //     openBrowser: true,
+ *     //     port: 12345
+ *     // },
+ *     // shouldVerifyMessageOrder: true,
+ *     // shouldVerifyMessageSignature: true
+ * });
+ * 
+ * // MineJs is a event driven library, the same way DiscordJS work (if you know them).
+ * // One thing to note is most of method in this client require client to be ready, 
+ * // meaning that unless the "ready" event is fired, you can't do, mostly, anything :D
+ * client.on("ready", () => console.log("Client is ready :yay:"));
+ * 
+ * // The init step before is just init the data and does not create the connection yet.
+ * // This method will create that connection.
+ * client.connect();
+ * ```
  */
 export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents>) {
     private static loadRegistry: boolean = false;
@@ -249,7 +315,9 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
         });
     }
     /**
-     * Destroy the connection
+     * Destroy the connection.
+     * 
+     * Calling this method will also fire the "disconnect" event.
      */
     public disconnect(reason: string = "Disconnect", raw?: TextComponent) {
         this.state.state = ConnectionState.Disconnected;
@@ -267,34 +335,57 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
 
     // Inputs
     /**
-     * Press and hold a key
+     * Press and hold a key.
+     * 
+     * This is pretty the same idea as when you play Minecraft.
+     * When you need to go forward, you have to hold the key `W`, `S` for backward, etc...
+     * 
+     * @throws {ClientNotReady} When the client is not ready
      */
-    public hold(inout: Input) {
-        this.player.input(inout);
+    public hold(input: Input) {
+        this.state.checkReady();
+        this.player.input(input);
     }
     /**
-     * Release a key
+     * Release a key.
+     * 
+     * This is also pretty the same idea as when you play Minecraft.
+     * Need to stop, stop holding `W`, `S` key, etc...
+     * 
+     * @throws {ClientNotReady} When the client is not ready
      */
     public release(input: Input) {
+        this.state.checkReady();
         this.player.releaseInput(input);
     }
     /**
-     * Release all key
+     * Release all key. 
+     * 
+     * This is the shortcut for release all keys. 
+     * Instead of calling `release` method for each keys, just call this
+     * 
+     * @throws {ClientNotReady} When the client is not ready
      */
     public stopMoving() {
+        this.state.checkReady();
         this.player.releaseAllInputs();
     }
 
     /**
      * Send a message
+     * 
+     * @throws {ClientNotReady} When the client is not ready
      */
     public chat(message: string) {
+        this.state.checkReady();
         this.packetSender.sendMessage(message);
     }
 
     // World
     /**
      * Get the block state at position
+     * 
+     * @throws {ClientNotReady} When the client is not ready
      */
     public getBlock(x: number, y: number, z: number): BlockState | null;
     public getBlock(position: BaseVec3): BlockState | null;
@@ -303,6 +394,11 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
         return this.blocks.at(vec3);
     }
 
+    /**
+     * Get player position
+     * 
+     * @throws {ClientNotReady} When the client is not ready
+     */
     public getPosition() {
         this.state.checkReady();
         return structuredClone(this.state.player!.position);
@@ -311,42 +407,59 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
     /**
      * Rotate your face
      * 
-     * @see https://minecraft.wiki/w/Java_Edition_protocol/Packets#Synchronize_Player_Position For Yaw and Pitch definition:
-     * 
-     * "Yaw is measured in degrees and does not follow classical trigonometry rules. 
+     * "Yaw is measured in degrees and does not follow classical trigonometry rules.
      * The unit circle of yaw on the XZ-plane starts at (0, 1) and turns counterclockwise, with 90 at (-1, 0), 180 at (0, -1) and 270 at (1, 0).
-     * 
+     *
      * Pitch is measured in degrees, where 0 is looking straight ahead, -90 is looking straight up, and 90 is looking straight down."
-     * 
+     *
+     * @see https://minecraft.wiki/w/Java_Edition_protocol/Packets#Synchronize_Player_Position For Yaw and Pitch definition
+     *
      * @param yaw In degree
      * @param pitch In degree
+     * 
+     * @throws {ClientNotReady} When the client is not ready
      */
     public lookAt(yaw: number, pitch: number) {
+        this.state.checkReady();
         this.player.setAngle(yaw, pitch);
     }
 
     /**
      * Get opening container.
      * 
-     * Return `undefined` if not any is opening
+     * Return `undefined` if nothing is opening
+     * 
+     * @throws {ClientNotReady} When the client is not ready
      */
-    public getOpeningContainer() { return this.state.openingContainer; }
+    public getOpeningContainer() {
+        this.state.checkReady();
+        return this.state.openingContainer;
+    }
     /**
      * Get carrying item.
      * 
-     * Return `undefined` if not any is carried
+     * Return `undefined` if nothing is carried
+     * 
+     * @throws {ClientNotReady} When the client is not ready
      */
-    public getCarryingItem() { return this.state.player?.carryingItem; }
+    public getCarryingItem() {
+        this.state.checkReady();
+        return this.state.player?.carryingItem;
+    }
     /**
      * Get player's inventory
+     * 
+     * @throws {ClientNotReady} When the client is not ready
      */
-    public getInventory() { return this.state.player?.inventory; }
+    public getInventory() {
+        this.state.checkReady();
+        return this.state.player?.inventory;
+    }
 
     /**
      * Open a block.
      * 
-     * **NOTE** Not working for now
-     * 
+     * @throws {ClientNotReady} When the client is not ready
      * @returns `true` if the target block is a solid block, or else, return `false`
      */
     public openBlock(x: number, y: number, z: number): boolean;
@@ -364,7 +477,6 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
             to,
             (pos) => this.blocks.at(pos)!.shape
         )!;
-        console.log(clipResult);
         if (clipResult.miss) return false;
         const cursorX = Math.abs(clipResult.location.x - clipResult.pos.x),
             cursorY = Math.abs(clipResult.location.y - clipResult.pos.y),
