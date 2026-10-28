@@ -412,7 +412,7 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
      *
      * Pitch is measured in degrees, where 0 is looking straight ahead, -90 is looking straight up, and 90 is looking straight down."
      *
-     * @see https://minecraft.wiki/w/Java_Edition_protocol/Packets#Synchronize_Player_Position For Yaw and Pitch definition
+     * @see https://minecraft.wiki/w/Java_Edition_protocol/Packets#Synchronize_Player_Position
      *
      * @param yaw In degree
      * @param pitch In degree
