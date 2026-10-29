@@ -260,6 +260,7 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
             this.state.drainEvent(event => this.emitEvent(event));
             this.state.drainPacket((packet) => this.tcp.sendPacket(packet.id, packet.data));
             this.player.tick();
+            this.packetSender.sendClientTickEnd();
         });
 
         // Forward TCP events

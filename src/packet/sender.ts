@@ -211,4 +211,8 @@ export class Sender {
             sequence: this.state.nextSequence()
         });
     }
+
+    public sendClientTickEnd() {
+        this.sendPacket("client_tick_end", {});
+    }
 }
