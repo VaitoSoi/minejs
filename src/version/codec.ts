@@ -35,7 +35,7 @@ export class VersionCodec {
         const packet = PacketRegistry.getPacket(mappedState, "clientbound", packetId);
         if (!packet) return; // console.log("no packet");
 
-        const { name, structure, skipForNow } = packet;
+        const { name: packetName, structure, skipForNow } = packet;
 
         if (skipForNow) return;
 
@@ -47,6 +47,9 @@ export class VersionCodec {
                 } catch (err) {
                     if (err instanceof SkippableNotImplemented) break;
                     if (err instanceof NotImplemented) return;
+                    console.trace({
+                        name: packetName, id: packetId
+                    });
                     throw err;
                 }
         if (this.state.clientOptions.debug &&
@@ -60,7 +63,7 @@ export class VersionCodec {
                 data: resolvedObject,
             });
 
-        this.consumePacket(`${TCPStateMapping[this.state.state]}:${name}`, resolvedObject);
+        this.consumePacket(`${TCPStateMapping[this.state.state]}:${packetName}`, resolvedObject);
     }
 
     public encodePacket(packetId: number | string, data: Record<string, any>): EncodeResult {
