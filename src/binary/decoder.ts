@@ -87,6 +87,11 @@ export class BinaryDecoder {
      */
     public readInt() { return this.read(4, (buffer) => buffer.readInt32BE); }
     /**
+     * Read 4 bytes
+     * @returns signed 4-byte integer
+     */
+    public readUInt() { return this.read(4, (buffer) => buffer.readUInt32BE); }
+    /**
      * Read 8 bytes
      * @returns signed 8-byte integer
      */
@@ -357,7 +362,7 @@ export class BinaryDecoder {
         }
 
         const byte2 = this.readUByte();
-        const bytes3To6 = this.readInt(); // Should be UInt
+        const bytes3To6 = this.readUInt();
         const packed = BigInt(bytes3To6 << 16) | BigInt(byte2 << 8) | BigInt(byte1);
         let scaleFactor = BigInt(byte1) & SCALE_BITS;
         if ((BigInt(byte1) & CONTINUATION_FLAG) != 0n)
