@@ -1930,7 +1930,8 @@
               ]
             ],
             "default": {
-              "type": "prefixed_array",
+              "type": "array",
+              "length": "step_count",
               "subType": {
                 "type": "object",
                 "fields": {
@@ -2005,7 +2006,8 @@
               ]
             ],
             "default": {
-              "type": "prefixed_array",
+              "type": "array",
+              "length": "step_count",
               "subType": {
                 "type": "object",
                 "fields": {
