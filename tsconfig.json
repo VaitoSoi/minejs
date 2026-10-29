@@ -40,8 +40,5 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
   },
-  "exclude": [
-    "test/*",
-    "dist/*"
-  ]
+  "include": ["src/**/*"],
 }
