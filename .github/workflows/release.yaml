@@ -28,10 +28,76 @@ jobs:
 
       - name: Type check
         run: pnpm tsc --noEmit
+
+  smoke-test:
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    container:
+      image: catthehacker/ubuntu:act-latest
+      # options: -v /var/run/docker.sock:/var/run/docker.sock
+
+    strategy:
+      fail-fast: false
+      matrix:
+        mc_version: ["26.2", "26.3"]
+    
+    services:
+      minecraft:
+        image: itzg/minecraft-server
+        env:
+          EULA: "TRUE"
+          TYPE: VANILLA
+          ONLINE_MODE: "FALSE"
+          VERSION: ${{ matrix.mc_version }}
+          MODE: survival
+          SPAWN_PROTECTION: "0"
+          VIEW_DISTANCE: "4"
+        options: >-
+          --health-cmd "mc-health"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 30
+          --health-start-period 60s
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v6
+
+      - name: Setup Corepack (for PNPM)
+        run: corepack enable
+
+      - name: Install packages
+        run: pnpm install --frozen-lockfile
+
+      - name: Run smoke-test for 150s
+        run: pnpm tsx test/smoke_test/index.ts
+        env:
+          VERSION: ${{ matrix.mc_version }}
+          NAME: Smoker
+          HOST: minecraft
+          PORT: 25565
+          STAY_SECOND: 150
+
+      - name: Verify if the serevr saw player
+        run: |
+          CID=$(docker ps -q --filter ancestor=itzg/minecraft-server | head -n1)
+          docker logs "$CID" 2>&1 | tee server.log
+          grep -q "Smoker joined the game" server.log
+          ! grep -qE "disconnected: (Timed out|Internal Exception)" server.log
+
+      - name: Dump logs
+        if: failure()
+        run: |
+          CID=$(docker ps -q --filter ancestor=itzg/minecraft-server | head -n1)
+          docker logs "$CID" 2>&1 | tail -n 200
     
   publish:
     runs-on: ubuntu-latest
-    needs: lint
+    needs: ["lint", "smoke-test"]
 
     steps:
       - name: Checkout
@@ -61,7 +127,7 @@ jobs:
   
   gh-page:
     runs-on: ubuntu-latest
-    needs: lint
+    needs: ["lint", "smoke-test"]
 
     environment:
       name: github-pages
