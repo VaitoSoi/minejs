@@ -13,8 +13,27 @@ This package is highly unstable for now, please report if there is any bug, glit
 Also, since there is some problem with authenticating and appId approval, I haven't completed the join "online server" part yet. [See more here](#iv-about-joining-online-server)
 
 About support version:
-+ `26.2`, `26.3`: supported :yay:
-+ `26.4`: not even existed 😭
+
+|             |26.2|26.3|
+|-------------|----|----|
+| Join server | ✅ | ✅ |
+| Chat        | ✅ | ✅ |
+| Container   | ✅ | ✅ |
+| Physics     | ☑️ | ❔ |
+
+**Meaning:**
+
+✅ Worked
+
+☑️ Worked, but some of the feature not
+
+❔ May worked, not tested
+
+**Note**:
+
++ I haven't made the block metadata files for `26.3` yet, so many block will be treated falsely :sad:
+
++ Basically, 26.2 worked well, just some of blocks special metadata (like `bounciness` of slime block, low `friction` of ice) isn't updated 
 
 ## II. Usage
 
