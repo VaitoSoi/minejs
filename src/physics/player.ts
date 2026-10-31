@@ -267,7 +267,7 @@ export class Player {
         this.aiStep();
         const { x, y, z } = this.getPos(),
             { x: xLast, y: yLast, z: zLast } = this.lastPos,
-            { yaw, yaw: xRot, pitch, pitch: yRot } = this.getAngle(),
+            { yaw: xRot, pitch: yRot } = this.getAngle(),
             { yaw: xRotLast, pitch: yRotLast } = this.lastAngle;
         const deltaX = x - xLast,
             deltaY = y - yLast,
@@ -329,7 +329,7 @@ export class Player {
                 }
             }
 
-            this.noJumpDelay = 15; // Original value to 10
+            this.noJumpDelay = 15; // Original value is 10
         }
         // TODO: Handle in fluid
 

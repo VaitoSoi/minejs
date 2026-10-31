@@ -81,7 +81,7 @@ export class Block {
         if (defaultVal) return defaultVal;
         return null;
     }
-    
+
     /**
      * Get the block type.
      * 
@@ -172,6 +172,7 @@ export class BlockManager {
     private getBlock(stateId: number | string) {
         return BlockRegistry.getState(String(stateId));
     }
+
     private getWithCache(
         sx: number, sy: number, sz: number,
         px: number, py: number, pz: number,

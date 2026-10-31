@@ -269,7 +269,7 @@ export class SharedState {
 
         if (this.clientOptions.loadAndCacheChunk) {
             if (this.clientOptions.cacheImplementation)
-                this.cache = new this.clientOptions.cacheImplementation();
+                this.cache = this.clientOptions.cacheImplementation();
             else
                 this.cache = new LRUCache(32);
         }

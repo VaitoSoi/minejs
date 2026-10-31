@@ -28,7 +28,7 @@ export class Listener {
     constructor(
         private state: SharedState,
         private emit: TypedEmmiter<ClientEvents>["emit"],
-        private sender: Sender,
+        private sender: Sender
     ) {
         this.mapping = {
             "login:login_disconnect": this.handleLoginDisconnect,
