@@ -55,7 +55,7 @@ export interface ChunkColumn {
 }
 
 export interface ChunkSection {
-    block: PaletteContainer,
+    block: PaletteContainer & { overlay: Map<number, number> },
     biome: PaletteContainer,
 }
 

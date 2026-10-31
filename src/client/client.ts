@@ -106,6 +106,17 @@ export interface ClientEvents {
      * See the `chunkX` and `chunkZ` explaination in `loadChunk` events 
      */
     unloadChunk: [chunkX: number, chunkZ: number],
+    /**
+     * When a block is updated
+     * 
+     * When you place a block in the world, instead of resending a whole chunk, which is very costly, the server will send only newly placed block and its
+     * information.
+     */
+    blockUpdate: [x: number, y: number, z: number, newBlockId: number],
+    /**
+     * Like `blockUpdate` but its chunk is not in the memory.
+     */
+    orphanBlockUpdate: [x: number, y: number, z: number, blockId: number],
 
     /** When an entity is spawned or appeared in the client view distance */
     spawnEntity: [entity: Entity],
@@ -237,6 +248,7 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
         };
         this.packetSender.sendPacket = this.tcp.sendPacket.bind(this.tcp);
         this.packetListener.disconnect = this.disconnect.bind(this);
+        this.packetListener.sendChunkBatchReceived = this.packetSender.sendChunkBatchReceived.bind(this.packetSender);
         versionCodec.consumePacket = this.packetListener.handlePacket.bind(this.packetListener);
         Container.sendClickContainer = this.packetSender.sendClickContainer.bind(this.packetSender);
 

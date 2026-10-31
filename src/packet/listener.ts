@@ -13,6 +13,7 @@ import { uuidToBuffer } from "../base/math";
 import { MessageLink } from "../message/link";
 import { Sender } from "./sender";
 import { Container, Slot } from "../world/container";
+import { BlockManager } from "../world/block";
 
 function zodParse<Type extends zod.ZodType>(data: object, zod: Type): zod.infer<Type> {
     return zod.parse(data);
@@ -52,6 +53,8 @@ export class Listener {
 
             "play:level_chunk_with_light": this.handleChunkData,
             "play:forget_level_chunk": this.handleUnloadChunk,
+            "play:section_blocks_update": this.handleSectionUpdateBlock,
+            "play:block_update": this.handleBlockUpdate,
 
             "play:add_entity": this.handleSpawnEntity,
             "play:move_entity_pos": this.handleUpdateEntityPosition,
@@ -419,7 +422,8 @@ export class Listener {
                 block: {
                     bpe: blockStateBPE,
                     palette: blockStatePalettes,
-                    data: blockDataArray
+                    data: blockDataArray,
+                    overlay: new Map()
                 },
                 biome: {
                     bpe: biomeBPE,
@@ -478,6 +482,63 @@ export class Listener {
                     data
                 }
             );
+    }
+
+    private handleBlockUpdate(data: object) {
+        const {
+            location,
+            block_id
+        } = zodParse(data, zod.object({
+            location: zod.object({
+                x: zod.int(),
+                y: zod.int(),
+                z: zod.int(),
+            }),
+            block_id: zod.int()
+        }));
+
+        const { x, y, z } = location;
+        const sx = Math.floor(x / 16), sy = Math.floor((y + 64) / 16), sz = Math.floor(z / 16);
+        const chunk = BlockManager.getChunk(this.state, sx, sy, sz);
+        if (!chunk)
+            this.emit("orphanBlockUpdate", x, y, z, block_id);
+        else {
+            const px = x & 15, py = y & 15, pz = z & 15;
+            const localKey = BlockManager.getLocalPosKey(px, py, pz);
+            chunk.block.overlay.set(localKey, block_id);
+            this.emit("blockUpdate", x, y, z, block_id);
+        }
+    }
+
+    private handleSectionUpdateBlock(data: object) {
+        const {
+            chunk_section_position,
+            blocks
+        } = zodParse(data, zod.object({
+            chunk_section_position: zod.bigint(),
+            blocks: zod.bigint().array()
+        }));
+        const sX = Number(chunk_section_position >> 42n),
+            sY = Number(chunk_section_position << 44n >> 44n),
+            sZ = Number(chunk_section_position << 22n >> 42n);
+        const chunk = BlockManager.getChunk(this.state, sX, sY, sZ)?.block;
+        for (const block of blocks) {
+            const blockStateId = Number(block >> 12n),
+                pX = Number((block >> 8n) & 0xFn),
+                pY = Number(block & 0xFn),
+                pZ = Number((block >> 4n) & 0xFn);
+            const x = sX * 16 + pX,
+                y = sY * 16 + pY - 64,
+                z = sZ * 16 + pZ;
+            if (!chunk)
+                this.emit("orphanBlockUpdate", x, y, z, blockStateId);
+            else {
+                const px = x & 15, py = y & 15, pz = z & 15;
+                const localKey = BlockManager.getLocalPosKey(px, py, pz);
+                chunk.overlay.set(localKey, blockStateId);
+                this.emit("blockUpdate", x, y, z, blockStateId);
+            }
+        }
     }
 
     // Entity

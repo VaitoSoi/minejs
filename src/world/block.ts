@@ -157,6 +157,12 @@ export class BlockManager {
         // Block position within the chunk
         const px = ((x % 16) + 16) % 16, py = ((y % 16) + 16) % 16, pz = ((z % 16) + 16) % 16;
 
+        const chunk = this.getChunk(sx, sy, sz)?.block;
+        if (!chunk) return null;
+        const localKey = BlockManager.getLocalPosKey(px, py, pz);
+        if (chunk.overlay.has(localKey))
+            return this.getBlock(chunk.overlay.get(localKey)!);
+        
         if (this.state.cache)
             return this.getWithCache(sx, sy, sz, px, py, pz);
         else
