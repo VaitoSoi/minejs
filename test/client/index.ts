@@ -1,10 +1,15 @@
-import { Input, Client, ClientEvents } from "../../src/index";
+import { Input, Client, ClientEvents, Button, PaintingMode } from "../../src/index";
+
+const version = process!.argv[2];
+if (!version) {
+    throw new Error("missing version, run `tsx test/client <version>`");
+}
 
 const client = new Client({
     playerName: "bot",
     host: "localhost",
     port: 25565,
-    version: "26.2",
+    version,
     debug: {
         packetLogger: true,
         ignorePackets: [
@@ -14,9 +19,9 @@ const client = new Client({
             "entity_position_sync", "update_attributes",
             "move_player_pos", "move_player_pos_rot", "move_player_rot",
             "player_chat", "keep_alive", "entity_event", "tab_list",
-            "block_event"
+            "block_event", "client_tick_end"
         ],
-        ignoreTCPPacketLogs: [0, 83, 54, 101, 1, 99, 53, 35, 131, 113, 102, 44, 56, 65, 34, 77, 122, 7, 46]
+        ignoreTCPPacketLogs: [0, 83, 54, 101, 1, 99, 53, 35, 131, 113, 102, 44, 56, 65, 34, 77, 122, 7, 85, 134, 104, 55, 115, 78, 103]
     },
     loadRegistry: false,
     // auth: {
@@ -31,6 +36,7 @@ const client = new Client({
 });
 const forwardEventToConsole = <K extends keyof ClientEvents>(name: K) => client.on(name, ((...args: any[]) => console.dir({ name, args }, { depth: null })) as any);
 client.connect();
+client.once("ready", () => console.log("Ready :D"));
 forwardEventToConsole("disconnect");
 forwardEventToConsole("disconnectRaw");
 // forwardEventToConsole("loadChunk");
@@ -49,7 +55,10 @@ forwardEventToConsole("closeContainer");
 forwardEventToConsole("containerContent");
 forwardEventToConsole("containerProperty");
 forwardEventToConsole("tablist");
+forwardEventToConsole("blockUpdate");
+forwardEventToConsole("orphanBlockUpdate");
 
+let paint: PaintingMode | undefined = undefined;
 client.on("message", async (message) => {
     if (!message.content.startsWith("_")) return;
     const args = message.content.slice(1).split(" ");
@@ -110,6 +119,74 @@ client.on("message", async (message) => {
             const { x, y, z } = client.getPosition();
             client.chat(`XYZ: ${x} ${y} ${z}`);
             break;
+        }
+
+        case "slot": {
+            const container = client.getOpeningContainer();
+            if (!container)
+                return client.chat("Not open any :(");
+            console.dir(container, { depth: null });
+            break;
+        }
+
+        case "click": {
+            const container = client.getOpeningContainer();
+            if (!container)
+                return client.chat("Not open any :(");
+
+            const slot = Number(args[2]);
+            if (isNaN(slot))
+                return client.chat("Slot has to be a number");
+
+            switch (args[1]) {
+                case "0": container.click(slot, Button.LeftMouse); break;
+                case "1": container.click(slot, Button.RightMouse); break;
+                default: return client.chat("0 for left, 1 for right");
+            }
+            client.chat("Done!");
+            break;
+        }
+
+        case "paint": {
+            const container = client.getOpeningContainer();
+            if (!container)
+                return client.chat("Not open any :(");
+
+            switch (args[1]) {
+                case "start": {
+                    switch (args[2]) {
+                        case "0": paint = container.paint(Button.LeftMouse); break;
+                        case "1": paint = container.paint(Button.RightMouse); break;
+                        default: return client.chat("0 for left, 1 for right");
+                    }
+
+                    client.chat("Started!");
+                    break;
+                }
+
+                case "select": {
+                    if (!paint)
+                        return client.chat("Not painting :(");
+
+                    const slot = Number(args[2]);
+                    if (isNaN(slot))
+                        return client.chat("Slot has to be a number");
+
+                    paint.select(slot);
+                    client.chat("Ok :D");
+                    break;
+                }
+
+
+                case "done": {
+                    if (!paint)
+                        return client.chat("Not painting :(");
+                    paint.done();
+                    paint = undefined;
+                    client.chat("Done");
+                    break;
+                }
+            }
         }
     }
 });
