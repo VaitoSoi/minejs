@@ -55,6 +55,8 @@ export class Listener {
             "play:forget_level_chunk": this.handleUnloadChunk,
             "play:section_blocks_update": this.handleSectionUpdateBlock,
             "play:block_update": this.handleBlockUpdate,
+            "play:chunk_batch_start": this.handleChunkBatchStart,
+            "play:chunk_batch_finished": this.handleChunkBatchFinish,
 
             "play:add_entity": this.handleSpawnEntity,
             "play:move_entity_pos": this.handleUpdateEntityPosition,
@@ -77,6 +79,7 @@ export class Listener {
     }
 
     public disconnect: (reason: string, reasonRaw?: TextComponent) => void = () => { throw new NotImplemented(); };
+    public sendChunkBatchReceived: (chunkPerTick: number) => void = () => { throw new NotImplemented(); };
 
 
     public handlePacket(packetId: string, data: object) {
@@ -345,6 +348,18 @@ export class Listener {
     }
 
     // Chunk
+    private handleChunkBatchStart() {
+        this.state.chunkBatchCalculator.startBatch();
+    }
+
+    private handleChunkBatchFinish(data: object) {
+        const { batch_size } = zodParse(data, zod.object({ batch_size: zod.int() }));
+        this.state.chunkBatchCalculator.endBatch(batch_size);
+        this.sendChunkBatchReceived(
+            this.state.chunkBatchCalculator.getChunkPerTick()
+        );
+    }
+
     private handleChunkData(data_: object) {
         const {
             chunk_x,

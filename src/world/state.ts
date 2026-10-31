@@ -8,6 +8,7 @@ import { SignatureCache } from "../message/sigCache";
 import { CacheImplementation, LRUCache } from "../base/cache";
 import { Container, Slot } from "./container";
 import { ProtocolVersionMapping } from "../version/registry";
+import { clamp } from "../base/math";
 
 export interface Server {
     knownPacks?: ServerKnownPack
@@ -195,6 +196,7 @@ export class SharedState {
     public player: ClientPlayer | null = null;
     public messageCount: number = 0;
     public openingContainer: Container | undefined = undefined;
+    public chunkBatchCalculator: ChunkBatchCalculator = new ChunkBatchCalculator();
     
     public cache: CacheImplementation<Uint16Array> | undefined = undefined;
 
@@ -254,6 +256,7 @@ export class SharedState {
         this.messageCount = 0;
         this.openingContainer = undefined as any;
         this.sequence = 0;
+        this.chunkBatchCalculator = new ChunkBatchCalculator();
 
         if (this.clientOptions.shouldVerifyMessageSignature)
             this.messageSignatureCache = SignatureCache.default();
@@ -359,5 +362,30 @@ export class SharedState {
             else
                 break;
         }
+    }
+}
+
+class ChunkBatchCalculator {
+    private static MAX_SAMPLE_WEIGHT = 50;
+
+    private startChunkBatch: bigint = 0n;
+    private averageNsPerBatch: bigint = 2000000n;
+    private sampleWeight = 0;
+
+    public startBatch() {
+        this.startChunkBatch = process.hrtime.bigint();
+    }
+
+    public endBatch(size: number) {
+        if (this.startChunkBatch <= 0n) return;
+        const batchDuration = process.hrtime.bigint() - this.startChunkBatch;
+        const nsPerBatch = batchDuration / BigInt(size);
+        const clampedNsPerBatch = clamp(nsPerBatch, this.averageNsPerBatch / 3n, this.averageNsPerBatch * 3n);
+        this.averageNsPerBatch = (this.averageNsPerBatch * BigInt(this.sampleWeight) + clampedNsPerBatch) / BigInt(this.sampleWeight + 1);
+        this.sampleWeight = Math.min(ChunkBatchCalculator.MAX_SAMPLE_WEIGHT - 1, this.sampleWeight + 1);
+    }
+
+    public getChunkPerTick() {
+        return Number(7000000n / this.averageNsPerBatch);
     }
 }

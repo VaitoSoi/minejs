@@ -236,4 +236,9 @@ export class Sender {
         });
     }
 
+    public sendChunkBatchReceived(chunkPerTick: number) {
+        this.sendPacket("chunk_batch_received", {
+            chunks_per_tick: chunkPerTick
+        });
+    }
 }
