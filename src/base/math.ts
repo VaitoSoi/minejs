@@ -78,7 +78,7 @@ export const getSign = (a: number) => a === 0 ? 0 : a > 0 ? 1 : -1;
 export const getFrac = (a: number) => a - Math.floor(a);
 
 /** @hidden */
-export function clamp(a: number, min: number, max: number) {
+export function clamp<T = number | bigint>(a: T, min: T, max: T): T {
     if (a < min) return min;
     if (a > max) return max;
     return a;
