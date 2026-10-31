@@ -1,3 +1,4 @@
+import { NotImplemented, UnexpectedValue } from "../base/error";
 import { TextComponent } from "../base/typing";
 
 /**
@@ -10,6 +11,11 @@ export interface Slot {
     itemId: number | undefined,
     addComponents: Record<string, any> | undefined,
     removeComponents: number[] | undefined
+}
+
+export enum Button {
+    LeftMouse = 0,
+    RightMouse = 1,
 }
 
 /**
@@ -25,7 +31,7 @@ export class Container {
     /**
      * Slots data
      * 
-     * @see https://minecraft.wiki/w/Java_Edition_protocol/Inventory For more info how how slot are organized
+     * @see https://minecraft.wiki/w/Java_Edition_protocol/Inventory For more info regarding how slot are organized
      */
     public slots: Slot[] = [];
     /**
@@ -94,6 +100,27 @@ export class Container {
         public type: number,
         public rawTitle: TextComponent
     ) { }
+
+    public static sendClickContainer: (
+        windowId: number,
+        stateId: number,
+        slot: number,
+        button: number,
+        mode: number
+    ) => void = () => { throw new NotImplemented(); };
+    private sendClick(
+        slot: number,
+        button: number,
+        mode: number,
+    ) {
+        return Container.sendClickContainer(
+            this.id,
+            this.stateId,
+            slot,
+            button,
+            mode
+        );
+    }
 
     /**
      * @see https://minecraft.wiki/w/Java_Edition_protocol/Packets#Set_Container_Property
@@ -176,5 +203,143 @@ export class Container {
                 }
                 break;
         }
+    }
+
+    /**
+     * Click the container slot.
+     * 
+     * Left click let you pick up all of the item in that slot.
+     * 
+     * When right-clicking on a stack of items, half the stack will be picked up and half left in the slot. 
+     * If the stack is an odd number, the half left in the slot will be the smaller of the amounts
+     * 
+     * Shift left click and Shift right click do the same job is moving the item to your hotbar, inventory,
+     * and containers.
+     * 
+     * @param slot The slot to interact
+     * @param mouse The mouse button
+     * @param shift Use Shift key
+     * @throws {UnexpectedValue} If the slot is exceeding the total slot
+     * @returns 
+     */
+    public click(slot: number, mouse: Button, shift?: boolean) {
+        if (slot != -999 && (slot < 0 || slot >= this.slots.length))
+            throw new UnexpectedValue("slot number", `valid slot number (less than ${this.slots.length})`, slot.toString());
+        return this.sendClick(slot, mouse, shift ? 1 : 0);
+    }
+
+    /**
+     * Drop the item in the slot.
+     * 
+     * Without Ctrl button, it will only drop one item at a time.
+     * 
+     * With Ctrl, it will drop all of the item in that slot.
+     * 
+     * @param slot The slot want to drop item
+     * @param ctrl Use Ctrl to drop all item
+     * @throws {UnexpectedValue} If the slot is exceeding the total slot
+     * @returns 
+     */
+    public drop(slot: number, ctrl?: boolean) {
+        if (slot < 0 || slot >= this.slots.length)
+            throw new UnexpectedValue("slot number", `valid slot number (0 <= slot index < ${this.slots.length})`, slot.toString());
+        return this.sendClick(slot, ctrl ? 1 : 0, 4);
+    }
+
+    /**
+     * Start the paint mode.
+     * 
+     * The Minecraft wiki explain this mode:
+     * ```text
+     * Starting from version 1.5, “painting mode” is available for use in inventory windows. It is done by picking up 
+     * a stack of something (more than 1 item), then holding Left Mouse Button, Right Mouse Button or Middle Mouse Button 
+     * and dragging the held stack over empty (or same type in case of right button) slots
+     * ```
+     * 
+     * Basically, this mode help you split the item you holding.
+     * 
+     * Left click will distribute the item. Right click just place one item in each slot.
+     * 
+     * @example
+     * ```ts
+     * // Get the `container` object from `client.getOpeningContainer` method or listen to event `openContainer`
+     * container.click(1, Button.LeftMouse); // Take all of the item
+     * container.paint(Button.LeftMouse) // Start the paint mode
+     *     .select(6) // Move the cursor to slot 6, 7, 8
+     *     .select(7)
+     *     .select(8)
+     *     .done(); // Confirm the paint mode
+     * ```
+     * 
+     * @param button The mouse button
+     * @throws {UnexpectedValue} If the slot is exceeding the total slot
+     * @returns 
+     */
+    public paint(button: Button) {
+        return new PaintingMode(
+            this.slots.length,
+            button,
+            this.sendClick.bind(this)
+        );
+    }
+
+    /**
+     * Double click a slot. This action will collect all of the item, with the same type, in the container to
+     * a stack.
+     * 
+     * @param slot 
+     * @returns 
+     */
+    public doubleClick(slot: number) {
+        if (slot < 0 || slot >= this.slots.length)
+            throw new UnexpectedValue("slot number", `valid slot number (0 <= slot index < ${this.slots.length})`, slot.toString());
+        return this.sendClick(slot, 0, 6);
+    }
+}
+
+export class PaintingMode {
+    constructor(
+        private totalSlots: number,
+        private currentButton: Button,
+        private sendClick: (
+            slot: number,
+            button: number,
+            mode: number,
+        ) => void,
+    ) {
+        sendClick(
+            -999,
+            currentButton === Button.LeftMouse ? 0 : 4,
+            5
+        );
+    };
+
+    /**
+     * Add new slot or, in other word, move the cursor to new slot.
+     * 
+     * It is unclear (un-documented) that the new slot has to be next to the old slot.
+     * @throws {UnexpectedValue} If the slot is exceeding the total slot
+     */
+    public select(slot: number) {
+        if (slot < 0 || slot >= this.totalSlots)
+            throw new UnexpectedValue("slot number", `valid slot number (0 <= slot index < ${this.totalSlots})`, slot.toString());
+        this.sendClick(
+            slot,
+            this.currentButton === Button.LeftMouse ? 1 : 5,
+            5
+        );
+    }
+
+    /**
+     * Mark as complete the paint mode
+     * 
+     * You have to call this function to do other action.
+     */
+    public done() {
+        this.sendClick(
+            -999,
+            this.currentButton === Button.LeftMouse ? 2 : 6,
+            5
+        );
     }
 }

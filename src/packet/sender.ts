@@ -215,4 +215,25 @@ export class Sender {
     public sendClientTickEnd() {
         this.sendPacket("client_tick_end", {});
     }
+    
+    public sendClickContainer(
+        windowId: number,
+        stateId: number,
+        slot: number,
+        button: number,
+        mode: number
+    ) {
+        this.sendPacket("container_click", {
+            window_id: windowId,
+            state_id: stateId,
+            slot,
+            button,
+            mode,
+            array_of_changed_slots: [],
+            carried_item: {
+                has_item: false
+            }
+        });
+    }
+
 }

@@ -238,6 +238,7 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
         this.packetSender.sendPacket = this.tcp.sendPacket.bind(this.tcp);
         this.packetListener.disconnect = this.disconnect.bind(this);
         versionCodec.consumePacket = this.packetListener.handlePacket.bind(this.packetListener);
+        Container.sendClickContainer = this.packetSender.sendClickContainer.bind(this.packetSender);
 
         // For querying data
         this.blocks = new BlockManager(this.state);
