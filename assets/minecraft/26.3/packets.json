@@ -2236,16 +2236,24 @@
           "salt": {
             "type": "long"
           },
-          "message_id": {
-            "type": "var_int"
-          },
-          "signature": {
-            "type": "prefixed_optional",
+          "previous_messages": {
+            "type": "prefixed_array",
             "subType": {
-              "type": "array",
-              "length": 256,
-              "subType": {
-                "type": "byte"
+              "type": "object",
+              "fields": {
+                "message_id": {
+                  "type": "var_int"
+                },
+                "signature": {
+                  "type": "prefixed_optional",
+                  "subType": {
+                    "type": "array",
+                    "length": 256,
+                    "subType": {
+                      "type": "byte"
+                    }
+                  }
+                }
               }
             }
           },
@@ -2262,10 +2270,16 @@
             }
           },
           "filter_type_bits": {
-            "type": "prefixed_optional",
-            "subType": {
-              "type": "bitset"
-            }
+            "type": "switch",
+            "dependsOn": "filter_type",
+            "cases": [
+              [
+                2,
+                {
+                  "type": "bitset"
+                }
+              ]
+            ]
           },
           "chat_type": {
             "type": "id_or_x",
