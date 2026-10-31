@@ -262,7 +262,7 @@ export class VersionCodec {
             //     return encoder.writeArray(length, (decoder) => this.readField(packetId, readObject, fieldName, field.subType, decoder));
             // }
             case "prefixed_array": {
-                const length = metadata["length"] ?? field.length;
+                const length = metadata["length"] ?? field.length ?? value.length;
                 if (length === null || length === undefined) throw new MissingField("length", "prefixed array metadata object");
                 if (!Array.isArray(value))
                     throw new UnexpectedValue("an array for prefixed array", typeof value);
