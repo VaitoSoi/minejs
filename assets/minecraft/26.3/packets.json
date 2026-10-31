@@ -4090,15 +4090,23 @@
                   "type": "short"
                 },
                 "slot_data": {
-                  "type": "not_implemented",
-                  "comment": "Hashed Slot"
+                  "type": "object",
+                  "fields": {
+                    "has_item": {
+                      "type": "boolean"
+                    }
+                  }
                 }
               }
             }
           },
           "carried_item": {
-            "type": "not_implemented",
-            "comment": "Hashed Slot"
+            "type": "object",
+            "fields": {
+              "has_item": {
+                "type": "boolean"
+              }
+            }
           }
         }
       },
