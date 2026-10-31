@@ -271,6 +271,9 @@ function getTagOfNumber(n: number | bigint): FixedSizeTag {
     }
 }
 
+/**
+ * @hidden
+ */
 export interface StaticTypedField {
     __isStatic: true,
     type: Tag,
