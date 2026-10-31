@@ -23,6 +23,7 @@ export * from "./physics/player";
 export * from "./version/codec";
 export * from "./version/registry";
 export * from "./world/block";
+export * from "./world/container";
 export * from "./world/entity";
 export * from "./world/state";
 export * from "./world/tick";
