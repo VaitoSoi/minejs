@@ -219,9 +219,9 @@ export class BinaryDecoder {
      */
     public readPosition(): { x: number, y: number, z: number } {
         const val = this.readLong(),
-            x = val >> BigInt(38),
-            y = val << BigInt(52) >> BigInt(52),
-            z = val << BigInt(26) >> BigInt(38);
+            x = BigInt.asIntN(26, val >> 38n),
+            y = BigInt.asIntN(12, val << 52n >> 52n),
+            z = BigInt.asIntN(26, val << 26n >> 38n);
         return {
             x: Number(x),
             y: Number(y),
