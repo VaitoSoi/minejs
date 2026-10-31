@@ -48,7 +48,7 @@ export type ClientOption = Omit<TCPClientOption, "protocolVersion"> & {
     /**
      * Custom cache class. Default to `LRUCache`
      */
-    cacheImplementation?: new () => CacheImplementation<Uint16Array>,
+    cacheImplementation?: () => CacheImplementation<Uint16Array>,
 }
 
 export interface ClientEvents {
