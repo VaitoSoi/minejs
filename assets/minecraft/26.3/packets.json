@@ -1557,7 +1557,8 @@
           },
           "light": {
             "type": "not_implemented",
-            "comment": "Light Data"
+            "comment": "Light Data",
+            "skip_able": true
           }
         }
       },
