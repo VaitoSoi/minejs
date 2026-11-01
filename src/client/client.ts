@@ -560,6 +560,19 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
         );
         return true;
     }
+
+    /**
+     * Close the opening container, for example, close opening chest.
+     * 
+     * **Note** The `getOpeningContainer()` will return undefined after call this method.
+     * 
+     * @throws {ClientNotReady} When the client is not ready
+     */
+    public closeContainer() {
+        this.state.checkReady();
+        this.packetSender.sendCloseContainer();
+        this.state.openingContainer = undefined;
+    }
     /**
      * Get the server TPS or tick per second.
      * 

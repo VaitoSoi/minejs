@@ -236,6 +236,14 @@ export class Sender {
         });
     }
 
+    public sendCloseContainer() {
+        if (!this.state.openingContainer) return;
+
+        this.sendPacket("container_close", {
+            window_id: this.state.openingContainer.id
+        });
+    }
+
     public sendChunkBatchReceived(chunkPerTick: number) {
         this.sendPacket("chunk_batch_received", {
             chunks_per_tick: chunkPerTick
