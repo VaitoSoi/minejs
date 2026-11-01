@@ -76,6 +76,8 @@ export class Listener {
 
             "play:set_time": this.handleSetTime,
             "play:pong_response": this.handlePongRequest,
+            "play:player_combat_kill": this.handleDeathScreen,
+            "play:respawn": this.handleRespawn,
         };
     }
 
@@ -346,6 +348,23 @@ export class Listener {
     private handleChangeGameMode(data: object) {
         const { gameMode } = zodParse(data, zod.object({ gameMode: zod.number() }));
         this.state.enqueueMutation(state => state.player!.gameMode = gameMode);
+    }
+
+    private handleRespawn(data: object) {
+        const {
+            dimension_name,
+            game_mode
+        } = zodParse(data,
+            zod.object({
+                dimension_name: zod.string(),
+                game_mode: zod.int()
+            })
+                .loose()
+        );
+
+        this.state.player!.dimension = dimension_name;
+        this.state.player!.gameMode = game_mode;
+        this.state.status = ClientStatus.Ready;
     }
 
     // Chunk
@@ -1134,5 +1153,18 @@ export class Listener {
         }));
         this.state.lastPing = Number((process.hrtime.bigint() - timestamp) / BigInt(1e6));
         this.emit("pong", this.state.lastPing);
+    }
+
+    private handleDeathScreen(data: object) {
+        const {
+            player_id,
+            message: rawMessage
+        } = zodParse(data, zod.object({
+            player_id: zod.int(),
+            message: zod.record(zod.string(), zod.any())
+        }));
+        const message = getTextFromTextComponent(rawMessage);
+        this.state.enqueueEvent("death", message);
+        this.state.enqueueEvent("deathRaw", rawMessage);
     }
 }

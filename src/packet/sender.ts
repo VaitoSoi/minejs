@@ -247,4 +247,11 @@ export class Sender {
             timestamp: process.hrtime.bigint()
         });
     }
+
+    public sendRespawn() {
+        this.sendPacket("client_command", {
+            action_id: 0
+        });
+    }
+
 }

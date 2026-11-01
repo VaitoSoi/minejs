@@ -69,6 +69,13 @@ export type ClientOption = Omit<TCPClientOption, "protocolVersion"> & {
      * a lot of storage to store for precise calculation. 
      */
     tickBufferLength?: number
+
+    /**
+     * Respawn automatically after timeout.
+     * 
+     * The time is in seconds
+     */
+    autoRespawnTimeout?: number
 }
 
 export interface ClientEvents {
@@ -197,6 +204,16 @@ export interface ClientEvents {
      */
     pong: [latency: number],
 
+    /**
+     * The death message shown on the death screen.
+     * 
+     * This event only provide the parsed string. To get the unparsed, or the raw one with decoration, use `deathRaw`
+     */
+    death: [message: string],
+    /**
+     * The death raw message.
+     */
+    deathRaw: [rawMessage: TextComponent],
 }
 
 /**
@@ -311,6 +328,10 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
             for (let sy = 0; sy < 16; sy++)
                 this.blocks.deleteChunkCache(sx, sy, sz);
         });
+
+        // Auto respawn
+        if (options.autoRespawnTimeout && options.autoRespawnTimeout > 0)
+            this.on("death", () => this.respawn());
     }
 
     private emitEvent(event: EmittedEvent) {
@@ -590,4 +611,17 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
         this.packetSender.sendPingRequest();
         return new Promise<number>((res) => this.once("pong", res));
     }
+
+    /**
+     * Send the respawn request.
+     * 
+     * It is unclear what happen when you send this packet when you are still alive.
+     * 
+     * @throws {ClientNotReady} When the client is not ready
+     */
+    public respawn() {
+        this.state.checkReady();
+        this.packetSender.sendRespawn();
+    }
+
 }

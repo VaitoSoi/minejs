@@ -32,7 +32,8 @@ const client = new Client({
     // },
     // shouldVerifyMessageOrder: true,
     // shouldVerifyMessageSignature: true
-    loadAndCacheChunk: false
+    loadAndCacheChunk: false,
+    autoRespawnTimeout: 5,
 });
 const forwardEventToConsole = <K extends keyof ClientEvents>(name: K) => client.on(name, ((...args: any[]) => console.dir({ name, args }, { depth: null })) as any);
 client.connect();
@@ -57,6 +58,7 @@ forwardEventToConsole("containerProperty");
 forwardEventToConsole("tablist");
 forwardEventToConsole("blockUpdate");
 forwardEventToConsole("orphanBlockUpdate");
+forwardEventToConsole("death");
 
 let paint: PaintingMode | undefined = undefined;
 client.on("message", async (message) => {
