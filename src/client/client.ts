@@ -49,6 +49,26 @@ export type ClientOption = Omit<TCPClientOption, "protocolVersion"> & {
      * Custom cache class. Default to `LRUCache`
      */
     cacheImplementation?: () => CacheImplementation<Uint16Array>,
+
+    /**
+     * The number of tick will be stored in the buffer to calculate the TPS.
+     * 
+     * I would suggest 30. That would be enough sample.
+     * 
+     * But if you want a longer time window for more detail, you could specify a larger number. In that scenario,
+     * I suggest you this equation:
+     * ```text
+     * tickBufferLength = <minute> * 60
+     * ```
+     * which `minute` is the time window in minute
+     * 
+     * **Note** Server sent tick update every seconds, so the `tickBufferLength` will be the number of the seconds stored,
+     * not ticks.
+     * 
+     * But be careful, the tick and the timestamp are stored in the BigInt format, meaning that it could cost
+     * a lot of storage to store for precise calculation. 
+     */
+    tickBufferLength?: number
 }
 
 export interface ClientEvents {
@@ -507,4 +527,49 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
         );
         return true;
     }
+    /**
+     * Get the server TPS or tick per second.
+     * 
+     * Normally, server runs at 20 TPS.
+     * 
+     * If you get suspiciously low TPS or -1 TPS when you just start the client, let it has sometime to 
+     * populate the tick calculator.
+     * 
+     * The difference between this method and `getTpsWithWindow` is this method is depend on how large the
+     * `tickBufferLength` option be, while the `getTpsWithWindow` depend on the `window` parameter.
+     * 
+     * @throws {ClientNotReady} When the client is not ready
+     * 
+     * @returns -1 if there isn't any tick stored
+     * @returns the TPS
+     */
+    public getTps() {
+        this.state.checkReady();
+        return this.state.tickCalculator.getTps();
+    }
+
+
+    /**
+     * Return the TPS in a time window (eg. 5 minutes)
+     * 
+     * This could be useful when you just need the TPS in certain window of time.
+     * 
+     * **Note** The window time must be smaller than the `tickBufferLength` option, for detail:
+     * ```text
+     * tickBufferLength => <windows time>
+     * ```
+     * 
+     * @param window In second
+     * 
+     * @throws {ClientNotReady} When the client is not ready
+     * 
+     * @returns `-1` if there isn't any tick stored
+     * @returns `null` if the window is larger than the ticks stored
+     * @returns or else, return the TPS
+     */
+    public getTpsWithWindow(window: number): number | null {
+        this.state.checkReady();
+        return this.state.tickCalculator.getTpsWithWindow(window);
+    }
+
 }

@@ -197,7 +197,7 @@ export class SharedState {
     public messageCount: number = 0;
     public openingContainer: Container | undefined = undefined;
     public chunkBatchCalculator: ChunkBatchCalculator = new ChunkBatchCalculator();
-    
+    public tickCalculator: TickCalculator;
     public cache: CacheImplementation<Uint16Array> | undefined = undefined;
 
     /**
@@ -217,6 +217,8 @@ export class SharedState {
             else
                 this.cache = new LRUCache(32);
         }
+
+        this.tickCalculator = new TickCalculator(this.clientOptions.tickBufferLength);
     }
 
     public isReady() {
@@ -257,6 +259,7 @@ export class SharedState {
         this.openingContainer = undefined as any;
         this.sequence = 0;
         this.chunkBatchCalculator = new ChunkBatchCalculator();
+        this.tickCalculator = new TickCalculator(this.clientOptions.tickBufferLength);
 
         if (this.clientOptions.shouldVerifyMessageSignature)
             this.messageSignatureCache = SignatureCache.default();
@@ -387,5 +390,64 @@ class ChunkBatchCalculator {
 
     public getChunkPerTick() {
         return Number(7000000n / this.averageNsPerBatch);
+    }
+}
+
+interface Tick { age: bigint, timestamp: bigint }
+class TickCalculator {
+    public ticks: Tick[] = [];
+
+    constructor(private maxTicks: number = 32) { }
+
+    public addTick(tick: Tick) {
+        this.ticks.push(tick);
+        this.pruneOldTick();
+    }
+    private pruneOldTick() {
+        while (this.ticks.length > this.maxTicks) {
+            this.ticks.shift();
+        }
+    }
+
+    /**
+     * Get the TPS.
+     * 
+     * @returns -1 if there isn't any tick stored
+     * @returns or else, the TPS
+     */
+    public getTps() {
+        console.log(this.ticks);
+        if (this.ticks.length == 0) return -1;
+
+        const last = this.ticks.at(-1)!, first = this.ticks.at(0)!;
+        const ageDelta = Number(last.age - first.age);
+        const seconds = Number(last.timestamp - first.timestamp) / 1e9;
+        if (seconds <= 0 || ageDelta < 0) return -1;
+
+        return Math.min(20, ageDelta / seconds);
+    }
+
+    /**
+     * Return the TPS in a time window (eg. 5 minutes)
+     * 
+     * This could be useful when you just need the TPS in certain window of time.
+     * 
+     * @param window In second
+     * 
+     * @returns `-1` if there isn't any tick stored
+     * @returns `null` if the window is larger than the ticks stored
+     * @returns or else, return the TPS
+     */
+    public getTpsWithWindow(window: number): number | null {
+        if (this.ticks.length == 0) return -1;
+ 
+        const last = this.ticks.at(-1)!, 
+            first = this.ticks.findLast((tick) => tick.timestamp <= last.timestamp - BigInt(Math.round(window * 1e9)));
+        if (!first) return null;
+        const ageDelta = Number(last.age - first.age);
+        const seconds = Number(last.timestamp - first.timestamp) / 1e9;
+        if (seconds <= 0 || ageDelta < 0) return -1;
+
+        return Math.min(20, ageDelta / seconds);
     }
 }

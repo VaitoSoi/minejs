@@ -74,7 +74,7 @@ export class Listener {
             "play:container_set_content": this.handleContainerContent,
             "play:container_set_data": this.handleContainerProperty,
 
-            "play:tab_list": this.handleSetTablist
+            "play:set_time": this.handleSetTime,
         };
     }
 
@@ -1109,4 +1109,20 @@ export class Listener {
             }
         );
     }
+
+    private handleSetTime(data: object) {
+        const {
+            world_age,
+            clocks
+        } = zodParse(data, zod.object({
+            world_age: zod.bigint(),
+            clocks: zod.any().array()
+        }));
+
+        this.state.tickCalculator.addTick({
+            age: world_age,
+            timestamp: process.hrtime.bigint()
+        });
+    }
+
 }

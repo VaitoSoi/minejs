@@ -187,6 +187,10 @@ client.on("message", async (message) => {
                     break;
                 }
             }
+
+        case "tps": {
+            return client.chat(`TPS: ${client.getTps()}`);
+        }
         }
     }
 });
