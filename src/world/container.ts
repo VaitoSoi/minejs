@@ -226,7 +226,7 @@ export class Container {
      */
     public click(slot: number, mouse: Button, shift?: boolean) {
         if (slot != -999 && (slot < 0 || slot >= this.slots.length))
-            throw new UnexpectedValue("slot number", `valid slot number (less than ${this.slots.length})`, slot.toString());
+            throw new UnexpectedValue("slot number", slot.toString(), `valid slot number (0 <= slot index < ${this.slots.length})`);
         return this.sendClick(slot, mouse, shift ? 1 : 0);
     }
 
@@ -244,7 +244,7 @@ export class Container {
      */
     public drop(slot: number, ctrl?: boolean) {
         if (slot < 0 || slot >= this.slots.length)
-            throw new UnexpectedValue("slot number", `valid slot number (0 <= slot index < ${this.slots.length})`, slot.toString());
+            throw new UnexpectedValue("slot number", slot.toString(), `valid slot number (0 <= slot index < ${this.slots.length})`);
         return this.sendClick(slot, ctrl ? 1 : 0, 4);
     }
 
@@ -294,7 +294,7 @@ export class Container {
      */
     public doubleClick(slot: number) {
         if (slot < 0 || slot >= this.slots.length)
-            throw new UnexpectedValue("slot number", `valid slot number (0 <= slot index < ${this.slots.length})`, slot.toString());
+            throw new UnexpectedValue("slot number", slot.toString(), `valid slot number (0 <= slot index < ${this.slots.length})`);
         return this.sendClick(slot, 0, 6);
     }
 }
@@ -324,7 +324,7 @@ export class PaintingMode {
      */
     public select(slot: number) {
         if (slot < 0 || slot >= this.totalSlots)
-            throw new UnexpectedValue("slot number", `valid slot number (0 <= slot index < ${this.totalSlots})`, slot.toString());
+            throw new UnexpectedValue("slot number", slot.toString(), `valid slot number (0 <= slot index < ${this.totalSlots})`);
         this.sendClick(
             slot,
             this.currentButton === Button.LeftMouse ? 1 : 5,
