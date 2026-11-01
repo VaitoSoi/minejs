@@ -244,6 +244,12 @@ export class Sender {
         });
     }
 
+    public sendSetCarriedSlot(slot: number) {
+        this.sendPacket("set_carried_item", {
+            slot
+        });
+    }
+
     public sendChunkBatchReceived(chunkPerTick: number) {
         this.sendPacket("chunk_batch_received", {
             chunks_per_tick: chunkPerTick

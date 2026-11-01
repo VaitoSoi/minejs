@@ -130,6 +130,9 @@ export interface ClientPlayer {
     effects: Record<number, Effect>,
 
     inventory: Container,
+    /** The slot which the player has selected (0–8) */
+    holdingSlot: number,
+    /** Item being dragged with the mouse. */
     carryingItem: Slot | undefined,
 
     health: Health

@@ -573,6 +573,25 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
         this.packetSender.sendCloseContainer();
         this.state.openingContainer = undefined;
     }
+
+    /**
+     * Changes the slot selection in the hotbar.
+     * 
+     * @param slot slot which the player has selected (0–8)
+     * 
+     * @throws {ClientNotReady} When the client is not ready
+     * @throws {UnexpectedValue} when submit invalid number (a float, a number out of 0-8 range)
+     */
+    public setCarriedSlot(slot: number) {
+        this.state.checkReady();
+        if (getFrac(slot) != 0)
+            throw new UnexpectedValue("a number (0-8)", "a float");
+        if (slot < 0 || slot > 8)
+            throw new UnexpectedValue("a number (0-8)", `${slot}`);
+        this.packetSender.sendSetCarriedSlot(slot);
+        this.state.enqueueMutation(state => state.player!.holdingSlot = slot);
+    }
+
     /**
      * Get the server TPS or tick per second.
      * 

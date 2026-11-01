@@ -91,7 +91,9 @@ export class Container {
 
     constructor(
         /**
-         * This is not used at the moment
+         * The ID of this container.
+         * 
+         * Used for interact and close it.
          */
         public id: number,
         /**
