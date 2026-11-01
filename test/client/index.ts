@@ -105,6 +105,12 @@ client.on("message", async (message) => {
             break;
         }
 
+        case "close": {
+            client.closeContainer();
+            client.chat("Closed :D");
+            break;
+        }
+
         case "e":
         case "echo":
         case "say": {
