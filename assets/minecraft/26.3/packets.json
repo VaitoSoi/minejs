@@ -2173,7 +2173,11 @@
       "0x3F": {
         "name": "pong_response",
         "id": 63,
-        "structure": {}
+        "structure": {
+          "timestamp": {
+            "type": "long"
+          }
+        }
       },
       "0x40": {
         "name": "place_ghost_recipe",
@@ -4411,7 +4415,11 @@
       "0x26": {
         "name": "ping_request",
         "id": 38,
-        "structure": {}
+        "structure": {
+          "timestamp": {
+            "type": "long"
+          }
+        }
       },
       "0x27": {
         "name": "place_recipe",

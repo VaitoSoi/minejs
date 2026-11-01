@@ -1988,7 +1988,11 @@
       "0x3E": {
         "name": "pong_response",
         "id": 62,
-        "structure": {}
+        "structure": {
+          "timestamp": {
+            "type": "long"
+          }
+        }
       },
       "0x3F": {
         "name": "place_ghost_recipe",
@@ -4172,7 +4176,11 @@
       "0x26": {
         "name": "ping_request",
         "id": 38,
-        "structure": {}
+        "structure": {
+          "timestamp": {
+            "type": "long"
+          }
+        }
       },
       "0x27": {
         "name": "place_recipe",
