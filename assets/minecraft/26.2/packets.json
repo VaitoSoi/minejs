@@ -1625,7 +1625,7 @@
             "type": "long"
           },
           "game_mode": {
-            "type": "unsigned_byte"
+            "type": "byte"
           },
           "previous_game_mode": {
             "type": "byte"
@@ -1646,7 +1646,7 @@
               [
                 true,
                 {
-                  "type": "boolean"
+                  "type": "string"
                 }
               ]
             ],
@@ -2468,15 +2468,33 @@
             "type": "boolean"
           },
           "death_dimension_name": {
-            "type": "prefixed_optional",
-            "subType": {
-              "type": "string"
+            "type": "switch",
+            "dependsOn": "has_death_location",
+            "cases": [
+              [
+                true,
+                {
+                  "type": "string"
+                }
+              ]
+            ],
+            "default": {
+              "type": "null"
             }
           },
           "death_location": {
-            "type": "prefixed_optional",
-            "subType": {
-              "type": "position"
+            "type": "switch",
+            "dependsOn": "has_death_location",
+            "cases": [
+              [
+                true,
+                {
+                  "type": "position"
+                }
+              ]
+            ],
+            "default": {
+              "type": "null"
             }
           },
           "portal_cooldown": {
