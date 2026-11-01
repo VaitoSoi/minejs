@@ -191,6 +191,9 @@ client.on("message", async (message) => {
         case "tps": {
             return client.chat(`TPS: ${client.getTps()}`);
         }
+        
+        case "ping": {
+            return client.chat(`Ping: ${await client.ping()}ms`);
         }
     }
 });

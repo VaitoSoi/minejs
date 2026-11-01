@@ -241,4 +241,10 @@ export class Sender {
             chunks_per_tick: chunkPerTick
         });
     }
+
+    public sendPingRequest() {
+        this.sendPacket("ping_request", {
+            timestamp: process.hrtime.bigint()
+        });
+    }
 }

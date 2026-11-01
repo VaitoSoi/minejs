@@ -75,6 +75,7 @@ export class Listener {
             "play:container_set_data": this.handleContainerProperty,
 
             "play:set_time": this.handleSetTime,
+            "play:pong_response": this.handlePongRequest,
         };
     }
 
@@ -1125,4 +1126,13 @@ export class Listener {
         });
     }
 
+    private handlePongRequest(data: object) {
+        const {
+            timestamp
+        } = zodParse(data, zod.object({
+            timestamp: zod.bigint()
+        }));
+        this.state.lastPing = Number((process.hrtime.bigint() - timestamp) / BigInt(1e6));
+        this.emit("pong", this.state.lastPing);
+    }
 }

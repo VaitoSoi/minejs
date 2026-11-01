@@ -198,6 +198,8 @@ export class SharedState {
     public openingContainer: Container | undefined = undefined;
     public chunkBatchCalculator: ChunkBatchCalculator = new ChunkBatchCalculator();
     public tickCalculator: TickCalculator;
+    public lastPing: number = -1;
+
     public cache: CacheImplementation<Uint16Array> | undefined = undefined;
 
     /**

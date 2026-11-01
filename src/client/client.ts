@@ -189,7 +189,14 @@ export interface ClientEvents {
      * 
      * `{"text":""}` mean remove header or footer.
      */
-    tablist: [newTablist: { header: { text: string, raw: TextComponent }, footer: { text: string, raw: TextComponent } }]
+
+    /**
+     * The response of the ping request.
+     * 
+     * The latency is in ms.
+     */
+    pong: [latency: number],
+
 }
 
 /**
@@ -572,4 +579,15 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
         return this.state.tickCalculator.getTpsWithWindow(window);
     }
 
+    /**
+     * Get player latency
+     * 
+     * @throws {ClientNotReady} When the client is not ready
+     * @returns latency, in ms
+     */
+    public ping() {
+        this.state.checkReady();
+        this.packetSender.sendPingRequest();
+        return new Promise<number>((res) => this.once("pong", res));
+    }
 }
