@@ -77,6 +77,7 @@ export class Listener {
             "play:set_time": this.handleSetTime,
             "play:pong_response": this.handlePongRequest,
             "play:player_combat_kill": this.handleDeathScreen,
+            "play:set_health": this.handleSetHealth,
             "play:respawn": this.handleRespawn,
         };
     }
@@ -169,7 +170,11 @@ export class Listener {
             },
             effects: {},
             inventory: new Container(0, -1, {}),
-            carryingItem: undefined
+            health: {
+                health: 20,
+                food: 20,
+                saturation: 5
+            }
         } satisfies ClientPlayer as any;
         this.sender.sendLoginAck();
     }
@@ -1166,5 +1171,25 @@ export class Listener {
         const message = getTextFromTextComponent(rawMessage);
         this.state.enqueueEvent("death", message);
         this.state.enqueueEvent("deathRaw", rawMessage);
+    }
+
+    private handleSetHealth(data: object) {
+        const {
+            health,
+            food,
+            food_saturation
+        } = zodParse(data, zod.object({
+            health: zod.number(),
+            food: zod.number(),
+            food_saturation: zod.number()
+        }));
+        this.state.enqueueMutation((state) => {
+            state.player!.health = {
+                health,
+                food,
+                saturation: food_saturation
+            };
+            this.emit("health", structuredClone(state.player!.health));
+        });
     }
 }

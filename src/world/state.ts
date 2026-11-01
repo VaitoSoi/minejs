@@ -131,6 +131,30 @@ export interface ClientPlayer {
 
     inventory: Container,
     carryingItem: Slot | undefined,
+
+    health: Health
+}
+
+export interface Health {
+    /**
+     * Ranging from 0 to 20 where lesser or equal to 0 is death, 20 is full HP
+     */
+    health: number,
+    /**
+     * Ranging from 0 to 20
+     */
+    food: number,
+    /**
+     * Ranging from 0 to 5
+     * 
+     * Minecraft Wiki said:
+     * ```text
+     * Food saturation acts as a food “overcharge”. Food values will not decrease while the saturation is over zero. 
+     * New players logging in or respawning automatically get a saturation of 5.0. Eating food increases the saturation 
+     * as well as the food bar.
+     * ```
+     */
+    saturation: number,
 }
 
 export enum ClientStatus {

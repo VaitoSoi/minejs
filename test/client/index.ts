@@ -59,6 +59,7 @@ forwardEventToConsole("tablist");
 forwardEventToConsole("blockUpdate");
 forwardEventToConsole("orphanBlockUpdate");
 forwardEventToConsole("death");
+forwardEventToConsole("health");
 
 let paint: PaintingMode | undefined = undefined;
 client.on("message", async (message) => {

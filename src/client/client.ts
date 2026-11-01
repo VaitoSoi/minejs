@@ -214,6 +214,11 @@ export interface ClientEvents {
      * The death raw message.
      */
     deathRaw: [rawMessage: TextComponent],
+
+    /**
+     * When server update player health
+     */
+    health: [health: Health]
 }
 
 /**
@@ -624,4 +629,13 @@ export class Client extends (EventEmitter as new () => TypedEmitter<ClientEvents
         this.packetSender.sendRespawn();
     }
 
+    /**
+     * Get the player's health
+     * 
+     * @throws {ClientNotReady} When the client is not ready
+     */
+    public getHealth() {
+        this.state.checkReady();
+        return structuredClone(this.state.player!.health);
+    }
 }
