@@ -48,7 +48,7 @@ export class VersionCodec {
                     if (err instanceof SkippableNotImplemented) break;
                     if (err instanceof NotImplemented) return;
                     console.trace({
-                        name: packetName, id: packetId
+                        name: packetName, id: packetId, fieldName: name, fieldValue: field
                     });
                     throw err;
                 }
