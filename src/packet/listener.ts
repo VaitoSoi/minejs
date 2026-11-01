@@ -73,7 +73,9 @@ export class Listener {
             "play:container_close": this.handleCloseContainer,
             "play:container_set_content": this.handleContainerContent,
             "play:container_set_data": this.handleContainerProperty,
+            "play:set_held_slot": this.handleSetHeldSlot,
 
+            "play:tab_list": this.handleSetTablist,
             "play:set_time": this.handleSetTime,
             "play:pong_response": this.handlePongRequest,
             "play:player_combat_kill": this.handleDeathScreen,
@@ -170,6 +172,8 @@ export class Listener {
             },
             effects: {},
             inventory: new Container(0, -1, {}),
+            holdingSlot: 0,
+            carryingItem: undefined,
             health: {
                 health: 20,
                 food: 20,
@@ -1121,6 +1125,12 @@ export class Listener {
         });
     }
 
+    private handleSetHeldSlot(data: object) {
+        const { slot } = zodParse(data, zod.object({ slot: zod.number() }));
+        this.state.enqueueMutation((state) => state.player!.holdingSlot = slot);
+    }
+
+    // Other
     private handleSetTablist(data: object) {
         const { header, footer } = zodParse(data, zod.object({
             header: zod.record(zod.string(), zod.any()),
