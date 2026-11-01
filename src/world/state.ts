@@ -334,7 +334,7 @@ export class SharedState {
     public async startSignatureLoop() {
         const expiresAt = await this.fetchSignature();
         this.signatureTimeoutInstance = setTimeout(
-            async () => await this.startSignatureLoop(), 
+            async () => await this.startSignatureLoop(),
             expiresAt - Date.now() - 10_000
         );
     }

@@ -39,7 +39,8 @@ export type ClientOption = Omit<TCPClientOption, "protocolVersion"> & {
     /**
      * Whether to load the whole chunk section (16x16x16) and keep them in the cache or just load the needed block.
      * 
-     * Please consider this carefully since this can consume a lot of resource to calculate the whole chunk section and store it while you may not need that much.
+     * Please consider this carefully since this can consume a lot of resource to calculate the whole chunk section 
+     * and store it while you may not need that much.
      * 
      * This option is useful when you have to constantly access to the world chunk, e.g pathfinding.
      */
@@ -196,6 +197,7 @@ export interface ClientEvents {
      * 
      * `{"text":""}` mean remove header or footer.
      */
+    tablist: [newTablist: { header: { text: string, raw: TextComponent }, footer: { text: string, raw: TextComponent } }],
 
     /**
      * The response of the ping request.
